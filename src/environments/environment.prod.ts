@@ -1,5 +1,5 @@
-/** Fill in from the Supabase project before deploying. The anon key is public by design. */
+/** Supabase project `vadem-quiz`. The publishable key is public by design. */
 export const environment = {
-  supabaseUrl: 'https://YOUR-PROJECT.supabase.co',
-  supabaseAnonKey: 'YOUR-ANON-KEY',
+  supabaseUrl: 'https://rmoluipdtpisezeecqip.supabase.co',
+  supabaseAnonKey: 'sb_publishable_asQoNAeITJxgMz5aZqhNZQ_n1vpU-J8',
 };

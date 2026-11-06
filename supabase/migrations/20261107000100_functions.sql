@@ -582,9 +582,31 @@ end $$;
 
 -- ----------------------------------------------------------------------------------- permissions
 
--- Functions are executable by PUBLIC by default, and Supabase also grants them to anon.
+-- Functions are executable by PUBLIC by default, and Supabase also grants them to anon. Public
+-- functions are revoked by name: a shared database may hold another application's functions.
 revoke all on all functions in schema private from public, anon, authenticated;
-revoke all on all functions in schema public from public, anon, authenticated;
+
+revoke all on function
+  public.create_quiz(text),
+  public.get_quiz(uuid, text),
+  public.save_quiz(uuid, text, jsonb),
+  public.delete_quiz(uuid, text),
+  public.create_room(uuid, text),
+  public.is_room_host(uuid, text),
+  public.join_room(text, text),
+  public.is_room_player(uuid, text),
+  public.buzz(uuid, uuid, text),
+  public.start_game(uuid, text),
+  public.open_question(uuid, text, uuid),
+  public.open_buzz(uuid, text),
+  public.host_answer(uuid, text),
+  public.judge(uuid, text, boolean),
+  public.skip_question(uuid, text),
+  public.return_to_board(uuid, text),
+  public.next_round(uuid, text),
+  public.finish_game(uuid, text),
+  public.adjust_score(uuid, text, uuid, integer)
+from public, anon, authenticated;
 
 grant execute on function
   public.create_quiz(text),
