@@ -1,0 +1,8 @@
+.angular
+.claude
+.tools
+dist
+graphify-out
+playwright-report
+supabase
+test-results

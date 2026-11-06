@@ -1,0 +1,17 @@
+@import '@vadem/ui/styles.css';
+
+/* No double-tap zoom or pull-to-refresh in the middle of a question. Pinch zoom stays available. */
+html {
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+body {
+  margin: 0;
+}
+
+/* Global because the board belongs to a child component: read from a shared screen, it can be big. */
+.vq-stream .vd-board {
+  --vd-board-cell-height: 6rem;
+  --vd-board-cell-font-size: var(--vd-text-3xl);
+}
