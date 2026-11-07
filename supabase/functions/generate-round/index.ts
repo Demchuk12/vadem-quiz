@@ -1,9 +1,16 @@
 // Fills one round of a quiz with AI-written questions. The AI key is a secret of this function, which
 // is why it exists at all: the app has no other server, and a browser cannot keep a key.
-// Secrets: GEMINI_API_KEY, and optionally GEMINI_MODEL to change the model without a deploy.
+// Secrets: GEMINI_API_KEY, and optionally GEMINI_MODEL and GEMINI_FALLBACK_MODEL to change the models
+// without a deploy.
 
 const DEFAULT_MODEL = 'gemini-3.6-flash';
-const REQUEST_TIMEOUT_MS = 100_000;
+const DEFAULT_FALLBACK_MODEL = 'gemini-3.5-flash-lite';
+/** Stays under the platform's request limit, however many attempts it takes. */
+const TIME_BUDGET_MS = 130_000;
+const ATTEMPT_TIMEOUT_MS = 60_000;
+const MIN_ATTEMPT_MS = 15_000;
+/** A pause before each repeated attempt. The last attempt goes to the fallback model. */
+const RETRY_DELAYS_MS = [2_000, 5_000];
 const MAX_PROMPT_LENGTH = 500;
 const MAX_CATEGORIES = 8;
 const MAX_QUESTIONS = 8;
@@ -143,41 +150,83 @@ const SCHEMA = {
   required: ['categories'],
 };
 
-async function askModel(request: RoundRequest): Promise<unknown> {
+/** A failure that another attempt may not repeat: the free tier is often briefly overloaded. */
+class Retryable extends Error {
+  constructor(readonly code: string) {
+    super(code);
+  }
+}
+
+async function askOnce(model: string, key: string, request: RoundRequest, timeoutMs: number) {
+  let response: Response;
+  try {
+    response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
+        method: 'POST',
+        headers: { 'x-goog-api-key': key, 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(timeoutMs),
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: instructions(request) }] },
+          contents: [{ role: 'user', parts: [{ text: request.prompt }] }],
+          generationConfig: {
+            responseFormat: { text: { mimeType: 'APPLICATION_JSON', schema: SCHEMA } },
+          },
+        }),
+      },
+    );
+  } catch (error) {
+    console.error('Gemini did not answer', model, error);
+    throw new Retryable('ai_busy');
+  }
+
+  if (response.status === 429 || response.status >= 500) {
+    console.error('Gemini busy', model, response.status, (await response.text()).slice(0, 300));
+    throw new Retryable('ai_busy');
+  }
+  if (!response.ok) {
+    console.error('Gemini failed', model, response.status, (await response.text()).slice(0, 500));
+    throw new Failure(502, 'ai_failed');
+  }
+
+  const data = await response.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  try {
+    return checkRound(JSON.parse(text), request);
+  } catch {
+    console.error('Gemini gave an unusable answer', model, data?.candidates?.[0]?.finishReason);
+    throw new Retryable('ai_failed');
+  }
+}
+
+async function askModel(request: RoundRequest): Promise<GeneratedRound> {
   const key = Deno.env.get('GEMINI_API_KEY');
   if (!key) {
     console.error('GEMINI_API_KEY is not set');
     throw new Failure(500, 'ai_failed');
   }
   const model = Deno.env.get('GEMINI_MODEL') ?? DEFAULT_MODEL;
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-    {
-      method: 'POST',
-      headers: { 'x-goog-api-key': key, 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: instructions(request) }] },
-        contents: [{ role: 'user', parts: [{ text: request.prompt }] }],
-        generationConfig: {
-          responseFormat: { text: { mimeType: 'APPLICATION_JSON', schema: SCHEMA } },
-        },
-      }),
-    },
-  );
-  if (response.status === 429) throw new Failure(429, 'ai_busy');
-  if (!response.ok) {
-    console.error('Gemini failed', response.status, (await response.text()).slice(0, 500));
-    throw new Failure(502, 'ai_failed');
+  const fallback = Deno.env.get('GEMINI_FALLBACK_MODEL') ?? DEFAULT_FALLBACK_MODEL;
+  const attempts = [
+    { model, delay: 0 },
+    { model, delay: RETRY_DELAYS_MS[0]! },
+    { model: fallback, delay: RETRY_DELAYS_MS[1]! },
+  ];
+
+  const startedAt = Date.now();
+  let lastCode = 'ai_failed';
+  for (const attempt of attempts) {
+    await new Promise((resolve) => setTimeout(resolve, attempt.delay));
+    const remaining = TIME_BUDGET_MS - (Date.now() - startedAt);
+    if (remaining < MIN_ATTEMPT_MS) break;
+    try {
+      return await askOnce(attempt.model, key, request, Math.min(remaining, ATTEMPT_TIMEOUT_MS));
+    } catch (error) {
+      if (!(error instanceof Retryable)) throw error;
+      lastCode = error.code;
+    }
   }
-  const data = await response.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  try {
-    return JSON.parse(text);
-  } catch {
-    console.error('Gemini returned no JSON', data?.candidates?.[0]?.finishReason);
-    throw new Failure(502, 'ai_failed');
-  }
+  throw new Failure(lastCode === 'ai_busy' ? 503 : 502, lastCode);
 }
 
 /** Schemas shape the answer but do not fix the counts, and a short round would break the board. */
@@ -200,10 +249,7 @@ function checkRound(value: unknown, request: RoundRequest): GeneratedRound {
             question.answer.trim() !== '',
         ),
     );
-  if (!valid) {
-    console.error('Gemini returned a round of the wrong shape');
-    throw new Failure(502, 'ai_failed');
-  }
+  if (!valid) throw new Error('A round of the wrong shape');
   return { categories };
 }
 
@@ -214,7 +260,7 @@ Deno.serve(async (req) => {
   try {
     const request = parseRequest(await req.json().catch(() => null));
     await consumeCall(request);
-    return reply(200, checkRound(await askModel(request), request));
+    return reply(200, await askModel(request));
   } catch (error) {
     if (error instanceof Failure) return reply(error.status, { code: error.code });
     console.error('generate-round failed', error);

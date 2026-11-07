@@ -82,7 +82,9 @@ confidence, so a person reviews it before saving. `consume_ai_call` is granted t
 alone and limits each quiz and the whole app per day: anyone can create a quiz, so a per-quiz limit by
 itself would not protect the shared free quota. Gemini is the provider because its free tier fits a
 game among friends, and free-tier requests may be used by Google, so no personal data belongs in a
-prompt. Tests replace the function: they must not depend on, or spend, a real quota.
+prompt. Tests replace the function: they must not depend on, or spend, a real quota. The free tier
+gets briefly overloaded (503), so the function retries and then falls back to a lighter model, and the
+editor resumes an interrupted run from the failed round rather than spending the daily limit again.
 
 ## Known limits
 

@@ -7,6 +7,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   QuizApi,
@@ -26,6 +27,13 @@ import { VdInput } from '@vadem/ui/input';
 import { VdToaster } from '@vadem/ui/toast';
 
 const MAX_PROMPT_LENGTH = 500;
+
+/** Where an interrupted generation stopped: the next round to write, and what it must not repeat. */
+interface Progress {
+  prompt: string;
+  round: number;
+  avoid: string[];
+}
 
 /** Writes the quiz from a topic. The result is a draft in the editor: the host reviews and saves it. */
 @Component({
@@ -65,10 +73,26 @@ export class QuizGenerator {
     ],
   });
 
+  private readonly prompt = toSignal(this.form.controls.prompt.valueChanges, { initialValue: '' });
+  private readonly interrupted = signal<Progress | null>(null);
+  /** A failed run continues where it stopped, as long as the topic stays the same. */
+  private readonly resumable = computed(() => {
+    const progress = this.interrupted();
+    return progress && progress.round > 0 && progress.prompt === this.prompt().trim()
+      ? progress
+      : null;
+  });
+  protected readonly actionLabel = computed(() => {
+    const progress = this.resumable();
+    return progress ? `Продовжити з раунду ${progress.round + 1}` : 'Згенерувати';
+  });
+
   protected start(): void {
     this.form.markAllAsTouched();
     if (this.form.invalid || this.busy()) return;
-    if (quizProgress(this.quiz()).complete > 0) this.confirming.set(true);
+    const progress = this.resumable();
+    if (progress) void this.generate(progress);
+    else if (quizProgress(this.quiz()).complete > 0) this.confirming.set(true);
     else void this.generate();
   }
 
@@ -78,7 +102,7 @@ export class QuizGenerator {
   };
 
   /** Round by round: a failure keeps what is already written and costs only the current round. */
-  private async generate(): Promise<void> {
+  private async generate(from?: Progress): Promise<void> {
     const token = this.saved.find(this.quizId())?.token;
     if (!token) return;
     const prompt = this.form.controls.prompt.value.trim();
@@ -87,8 +111,9 @@ export class QuizGenerator {
       async () => {
         let quiz = this.quiz();
         const roundCount = quiz.rounds.length;
-        const avoid: string[] = [];
-        for (let round = 0; round < roundCount; round += 1) {
+        const avoid = [...(from?.avoid ?? [])];
+        for (let round = from?.round ?? 0; round < roundCount; round += 1) {
+          this.interrupted.set({ prompt, round, avoid: [...avoid] });
           this.currentRound.set(round + 1);
           const result = await this.api.generateRound({
             quizId: this.quizId(),
@@ -103,6 +128,7 @@ export class QuizGenerator {
           avoid.push(...result.categories.map((category) => category.title));
           this.generated.emit(quiz);
         }
+        this.interrupted.set(null);
       },
       { errorTitle: 'Не все вдалося згенерувати' },
     );

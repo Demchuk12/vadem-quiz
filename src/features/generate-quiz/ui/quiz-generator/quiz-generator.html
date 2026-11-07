@@ -16,7 +16,7 @@
     <div class="actions">
       <button vdButton type="submit" [loading]="busy()">
         <vd-icon slot="start" name="star" />
-        Згенерувати
+        {{ actionLabel() }}
       </button>
       <span class="status" aria-live="polite">{{ status() }}</span>
     </div>

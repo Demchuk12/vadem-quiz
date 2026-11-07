@@ -175,6 +175,50 @@ test('AI fills the editor as a draft, one round at a time', async ({ browser }) 
   await expect(host.getByRole('button', { name: 'Зберегти' })).toBeEnabled();
 });
 
+test('an interrupted generation continues from the failed round', async ({ browser }) => {
+  const { host } = await hostGame(browser);
+  await host.goto('/quizzes');
+  await host.getByRole('link', { name: 'Редагувати' }).first().click();
+  await expect(host.getByRole('button', { name: 'Зберегти' })).toBeDisabled();
+
+  const rounds: number[] = [];
+  let busy = true;
+  await host.route('**/functions/v1/generate-round', async (route) => {
+    const headers = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' };
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 200, headers });
+    const body = route.request().postDataJSON();
+    rounds.push(body.round);
+    if (body.round === 2 && busy) {
+      busy = false;
+      return route.fulfill({ status: 503, headers, json: { code: 'ai_busy' } });
+    }
+    return route.fulfill({
+      status: 200,
+      headers,
+      json: {
+        categories: Array.from({ length: body.categories }, (_, c) => ({
+          title: `Раунд ${body.round} категорія ${c + 1}`,
+          questions: Array.from({ length: body.questions }, (_, q) => ({
+            text: `Питання ${q + 1}`,
+            answer: `Відповідь ${q + 1}`,
+          })),
+        })),
+      },
+    });
+  });
+
+  await host.getByLabel('Тема квізу').fill('Кіно');
+  await host.getByRole('button', { name: 'Згенерувати' }).click();
+  await host.getByRole('alertdialog').getByRole('button', { name: 'Замінити' }).click();
+  await expect(host.getByText('AI зараз перевантажений')).toBeVisible();
+
+  // Round 1 stays, and only round 2 is requested again, without a second question.
+  await host.getByRole('button', { name: 'Продовжити з раунду 2' }).click();
+  await expect(host.getByText('Квіз написано')).toBeVisible();
+  expect(rounds).toEqual([1, 2, 2]);
+  await expect(host.getByRole('button', { name: 'Згенерувати' })).toBeVisible();
+});
+
 test('a used-up AI limit is explained and leaves the quiz as it was', async ({ browser }) => {
   const { host } = await hostGame(browser);
   await host.goto('/quizzes');
