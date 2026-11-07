@@ -1,0 +1,15 @@
+@use 'shared/ui/styles/layout';
+
+:host {
+  display: grid;
+  gap: var(--vq-sidebar-gap, var(--vd-space-4));
+  align-items: start;
+}
+@media (width >= 64rem) {
+  :host {
+    grid-template-columns: minmax(0, 1fr) var(--vq-sidebar-size, 20rem);
+  }
+}
+.main {
+  @include layout.stack;
+}

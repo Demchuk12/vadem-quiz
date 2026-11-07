@@ -13,6 +13,9 @@ export default defineConfig({
     baseURL: 'http://localhost:4210',
     ...devices['Desktop Chrome'],
     trace: 'retain-on-failure',
+    // Stable measurements: axe would otherwise read contrast mid-fade. Also proves the app is
+    // complete without motion.
+    contextOptions: { reducedMotion: 'reduce' },
   },
   webServer: {
     command: 'npx ng serve --port 4210',

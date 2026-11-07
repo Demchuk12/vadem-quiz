@@ -1,0 +1,11 @@
+.preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-3);
+  align-items: center;
+}
+img {
+  max-inline-size: 10rem;
+  max-block-size: 7rem;
+  border-radius: var(--vd-radius-md);
+}

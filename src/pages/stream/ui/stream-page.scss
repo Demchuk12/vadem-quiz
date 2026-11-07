@@ -1,0 +1,14 @@
+@use 'shared/ui/styles/layout';
+
+:host {
+  @include layout.page(var(--vd-space-6), var(--vd-space-6));
+
+  min-block-size: 100dvh;
+  align-content: start;
+
+  --vq-sidebar-size: 22rem;
+  --vq-sidebar-gap: var(--vd-space-6);
+}
+.big {
+  @include layout.headline(var(--vd-text-3xl), var(--vd-weight-extrabold));
+}

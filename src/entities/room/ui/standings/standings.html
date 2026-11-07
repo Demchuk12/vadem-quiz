@@ -1,0 +1,37 @@
+@if (store.ranked().length === 0) {
+  <div vdEmptyState icon="users" size="sm">
+    <p vdEmptyStateTitle>Гравців ще немає</p>
+  </div>
+} @else {
+  <ol vdLeaderboard aria-label="Таблиця лідерів">
+    @for (entry of store.ranked(); track entry.player.id) {
+      <li
+        vdLeaderboardRow
+        [attr.data-player-id]="entry.player.id"
+        [rank]="entry.rank"
+        [name]="entry.player.nickname"
+        [score]="format(entry.player.score)"
+        [negative]="entry.player.score < 0"
+        [current]="entry.player.id === currentPlayerId()"
+        [inactive]="isOffline(entry.player)"
+      >
+        @if (isOffline(entry.player)) {
+          <span vdBadge>Офлайн</span>
+        }
+        @if (editable()) {
+          <button
+            slot="actions"
+            vdButton
+            variant="ghost"
+            size="sm"
+            iconOnly
+            [attr.aria-label]="'Змінити очки: ' + entry.player.nickname"
+            (click)="adjust.emit(entry.player)"
+          >
+            <vd-icon name="pencil" />
+          </button>
+        }
+      </li>
+    }
+  </ol>
+}

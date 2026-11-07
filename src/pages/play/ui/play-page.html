@@ -1,0 +1,44 @@
+@if (store.status() !== 'ready') {
+  <vq-room-status [status]="store.status()" />
+} @else if (store.room(); as room) {
+  <h1 class="vd-visually-hidden">{{ room.quiz_title }}</h1>
+  <header>
+    <vq-vadem-logo mark />
+    <span class="me">{{ me()?.nickname }}</span>
+    <vq-room-badges />
+    <span class="score" aria-label="Ваш рахунок">{{ format(me()?.score ?? 0) }}</span>
+  </header>
+
+  @switch (room.state) {
+    @case ('lobby') {
+      <section vdCard class="stack">
+        <h2>Ви в кімнаті {{ room.code }}</h2>
+        <p class="notice">Гра почнеться, щойно ведучий її запустить.</p>
+      </section>
+      <vq-standings [currentPlayerId]="playerId()" showOnline />
+    }
+    @case ('board') {
+      <p class="notice">Ведучий обирає питання.</p>
+      <vq-game-board />
+      <vq-standings [currentPlayerId]="playerId()" />
+    }
+    @case ('round_end') {
+      <h2>Раунд {{ room.round }} завершено</h2>
+      <vq-standings [currentPlayerId]="playerId()" />
+    }
+    @case ('finished') {
+      <vq-winner-banner />
+      <vq-standings [currentPlayerId]="playerId()" />
+    }
+    @case ('answer_shown') {
+      <vq-question-view />
+      <vq-standings [currentPlayerId]="playerId()" />
+    }
+    @default {
+      <vq-question-view />
+      @if (session(); as playerSession) {
+        <vq-buzz-button [session]="playerSession" />
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+<vd-board [label]="label()" [rows]="store.rows()">
+  @for (column of store.columns(); track column.title + $index) {
+    <vd-board-column [heading]="column.title">
+      @for (cell of column.cells; track cell.id) {
+        @if (interactive()) {
+          <button vdBoardCell [state]="stateOf(cell)" (click)="pick.emit(cell)">
+            {{ cell.points }}
+          </button>
+        } @else {
+          <div vdBoardCell [state]="stateOf(cell)">{{ cell.points }}</div>
+        }
+      }
+    </vd-board-column>
+  }
+</vd-board>

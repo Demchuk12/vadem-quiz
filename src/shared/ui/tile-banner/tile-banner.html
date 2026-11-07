@@ -1,0 +1,7 @@
+<div class="grid">
+  @for (tile of tiles; track $index) {
+    <span class="tile" [attr.data-tier]="tile.tier" [style.--order]="tile.order">{{
+      tile.value
+    }}</span>
+  }
+</div>

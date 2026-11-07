@@ -1,0 +1,11 @@
+@use 'shared/ui/styles/layout';
+
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2);
+  align-items: center;
+}
+.winner {
+  @include layout.headline;
+}

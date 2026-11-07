@@ -1,0 +1,27 @@
+@if (quizzes().length === 0) {
+  <div vdEmptyState icon="folder">
+    <p vdEmptyStateTitle>Квізів поки немає</p>
+    <p vdEmptyStateDescription>Створіть перший, щоб зібрати питання й запустити гру.</p>
+  </div>
+} @else {
+  <ul>
+    @for (quiz of quizzes(); track quiz.id) {
+      <li vdCard>
+        <div class="row">
+          <span class="title">{{ quiz.title }}</span>
+          <div class="actions">
+            @if (quiz.lastRoomCode; as code) {
+              <a vdButton size="sm" [routerLink]="['/host', code]">Гра {{ code }}</a>
+            }
+            <vq-start-room-button [quiz]="quiz" />
+            <a vdButton size="sm" [routerLink]="['/quizzes', quiz.id]">
+              <vd-icon slot="start" name="pencil" />
+              Редагувати
+            </a>
+            <vq-delete-quiz-button [quiz]="quiz" (deleted)="refresh()" />
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+}

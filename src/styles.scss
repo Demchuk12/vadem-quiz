@@ -1,0 +1,69 @@
+@import '@vadem/ui/styles.css';
+
+/* The app's identity: a deep emerald, which also tints every neutral through Vadem's tokens. */
+:root {
+  --vd-hue-accent: 158;
+  --vd-chroma-accent: 0.15;
+}
+
+html {
+  /* No double-tap zoom or pull-to-refresh in the middle of a question. Pinch zoom stays. */
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+body {
+  margin: 0;
+  background-color: var(--vd-color-bg);
+  background-image: radial-gradient(
+    60rem 28rem at 50% -8rem,
+    color-mix(in oklch, var(--vd-color-action) 16%, transparent),
+    transparent
+  );
+  background-repeat: no-repeat;
+}
+
+/* A board tile answers the pointer like a physical block. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  button.vd-board-cell {
+    transition:
+      var(--vd-transition-colors),
+      translate var(--vd-duration-base) var(--vd-ease-out),
+      scale var(--vd-duration-fast) var(--vd-ease-out);
+  }
+
+  button.vd-board-cell:not(:disabled):hover {
+    translate: 0 calc(var(--vd-space-1) * -1);
+    border-color: var(--vd-color-action);
+    box-shadow: var(--vd-highlight-top), var(--vd-shadow-glow-action);
+  }
+}
+
+/* Global because the board belongs to a child component: read from a shared screen, it can be big. */
+.vq-stream .vd-board {
+  --vd-board-cell-height: 6rem;
+  --vd-board-cell-font-size: var(--vd-text-3xl);
+}
+
+/* Shared by components through shared/ui/styles/_motion.scss. */
+@keyframes vq-rise {
+  from {
+    opacity: 0;
+    translate: 0 var(--vd-space-3);
+  }
+}
+
+@keyframes vq-pop {
+  from {
+    opacity: 0;
+    scale: 0.92;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+}

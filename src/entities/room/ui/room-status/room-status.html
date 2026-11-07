@@ -1,0 +1,20 @@
+@switch (status()) {
+  @case ('loading') {
+    <div role="status" aria-label="Завантаження гри">
+      <div vdSkeleton></div>
+    </div>
+  }
+  @case ('not_found') {
+    <div vdAlert variant="danger" role="alert">
+      <p vdAlertTitle>Кімнату не знайдено</p>
+      <p>Перевірте код або попросіть ведучого надіслати нове посилання.</p>
+    </div>
+    <a vdButton routerLink="/join">До входу</a>
+  }
+  @case ('error') {
+    <div vdAlert variant="danger" role="alert">
+      <p vdAlertTitle>Не вдалося завантажити гру</p>
+      <p>Перевірте зʼєднання й оновіть сторінку.</p>
+    </div>
+  }
+}

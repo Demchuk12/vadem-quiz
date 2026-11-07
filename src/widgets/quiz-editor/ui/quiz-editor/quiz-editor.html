@@ -1,0 +1,105 @@
+<vd-field label="Назва квізу">
+  <input vdInput maxlength="120" [value]="quiz().title" (input)="setTitle($event)" />
+</vd-field>
+
+<vd-tabs [value]="activeRound()" (valueChange)="activeRound.set($any($event))">
+  <div vdTabList aria-label="Раунди">
+    @for (round of quiz().rounds; track $index) {
+      <button vdTab [value]="$index + ''">Раунд {{ $index + 1 }}</button>
+    }
+  </div>
+  @for (round of quiz().rounds; track $index; let r = $index) {
+    <div vdTabPanel [value]="r + ''">
+      <div class="round">
+        <vd-field class="multiplier" label="Множник очок">
+          <vd-number-input decreaseLabel="Зменшити" increaseLabel="Збільшити">
+            <input
+              vdNumberInput
+              type="number"
+              min="1"
+              max="10"
+              [value]="quiz().roundMultipliers[r]"
+              (change)="setMultiplier(r, $event)"
+            />
+          </vd-number-input>
+        </vd-field>
+
+        @for (category of round.categories; track $index; let c = $index) {
+          <section vdCard class="category">
+            <div class="category-head">
+              <vd-field [label]="'Категорія ' + (c + 1)">
+                <input
+                  vdInput
+                  maxlength="80"
+                  [value]="category.title"
+                  (input)="setCategoryTitle(r, c, $event)"
+                />
+              </vd-field>
+              <button
+                vdButton
+                variant="ghost"
+                iconOnly
+                [attr.aria-label]="'Видалити категорію ' + (c + 1)"
+                (click)="removeCategory(r, c)"
+              >
+                <vd-icon name="trash" />
+              </button>
+            </div>
+
+            <div vdAccordion>
+              @for (question of category.questions; track $index; let q = $index) {
+                <details vdAccordionItem>
+                  <summary>
+                    {{ points(question, r) }} ·
+                    {{ isComplete(question) ? question.text || 'Картинка' : 'не заповнено' }}
+                  </summary>
+                  <div class="question">
+                    <div class="pair">
+                      <vd-field label="Питання">
+                        <textarea
+                          vdInput
+                          rows="3"
+                          maxlength="2000"
+                          [value]="question.text"
+                          (input)="setQuestion(r, c, q, { text: valueOf($event) })"
+                        ></textarea>
+                      </vd-field>
+                      <vd-field label="Правильна відповідь">
+                        <textarea
+                          vdInput
+                          rows="3"
+                          maxlength="2000"
+                          [value]="question.answerText"
+                          (input)="setQuestion(r, c, q, { answerText: valueOf($event) })"
+                        ></textarea>
+                      </vd-field>
+                    </div>
+                    <div class="pair">
+                      <vq-question-image
+                        [quizId]="quizId()"
+                        [path]="question.imagePath"
+                        label="Картинка до питання"
+                        (pathChange)="setQuestion(r, c, q, { imagePath: $event })"
+                      />
+                      <vq-question-image
+                        [quizId]="quizId()"
+                        [path]="question.answerImagePath"
+                        label="Картинка до відповіді"
+                        (pathChange)="setQuestion(r, c, q, { answerImagePath: $event })"
+                      />
+                    </div>
+                  </div>
+                </details>
+              }
+            </div>
+          </section>
+        }
+
+        <button vdButton (click)="addCategory(r)">
+          <vd-icon slot="start" name="plus" />
+          Додати категорію
+        </button>
+      </div>
+    </div>
+  }
+</vd-tabs>

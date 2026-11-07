@@ -1,0 +1,15 @@
+@if (store.room(); as room) {
+  <vq-vadem-logo mark />
+  <h1>{{ room.quiz_title }}</h1>
+  <vq-room-badges />
+  <button
+    vdButton
+    size="sm"
+    variant="ghost"
+    [attr.aria-pressed]="sound.enabled()"
+    (click)="sound.toggle()"
+  >
+    Звук: {{ sound.enabled() ? 'увімкнено' : 'вимкнено' }}
+  </button>
+  <ng-content />
+}

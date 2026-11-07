@@ -1,0 +1,11 @@
+@use 'shared/ui/styles/layout';
+
+:host {
+  @include layout.page;
+}
+.stack {
+  @include layout.stack;
+}
+vq-finish-game-button {
+  justify-self: center;
+}

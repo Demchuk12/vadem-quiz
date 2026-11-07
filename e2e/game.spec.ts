@@ -14,7 +14,7 @@ test('a full game: lobby, buzzer, judging, rounds, final standings', async ({ br
   const streamContext = await browser.newContext();
   const stream = await streamContext.newPage();
   await stream.goto(`/stream/${code}`);
-  await expect(stream.getByText(code, { exact: true })).toBeVisible();
+  await expect(stream.getByText(code, { exact: true }).first()).toBeVisible();
 
   // The lobby updates live on the host's screen.
   await expect(host.getByText('Анна')).toBeVisible();
@@ -97,7 +97,7 @@ test('a full game: lobby, buzzer, judging, rounds, final standings', async ({ br
   await host.getByRole('button', { name: 'Підбити підсумки' }).click();
   await expect(host.getByText('Перемагає Анна: 400')).toBeVisible();
   await expect(bob.getByText('Перемагає Анна')).toBeVisible();
-  await expect(stream.getByText('Перемагає Анна!')).toBeVisible();
+  await expect(stream.getByText('Перемагає Анна')).toBeVisible();
 });
 
 test('a nickname cannot be taken twice and a bad code is explained', async ({ browser }) => {
@@ -183,7 +183,7 @@ test('axe: host, player and stream during a question', async ({ browser }) => {
   const context = await browser.newContext();
   const stream = await context.newPage();
   await stream.goto(`/stream/${code}`);
-  await expect(stream.getByText(code, { exact: true })).toBeVisible();
+  await expect(stream.getByText(code, { exact: true }).first()).toBeVisible();
 
   for (const page of [host, ann, stream]) {
     await expect(page.getByRole('heading').first()).toBeVisible();
@@ -216,14 +216,36 @@ test('a host who reloads during a question still sees the answer', async ({ brow
   await expect(host.getByText('ТАЄМНА-ВІДПОВІДЬ-КИЇВ')).toBeVisible();
 });
 
-test('a phone shows the whole buzzer without sideways scrolling', async ({ browser }) => {
+test('a phone fits the buzzer in every state, without sideways scrolling', async ({ browser }) => {
   const { host, code } = await hostGame(browser);
   const ann = await joinGame(browser, code, 'Анна');
+  const noOverflow = () =>
+    ann.evaluate(
+      () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+    );
+
   await host.getByRole('button', { name: 'Почати гру' }).click();
   await host.getByRole('group', { name: 'Географія' }).getByRole('button', { name: '200' }).click();
   await expect(buzzer(ann)).toBeInViewport({ ratio: 1 });
-  const overflow = await ann.evaluate(
-    () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+  expect(await noOverflow()).toBe(true);
+
+  await host.getByRole('button', { name: 'Відкрити відповіді' }).click();
+  await expect(buzzer(ann)).toHaveAttribute('data-state', 'ready');
+  expect(await noOverflow()).toBe(true);
+
+  await pressBuzzer(ann);
+  await expect(buzzer(ann)).toHaveAttribute('data-state', 'won');
+  await expect(buzzer(ann)).toBeInViewport({ ratio: 1 });
+  expect(await noOverflow()).toBe(true);
+});
+
+test('the join page fits a phone and offers the form on the first screen', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 360, height: 780 } });
+  const page = await context.newPage();
+  await page.goto('/join');
+  await expect(page.getByLabel('Код кімнати')).toBeInViewport();
+  const fits = await page.evaluate(
+    () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
   );
-  expect(overflow).toBe(false);
+  expect(fits).toBe(true);
 });

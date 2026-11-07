@@ -1,0 +1,12 @@
+<button vdButton variant="ghost" (click)="confirming.set(true)">Завершити гру</button>
+
+<vd-alert-dialog
+  title="Завершити гру?"
+  description="Гравці побачать підсумки, продовжити цю гру вже не вийде."
+  confirmLabel="Завершити"
+  cancelLabel="Скасувати"
+  variant="danger"
+  [open]="confirming()"
+  [action]="finish"
+  (openChange)="confirming.set($event)"
+/>

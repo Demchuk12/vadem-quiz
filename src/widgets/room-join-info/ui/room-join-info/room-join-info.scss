@@ -1,0 +1,42 @@
+@use 'shared/ui/styles/motion';
+
+:host {
+  --tile: var(--vd-space-12);
+  --tile-font: var(--vd-text-2xl);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-6);
+  align-items: center;
+}
+:host([data-large]) {
+  --tile: clamp(3.5rem, 8vw, 6.5rem);
+  --tile-font: clamp(2rem, 5vw, 4rem);
+
+  gap: var(--vd-space-8);
+}
+.info {
+  display: grid;
+  gap: var(--vd-space-3);
+  justify-items: start;
+}
+.tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-1-5);
+}
+.tile {
+  @include motion.enter(vq-pop);
+
+  display: grid;
+  place-items: center;
+  inline-size: var(--tile);
+  aspect-ratio: 1;
+  border: var(--vd-border-width) solid var(--vd-color-action);
+  border-radius: var(--vd-radius-md);
+  background-color: var(--vd-color-action-subtle);
+  font-family: var(--vd-font-mono);
+  font-size: var(--tile-font);
+  font-weight: var(--vd-weight-bold);
+  animation-delay: calc(var(--order) * 60ms);
+}

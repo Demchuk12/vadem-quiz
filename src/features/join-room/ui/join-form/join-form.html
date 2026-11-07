@@ -1,0 +1,21 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <vd-field label="Код кімнати" [error]="codeError">
+    <input
+      vdInput
+      class="code"
+      formControlName="code"
+      size="lg"
+      autocomplete="off"
+      autocapitalize="characters"
+      spellcheck="false"
+      [attr.maxlength]="codeLength"
+    />
+  </vd-field>
+  <vd-field label="Нікнейм" error="Вкажіть нікнейм, до 24 символів.">
+    <input vdInput formControlName="nickname" size="lg" autocomplete="nickname" maxlength="24" />
+  </vd-field>
+  @if (error(); as message) {
+    <div vdAlert variant="danger" role="alert">{{ message }}</div>
+  }
+  <button vdButton variant="primary" size="lg" type="submit" [loading]="busy()">Приєднатися</button>
+</form>

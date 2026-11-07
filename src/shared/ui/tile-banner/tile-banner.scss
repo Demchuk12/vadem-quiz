@@ -1,0 +1,84 @@
+:host {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+/* Parents choose the scale and the anchor: --vq-tile-size, --vq-tile-font, --vq-banner-x, -y. */
+.grid {
+  --tile: var(--vq-tile-size, 4rem);
+
+  position: absolute;
+  inset-block-start: var(--vq-banner-y, 50%);
+  inset-inline-start: var(--vq-banner-x, 50%);
+  display: grid;
+  translate: -50% -50%;
+  grid-template-columns: repeat(9, var(--tile));
+  grid-auto-rows: var(--tile);
+  gap: var(--vq-tile-gap, var(--vd-space-2));
+}
+.tile {
+  display: grid;
+  place-items: center;
+  border: var(--vd-border-width) solid var(--vd-color-border);
+  border-radius: var(--vd-radius-md);
+  background-color: var(--vd-color-surface);
+  box-shadow: var(--vd-highlight-top);
+  color: var(--vd-color-text-subtle);
+  font-size: var(--vq-tile-font, var(--vd-text-sm));
+  font-weight: var(--vd-weight-bold);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+/* The same three steps as the logo: 50%, 80%, solid. */
+.tile[data-tier] {
+  border-color: transparent;
+  color: var(--vd-color-on-action);
+}
+.tile[data-tier='1'] {
+  background-color: color-mix(in oklch, var(--vd-accent-500) 50%, transparent);
+}
+.tile[data-tier='2'] {
+  background-color: color-mix(in oklch, var(--vd-accent-500) 80%, transparent);
+}
+.tile[data-tier='3'] {
+  background-color: var(--vd-accent-500);
+}
+
+@keyframes tile-in {
+  from {
+    opacity: 0;
+    scale: 0.8;
+  }
+}
+@keyframes tile-light {
+  from {
+    border-color: var(--vd-color-border);
+    background-color: var(--vd-color-surface);
+    color: var(--vd-color-text-subtle);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tile {
+    animation: tile-in var(--vd-duration-slow) var(--vd-ease-out) backwards;
+    animation-delay: calc(var(--order) * 40ms);
+  }
+  /* The tiles settle first, then the V lights up from the top to its tip. */
+  .tile[data-tier] {
+    animation:
+      tile-in var(--vd-duration-slow) var(--vd-ease-out) backwards,
+      tile-light var(--vd-duration-slow) var(--vd-ease-out) backwards;
+    animation-delay: calc(var(--order) * 40ms), calc(500ms + (var(--order) - 1) * 40ms);
+  }
+  .tile[data-tier='2'] {
+    animation-delay: calc(var(--order) * 40ms), 700ms;
+  }
+  .tile[data-tier='3'] {
+    animation-delay: calc(var(--order) * 40ms), 900ms;
+  }
+  .tile[data-tier='1'] {
+    animation-delay: calc(var(--order) * 40ms), 500ms;
+  }
+}

@@ -1,0 +1,35 @@
+@use 'shared/ui/styles/layout';
+
+:host {
+  @include layout.page($padding: var(--vd-space-3) var(--vd-space-4) var(--vd-space-8));
+
+  min-block-size: 100dvh;
+  align-content: start;
+}
+header {
+  --vq-logo-size: var(--vd-space-6);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2);
+  align-items: center;
+}
+.me {
+  margin-inline-end: auto;
+  font-weight: var(--vd-weight-semibold);
+  overflow-wrap: anywhere;
+}
+.score {
+  font-size: var(--vd-text-xl);
+  font-weight: var(--vd-weight-extrabold);
+  font-variant-numeric: tabular-nums;
+}
+h2 {
+  font-size: var(--vd-text-xl);
+}
+.notice {
+  color: var(--vd-color-text-muted);
+}
+.stack {
+  @include layout.stack;
+}

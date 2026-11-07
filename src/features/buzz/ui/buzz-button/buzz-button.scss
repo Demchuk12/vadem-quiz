@@ -1,0 +1,48 @@
+@use 'shared/ui/styles/motion';
+
+:host {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  padding-block: var(--vd-space-2);
+  /* The pulse may reach past a narrow screen, but must not make the page scroll sideways. */
+  overflow-x: clip;
+}
+.vd-buzzer {
+  --vd-buzzer-size: min(70vw, 45dvh, 20rem);
+
+  position: relative;
+}
+.vd-buzzer[data-state='ready'] {
+  @include motion.enter(vq-pop);
+}
+/* Green means "you can press", so being first needs its own color. */
+.vd-buzzer[data-state='won'] {
+  --vd-buzzer-bg: var(--vd-color-warning);
+  --vd-buzzer-fg: var(--vd-color-on-warning);
+
+  @include motion.enter(vq-pop);
+}
+
+@keyframes ring {
+  from {
+    opacity: 0.7;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    scale: 1.22;
+  }
+}
+/* The one looping motion in the app: it means "press now" and stops the moment that is over. */
+@media (prefers-reduced-motion: no-preference) {
+  .vd-buzzer[data-state='ready']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: var(--vd-space-1) solid var(--vd-color-action);
+    border-radius: inherit;
+    pointer-events: none;
+    animation: ring 1400ms var(--vd-ease-out) infinite;
+  }
+}

@@ -1,0 +1,7 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-4);
+}
+[vdSkeleton] {
+  block-size: var(--vd-space-16);
+}

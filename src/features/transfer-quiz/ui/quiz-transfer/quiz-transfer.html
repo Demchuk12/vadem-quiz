@@ -1,0 +1,16 @@
+<button vdButton size="sm" (click)="fileInput.click()">
+  <vd-icon slot="start" name="upload" />
+  Імпорт
+</button>
+<input
+  #fileInput
+  class="file-input"
+  type="file"
+  accept="application/json,.json"
+  aria-label="Імпорт квізу з JSON"
+  (change)="importFile($event)"
+/>
+<button vdButton size="sm" (click)="exportFile()">
+  <vd-icon slot="start" name="download" />
+  Експорт
+</button>

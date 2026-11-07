@@ -1,0 +1,32 @@
+// Page-level layout shared by the app's screens. Import with `@use 'shared/ui/styles/layout'`.
+
+@mixin stack($gap: var(--vd-space-4)) {
+  display: grid;
+  // A plain `auto` column grows with its content and pushes the page past the screen.
+  grid-template-columns: minmax(0, 1fr);
+  gap: $gap;
+  min-inline-size: 0;
+}
+
+/// A full-width screen.
+@mixin page($gap: var(--vd-space-4), $padding: var(--vd-space-4)) {
+  @include stack($gap);
+
+  padding: $padding;
+}
+
+/// A centered column, for forms and lists.
+@mixin narrow-page($width, $gap: var(--vd-space-6), $padding-end: var(--vd-space-6)) {
+  @include stack($gap);
+
+  max-inline-size: $width;
+  margin-inline: auto;
+  padding: var(--vd-space-6) var(--vd-space-4) $padding-end;
+}
+
+/// Display text that long nicknames must not break out of.
+@mixin headline($size: var(--vd-text-xl), $weight: var(--vd-weight-bold)) {
+  font-size: $size;
+  font-weight: $weight;
+  overflow-wrap: anywhere;
+}

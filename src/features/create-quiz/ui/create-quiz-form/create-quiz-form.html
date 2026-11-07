@@ -1,0 +1,9 @@
+<form [formGroup]="form" (ngSubmit)="create()">
+  <vd-field label="Назва нового квізу" error="Вкажіть назву.">
+    <input vdInput formControlName="title" maxlength="120" />
+  </vd-field>
+  <button vdButton variant="primary" type="submit" [loading]="busy()">
+    <vd-icon slot="start" name="plus" />
+    Створити
+  </button>
+</form>

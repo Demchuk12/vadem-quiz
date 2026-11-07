@@ -1,0 +1,19 @@
+<section class="hero">
+  <div class="banner"><vq-tile-banner /></div>
+  <div class="hero-text">
+    <vq-vadem-logo />
+    <h1>Квіз із друзями</h1>
+    <p>Хто перший натиснув, той і відповідає.</p>
+  </div>
+</section>
+
+<div class="panel">
+  <div class="panel-content">
+    <h2>Приєднатися до гри</h2>
+    <p class="hint">Введіть код кімнати від ведучого й оберіть нікнейм.</p>
+    <vq-join-form [code]="code()" />
+    <footer>
+      <a vdButton variant="ghost" routerLink="/quizzes">Я ведучий</a>
+    </footer>
+  </div>
+</div>

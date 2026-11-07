@@ -1,0 +1,41 @@
+@use 'shared/ui/styles/layout';
+
+.hero {
+  --vq-tile-size: 1.625rem;
+  --vq-tile-font: 0;
+  --vq-tile-gap: var(--vd-space-1);
+  --vq-banner-x: 78%;
+
+  position: relative;
+  display: grid;
+  align-items: end;
+  min-block-size: 13rem;
+  overflow: hidden;
+  background-color: var(--vd-color-surface-sunken);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to right, var(--vd-color-surface-sunken) 20%, transparent 70%);
+  pointer-events: none;
+}
+.hero-text {
+  @include layout.stack(var(--vd-space-3));
+
+  position: relative;
+  z-index: 1;
+  inline-size: min(100%, 48rem);
+  margin-inline: auto;
+  padding: var(--vd-space-6) var(--vd-space-4);
+}
+h1 {
+  font-size: var(--vd-text-3xl);
+  letter-spacing: var(--vd-tracking-tight);
+}
+.content {
+  @include layout.narrow-page(48rem);
+}
+.hint {
+  color: var(--vd-color-text-muted);
+}

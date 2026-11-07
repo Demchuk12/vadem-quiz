@@ -10,20 +10,29 @@ No own server. Original plan: `docs/PLAN.md`. Reasons for choices: `DECISIONS.md
 - Ask before adding a dependency, feature or abstraction that was not requested.
 - A missing UI component goes into `vadem-ui-angular` (sibling folder), not into this app. App code
   composes Vadem components; styles are page layout on `--vd-*` tokens with logical properties only.
+- Components keep `<name>.ts`, `<name>.html` and `<name>.scss` apart, no inline templates or styles.
+  No `.scss` file for a component without styles.
 - Record non-obvious choices in `DECISIONS.md`.
 - Commits and PRs carry no Claude attribution (no `Co-Authored-By: Claude`, no "Generated with" lines).
 
 ## Layout
 
+Feature-Sliced Design, enforced by `no-restricted-imports` in `eslint.config.js`: a layer imports only
+from layers below it, and from a slice only through its `index.ts`.
+
 ```
-supabase/migrations/   schema + RPC functions: the only way to change game state
-supabase/tests/        pgTAP: access control and game rules
-src/app/game/          pure logic (game-logic, quiz-document), RoomStore (realtime)
-src/app/core/          GameApi (RPC), LocalStore (device secrets), Media, Sound
-src/app/shared/        views used by several pages
-src/app/features/      join, editor, host, play, stream
-e2e/                   Playwright: multi-browser game, press race, axe
+src/app/        bootstrap, routes, providers
+src/pages/      one slice per route: join, quizzes, quiz-editor, host, play, stream
+src/widgets/    self-contained screen blocks: room-header, host-question-panel, quiz-editor...
+src/features/   one user action each: buzz, join-room, run-question, adjust-score...
+src/entities/   room (with players and tiles, too entangled to split), quiz
+src/shared/     api (Supabase, RPC, media), lib (storage, sound), ui (QR)
+supabase/       migrations (the only way to change game state) and pgTAP tests
+e2e/            Playwright: multi-browser game, press race, axe
 ```
+
+A slice is `api/`, `model/`, `lib/`, `ui/<component>/` as needed, plus `index.ts`. Components that
+need the live room inject `RoomStore`, which the page provides.
 
 ## Commands
 
@@ -37,7 +46,7 @@ e2e/                   Playwright: multi-browser game, press race, axe
 2. Nothing secret in `public` tables: they reach every client through realtime. Secrets and quiz
    content live in schema `private`; a question reaches `public.rooms` only when it opens, its answer
    only when revealed.
-3. Functions raise a short code as the message; `core/api-error.ts` maps codes to Ukrainian text.
+3. Functions raise a short code as the message; `shared/api/api-error.ts` maps codes to Ukrainian text.
 4. Add a pgTAP test with every rule or permission change.
 
 ## Graphify

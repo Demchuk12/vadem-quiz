@@ -1,0 +1,36 @@
+@if (store.status() !== 'ready') {
+  <vq-room-status [status]="store.status()" />
+} @else if (store.room(); as room) {
+  <vq-room-header large />
+
+  <vq-sidebar-layout>
+    @switch (room.state) {
+      @case ('lobby') {
+        <vq-room-join-info [code]="room.code" large />
+      }
+      @case ('board') {
+        <vq-game-board />
+      }
+      @case ('round_end') {
+        <p class="big">Раунд {{ room.round }} завершено</p>
+      }
+      @case ('finished') {
+        <vq-winner-banner />
+      }
+      @default {
+        <vq-question-view large />
+        @switch (room.state) {
+          @case ('buzzing_open') {
+            <p class="big">Хто перший?</p>
+          }
+          @case ('buzzed') {
+            <p class="big">{{ store.winner()?.nickname }} відповідає</p>
+          }
+        }
+      }
+    }
+    <aside slot="aside" aria-label="Рахунок">
+      <vq-standings />
+    </aside>
+  </vq-sidebar-layout>
+}

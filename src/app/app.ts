@@ -6,11 +6,6 @@ import { VdToasterOutlet } from '@vadem/ui/toast';
   selector: 'vq-root',
   imports: [RouterOutlet, VdToasterOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <main>
-      <router-outlet />
-    </main>
-    <vd-toaster label="Сповіщення" closeLabel="Закрити" />
-  `,
+  templateUrl: './app.html',
 })
 export class App {}

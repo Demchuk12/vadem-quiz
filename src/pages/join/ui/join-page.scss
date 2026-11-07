@@ -1,0 +1,91 @@
+@use 'shared/ui/styles/layout';
+@use 'shared/ui/styles/motion';
+
+:host {
+  display: grid;
+  min-block-size: 100dvh;
+}
+.hero {
+  position: relative;
+  display: grid;
+  align-content: end;
+  overflow: hidden;
+  background-color: var(--vd-color-surface-sunken);
+}
+/* On a phone the whole V sits above the text, without overlapping it. */
+.banner {
+  --vq-tile-size: 2.125rem;
+  --vq-tile-font: 0.625rem;
+  --vq-tile-gap: var(--vd-space-1);
+
+  position: relative;
+  block-size: 14.75rem;
+}
+.hero-text {
+  @include layout.stack(var(--vd-space-3));
+  @include motion.enter($delay: 300ms);
+
+  position: relative;
+  z-index: 1;
+  padding: 0 var(--vd-space-4) var(--vd-space-5);
+}
+h1 {
+  font-size: var(--vd-text-3xl);
+  letter-spacing: var(--vd-tracking-tight);
+  text-wrap: balance;
+}
+.hero-text p {
+  color: var(--vd-color-text-muted);
+  font-size: var(--vd-text-lg);
+  text-wrap: balance;
+}
+.panel {
+  display: grid;
+  place-items: center;
+  padding: var(--vd-space-6) var(--vd-space-4) var(--vd-space-8);
+}
+.panel-content {
+  @include layout.stack;
+
+  inline-size: min(100%, 26rem);
+}
+h2 {
+  font-size: var(--vd-text-xl);
+}
+.hint {
+  color: var(--vd-color-text-muted);
+}
+footer {
+  padding-block-start: var(--vd-space-4);
+  border-block-start: var(--vd-border-width) solid var(--vd-color-border);
+}
+
+@media (width >= 56rem) {
+  :host {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+  /* On a wide screen the board fills the panel and the text sits over its faded end. */
+  .banner {
+    --vq-tile-size: min(7vw, 11dvh);
+    --vq-tile-font: var(--vd-text-sm);
+    --vq-tile-gap: var(--vd-space-2);
+    --vq-banner-y: 42%;
+
+    position: absolute;
+    inset: 0;
+    block-size: auto;
+  }
+  .banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(to top, var(--vd-color-surface-sunken) 16%, transparent 36%);
+    pointer-events: none;
+  }
+  .hero-text {
+    padding: var(--vd-space-12);
+  }
+  h1 {
+    font-size: var(--vd-text-4xl);
+  }
+}

@@ -1,0 +1,14 @@
+<dialog vdDialog size="sm" [open]="player() !== null" (openChange)="onOpenChange($event)">
+  <header vdDialogHeader>
+    <h2 vdDialogTitle>Змінити очки: {{ player()?.nickname }}</h2>
+    <p vdDialogDescription>Зараз {{ format(player()?.score ?? 0) }} очок.</p>
+  </header>
+  <form vdDialogBody (submit)="apply($event, delta)">
+    <vd-field label="На скільки змінити" hint="Від’ємне значення віднімає очки.">
+      <input vdInput #delta type="number" step="1" required />
+    </vd-field>
+    <div>
+      <button vdButton type="submit" variant="primary" [loading]="busy()">Застосувати</button>
+    </div>
+  </form>
+</dialog>

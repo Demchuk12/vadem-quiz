@@ -1,0 +1,7 @@
+@use 'shared/ui/styles/motion';
+
+:host {
+  @include motion.enter;
+
+  display: block;
+}

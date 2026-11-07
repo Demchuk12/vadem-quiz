@@ -1,0 +1,24 @@
+ul {
+  display: grid;
+  gap: var(--vd-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+.title {
+  min-inline-size: 0;
+  font-weight: var(--vd-weight-semibold);
+  overflow-wrap: anywhere;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2);
+}

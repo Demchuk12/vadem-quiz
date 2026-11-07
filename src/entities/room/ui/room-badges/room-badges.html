@@ -1,0 +1,6 @@
+@if (store.room(); as room) {
+  @if (!store.connected()) {
+    <span vdBadge variant="warning" role="status">Немає звʼязку</span>
+  }
+  <span vdBadge>Раунд {{ room.round }}/{{ room.round_count }}</span>
+}

@@ -1,0 +1,21 @@
+<button
+  vdButton
+  size="sm"
+  variant="ghost"
+  iconOnly
+  [attr.aria-label]="'Видалити: ' + quiz().title"
+  (click)="confirming.set(true)"
+>
+  <vd-icon name="trash" />
+</button>
+
+<vd-alert-dialog
+  title="Видалити квіз?"
+  [description]="'«' + quiz().title + '» зникне назавжди. Ігри, що вже йдуть, не постраждають.'"
+  confirmLabel="Видалити"
+  cancelLabel="Скасувати"
+  variant="danger"
+  [open]="confirming()"
+  [action]="remove"
+  (openChange)="confirming.set($event)"
+/>

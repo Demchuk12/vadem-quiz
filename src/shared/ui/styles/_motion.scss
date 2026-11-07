@@ -1,0 +1,7 @@
+// One-shot entrances, off under reduced motion. Keyframes live in src/styles.scss.
+
+@mixin enter($name: vq-rise, $delay: 0ms) {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: $name var(--vd-duration-slow) var(--vd-ease-out) $delay backwards;
+  }
+}

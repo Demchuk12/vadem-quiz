@@ -4,6 +4,30 @@ const { defineConfig, globalIgnores } = require('eslint/config');
 const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
 
+// Feature-Sliced Design: a layer imports only from layers below it, and only through a slice's
+// public API. Shared has segments instead of slices (`@shared/api`).
+const PUBLIC_API = {
+  group: ['@shared/*/*', '@entities/*/*', '@features/*/*', '@widgets/*/*', '@pages/*/*'],
+  message: "Import from the slice's public API (its index.ts).",
+};
+const layerRule = (folder, forbidden) => ({
+  files: [`src/${folder}/**/*.ts`],
+  rules: {
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          PUBLIC_API,
+          {
+            group: forbidden,
+            message: 'A layer may import only from layers below it, not from its own or above.',
+          },
+        ],
+      },
+    ],
+  },
+});
+
 module.exports = defineConfig([
   globalIgnores([
     'dist/',
@@ -34,6 +58,11 @@ module.exports = defineConfig([
       ],
     },
   },
+  layerRule('shared', ['@shared/*', '@entities/*', '@features/*', '@widgets/*', '@pages/*']),
+  layerRule('entities', ['@entities/*', '@features/*', '@widgets/*', '@pages/*']),
+  layerRule('features', ['@features/*', '@widgets/*', '@pages/*']),
+  layerRule('widgets', ['@widgets/*', '@pages/*']),
+  layerRule('pages', ['@pages/*']),
   {
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],

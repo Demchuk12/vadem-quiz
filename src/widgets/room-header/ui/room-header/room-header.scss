@@ -1,0 +1,16 @@
+:host {
+  --vq-logo-size: var(--vd-space-6);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2);
+  align-items: center;
+}
+h1 {
+  margin-inline-end: auto;
+  font-size: var(--vd-text-xl);
+  overflow-wrap: anywhere;
+}
+:host([data-large]) h1 {
+  font-size: var(--vd-text-2xl);
+}

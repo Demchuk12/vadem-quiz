@@ -1,0 +1,22 @@
+@if (store.room(); as room) {
+  <vq-question-view />
+
+  @if (room.state !== 'answer_shown' && answer(); as hostAnswer) {
+    <div class="host-answer">
+      <p class="vd-eyebrow">Відповідь (бачите лише ви)</p>
+      @if (hostAnswer.answer_text) {
+        <p>{{ hostAnswer.answer_text }}</p>
+      }
+      @if (hostAnswer.answer_image_path; as path) {
+        <img [src]="media.publicUrl(path)" alt="Картинка до відповіді" />
+      }
+    </div>
+  }
+
+  <div class="footer" aria-live="polite">
+    <vq-question-controls />
+    @if (room.state !== 'answer_shown') {
+      <span class="timer" role="timer" aria-label="Час на питанні">{{ timer() }}</span>
+    }
+  </div>
+}

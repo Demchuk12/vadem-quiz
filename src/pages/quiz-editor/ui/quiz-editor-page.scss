@@ -1,0 +1,21 @@
+@use 'shared/ui/styles/layout';
+
+:host {
+  @include layout.narrow-page(60rem, $padding-end: var(--vd-space-16));
+}
+.bar {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2);
+  align-items: center;
+  padding-block: var(--vd-space-3);
+  background-color: var(--vd-color-bg);
+}
+.progress {
+  margin-inline-end: auto;
+  color: var(--vd-color-text-muted);
+  font-size: var(--vd-text-sm);
+}

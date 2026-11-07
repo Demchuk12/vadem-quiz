@@ -1,0 +1,16 @@
+<vq-join-qr [url]="joinUrl()" />
+<div class="info">
+  <p class="vd-eyebrow">Код кімнати</p>
+  <p class="code">
+    <span class="vd-visually-hidden">{{ code() }}</span>
+    <span class="tiles" aria-hidden="true">
+      @for (character of characters(); track $index) {
+        <span class="tile" [style.--order]="$index">{{ character }}</span>
+      }
+    </span>
+  </p>
+  @if (copyable()) {
+    <vd-copy-button [value]="joinUrl()" label="Скопіювати посилання" copiedLabel="Скопійовано" />
+  }
+  <ng-content />
+</div>

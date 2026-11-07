@@ -1,0 +1,78 @@
+@if (store.status() !== 'ready') {
+  <vq-room-status [status]="store.status()" />
+} @else if (!host.authorized()) {
+  <div vdAlert variant="danger" role="alert">
+    <p vdAlertTitle>Ви не ведучий цієї гри</p>
+    <p>Панель керування відкривається лише на пристрої, де гру створили.</p>
+  </div>
+} @else if (store.room(); as room) {
+  <vq-room-header>
+    <a vdButton size="sm" target="_blank" rel="noopener" [href]="streamUrl()">
+      <vd-icon slot="start" name="monitor" />
+      Екран для стріму
+    </a>
+  </vq-room-header>
+
+  <vq-sidebar-layout>
+    @switch (room.state) {
+      @case ('lobby') {
+        <section vdCard>
+          <vq-room-join-info [code]="room.code" copyable>
+            <button
+              vdButton
+              variant="primary"
+              size="lg"
+              [loading]="host.busy()"
+              [disabled]="store.players().length === 0"
+              (click)="act('startGame')"
+            >
+              <vd-icon slot="start" name="rocket" />
+              Почати гру
+            </button>
+          </vq-room-join-info>
+        </section>
+      }
+      @case ('board') {
+        <vq-game-board interactive (pick)="openQuestion($event)" />
+        @if (room.round < room.round_count) {
+          <div>
+            <button vdButton (click)="act('nextRound')">Завершити раунд достроково</button>
+          </div>
+        }
+      }
+      @case ('round_end') {
+        <section vdCard>
+          <h2>Раунд {{ room.round }} завершено</h2>
+          <div>
+            <button
+              vdButton
+              variant="primary"
+              size="lg"
+              [loading]="host.busy()"
+              (click)="act('nextRound')"
+            >
+              {{ room.round < room.round_count ? 'Наступний раунд' : 'Підбити підсумки' }}
+            </button>
+          </div>
+        </section>
+      }
+      @case ('finished') {
+        <section vdCard><vq-winner-banner /></section>
+      }
+      @default {
+        <section vdCard>
+          <vq-host-question-panel />
+        </section>
+      }
+    }
+
+    <aside slot="aside" class="stack" aria-label="Рахунок">
+      <vq-standings showOnline editable (adjust)="adjusting.set($event)" />
+      @if (room.state !== 'finished') {
+        <vq-finish-game-button />
+      }
+    </aside>
+  </vq-sidebar-layout>
+
+  <vq-adjust-score-dialog [player]="adjusting()" (closed)="adjusting.set(null)" />
+}

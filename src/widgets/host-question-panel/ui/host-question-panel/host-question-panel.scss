@@ -1,0 +1,30 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-4);
+  min-inline-size: 0;
+}
+.host-answer {
+  display: grid;
+  gap: var(--vd-space-1);
+  padding: var(--vd-space-3);
+  border: var(--vd-border-width) dashed var(--vd-color-border-control);
+  border-radius: var(--vd-radius-md);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+
+  img {
+    max-inline-size: 12rem;
+    border-radius: var(--vd-radius-sm);
+  }
+}
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2);
+  align-items: center;
+}
+.timer {
+  font-family: var(--vd-font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--vd-color-text-muted);
+}

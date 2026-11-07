@@ -1,0 +1,45 @@
+@use 'shared/ui/styles/motion';
+
+:host {
+  @include motion.enter;
+
+  display: grid;
+  gap: var(--vd-space-4);
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2);
+  align-items: center;
+}
+.text {
+  margin: 0;
+  font-size: var(--vd-text-2xl);
+  font-weight: var(--vd-weight-semibold);
+  line-height: var(--vd-leading-snug);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+:host([data-large]) .text {
+  font-size: var(--vd-text-4xl);
+}
+img {
+  display: block;
+  max-inline-size: 100%;
+  max-block-size: 50dvh;
+  border-radius: var(--vd-radius-lg);
+  object-fit: contain;
+}
+.answer {
+  @include motion.enter(vq-pop);
+
+  display: grid;
+  gap: var(--vd-space-2);
+  padding: var(--vd-space-4);
+  border: var(--vd-border-width) solid var(--vd-color-success-border);
+  border-radius: var(--vd-radius-lg);
+  background-color: var(--vd-color-success-subtle);
+}
+.answer .text {
+  font-size: var(--vd-text-xl);
+}

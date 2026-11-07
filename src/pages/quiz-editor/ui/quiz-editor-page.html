@@ -1,0 +1,44 @@
+@switch (load()) {
+  @case ('loading') {
+    <div role="status" aria-label="Завантаження квізу"><div vdSkeleton></div></div>
+  }
+  @case ('forbidden') {
+    <div vdAlert variant="danger" role="alert">
+      <p vdAlertTitle>Цей квіз недоступний на цьому пристрої</p>
+      <p>Доступ зберігається в браузері, де квіз створили.</p>
+    </div>
+    <a vdButton routerLink="/quizzes">До моїх квізів</a>
+  }
+  @case ('error') {
+    <div vdAlert variant="danger" role="alert">Не вдалося завантажити квіз.</div>
+  }
+  @case ('ready') {
+    @if (quiz(); as document) {
+      <div class="bar">
+        <a vdButton variant="ghost" size="sm" routerLink="/quizzes">
+          <vd-icon slot="start" name="arrow-left" />
+          Квізи
+        </a>
+        <span class="progress" aria-live="polite">
+          Заповнено {{ progress().complete }} з {{ progress().total }}
+          @if (dirty()) {
+            · є незбережені зміни
+          }
+        </span>
+        <vq-quiz-transfer [quizId]="quizId()" [quiz]="document" (imported)="change($event)" />
+        <button
+          vdButton
+          size="sm"
+          variant="primary"
+          [loading]="saving()"
+          [disabled]="!dirty()"
+          (click)="save()"
+        >
+          Зберегти
+        </button>
+      </div>
+
+      <vq-quiz-editor [quizId]="quizId()" [quiz]="document" (quizChange)="change($event)" />
+    }
+  }
+}

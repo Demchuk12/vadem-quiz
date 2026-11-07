@@ -1,0 +1,8 @@
+:host {
+  display: inline-flex;
+}
+img {
+  display: block;
+  block-size: var(--vq-logo-size, var(--vd-space-8));
+  inline-size: auto;
+}

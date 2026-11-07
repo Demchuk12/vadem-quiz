@@ -47,6 +47,24 @@ press, the one call that has to be fast.
 Preloading needs the URL in advance, and the unguessable URL is what keeps the picture secret. Images
 are compressed to about 100-250 KB, so loading when the question opens stays fast enough.
 
+## D9 — Feature-Sliced Design layers, with room as one entity
+
+The owner asked for FSD. Rooms, players and tiles stay one `entities/room` slice: ranking, the buzzer's
+state and the realtime store each need several of them at once, and FSD forbids imports between
+slices of a layer. `src/app` stays where Angular puts it and acts as the app layer. Rules are enforced
+with ESLint's built-in `no-restricted-imports`, so no plugin was added. The rule cannot see relative
+imports across slices; those are caught in review.
+
+## D10 — Visual identity: a board that spells the logo
+
+The logo is five rounded blocks forming a V, and the game board is rounded blocks too, so the banner is
+a board whose tiles light up into that V, and the room code is a row of tiles. The accent is an emerald
+through `--vd-hue-accent`, which also tints the neutrals. Being first turns the buzzer amber: green
+already means "press now", and the status green is nearly the same. The logo copies in `public/brand`
+carry the green in the accent block, following the logo README's rule that the accent follows the hue;
+the library's originals are unchanged. Motion is one-shot and shows a change, with one exception: the
+ready buzzer pulses, because that is what the player must not miss. It is all off under reduced motion.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

@@ -1,0 +1,9 @@
+form {
+  display: grid;
+  gap: var(--vd-space-4);
+}
+.code {
+  font-family: var(--vd-font-mono);
+  letter-spacing: var(--vd-tracking-caps);
+  text-transform: uppercase;
+}
