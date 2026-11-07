@@ -125,6 +125,16 @@ and stores it through the same compression as a manual upload, so the bucket, it
 is missing or fails to arrive costs only itself, never the round. No key, no new limit: Wikipedia
 needs only a descriptive User-Agent, and a quiz gains a few megabytes of storage.
 
+## D18 — AI edits by instruction, as one call and one undo
+
+A question, a category or a whole round can be changed by the host's words. The same function
+takes the current text as `current` and the instruction as `prompt`, and replies in the shape it
+writes rounds in, so every AI and every safeguard (counts, photos, fallbacks) serves both. Edits
+land in the draft; the toast offers "Скасувати", which restores only the edited part, so later
+changes elsewhere survive. A picture stays while its answer does: then the question is still about
+the same thing. Edits cost calls, so one quiz now gets 40 a day instead of 15; the app keeps 150.
+Groq reasons more on small edits, where tokens are cheap and a wrong fact is the main risk.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

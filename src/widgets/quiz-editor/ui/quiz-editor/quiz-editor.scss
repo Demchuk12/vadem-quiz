@@ -36,3 +36,61 @@ summary {
 .multiplier {
   max-inline-size: 14rem;
 }
+.round-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-3);
+  align-items: end;
+  justify-content: space-between;
+}
+.question-ai {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* The part the AI is rewriting breathes and says so; the part it just changed glows once. */
+.ai-working,
+.ai-flash {
+  border-radius: var(--vd-radius-lg);
+}
+.ai-working {
+  position: relative;
+  outline: var(--vd-focus-ring-width) solid var(--vd-color-action);
+  outline-offset: calc(-1 * var(--vd-focus-ring-width));
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ai-breathe var(--vd-duration-shimmer) var(--vd-ease-in-out) infinite alternate;
+  }
+
+  &::after {
+    content: 'AI переписує…';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: var(--vd-space-4);
+    translate: 0 -50%;
+    padding-block: var(--vd-space-0-5);
+    padding-inline: var(--vd-space-2);
+    border-radius: var(--vd-radius-full);
+    background-color: var(--vd-color-action);
+    color: var(--vd-color-on-action);
+    font-size: var(--vd-text-xs);
+    font-weight: var(--vd-weight-semibold);
+    pointer-events: none;
+  }
+}
+.ai-flash {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ai-glow 1.6s var(--vd-ease-out);
+  }
+}
+@keyframes ai-breathe {
+  from {
+    outline-color: var(--vd-color-action-subtle);
+  }
+}
+@keyframes ai-glow {
+  from {
+    background-color: var(--vd-color-action-subtle);
+    box-shadow: inset 0 0 0 var(--vd-focus-ring-width) var(--vd-color-action);
+  }
+}

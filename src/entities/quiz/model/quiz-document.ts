@@ -125,6 +125,7 @@ export function removeCategory(doc: QuizDocument, round: number, category: numbe
 export interface GeneratedQuestion {
   text: string;
   answer: string;
+  explanation?: string;
   /** A picture already stored with the quiz. */
   imagePath?: string | null;
 }
@@ -164,7 +165,7 @@ export function applyGeneratedRound(
         imagePath: question.imagePath ?? null,
         answerText: question.answer,
         answerImagePath: null,
-        explanation: '',
+        explanation: question.explanation ?? '',
       })),
     })),
   );

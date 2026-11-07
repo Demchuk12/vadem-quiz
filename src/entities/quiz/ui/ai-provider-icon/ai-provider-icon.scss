@@ -1,0 +1,12 @@
+:host {
+  --vd-icon-size: 1.25em;
+
+  display: inline-flex;
+  flex: none;
+  inline-size: 1.25em;
+  block-size: 1.25em;
+}
+img {
+  inline-size: 100%;
+  block-size: 100%;
+}

@@ -5,6 +5,7 @@ import {
   input,
   linkedSignal,
   model,
+  signal,
 } from '@angular/core';
 import {
   addCategory,
@@ -16,6 +17,7 @@ import {
   type QuizDocument,
   type QuizQuestion,
 } from '@entities/quiz';
+import { AiEdit } from '@features/edit-with-ai';
 import { QuestionImage } from '@features/upload-image';
 import { VD_ACCORDION } from '@vadem/ui/accordion';
 import { VdButton } from '@vadem/ui/button';
@@ -38,6 +40,7 @@ import { VD_TABS } from '@vadem/ui/tabs';
     VdInput,
     VD_NUMBER_INPUT,
     VD_TABS,
+    AiEdit,
     QuestionImage,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -56,6 +59,29 @@ export class QuizEditor {
   });
 
   protected readonly isComplete = isQuestionComplete;
+
+  /** Parts the AI is rewriting now, and the one it just changed, keyed "round-category-question". */
+  protected readonly working = signal<ReadonlySet<string>>(new Set());
+  protected readonly flashed = signal<string | null>(null);
+  private flashTimer: ReturnType<typeof setTimeout> | undefined;
+
+  protected setWorking(key: string, on: boolean): void {
+    this.working.update((keys) => {
+      const next = new Set(keys);
+      if (on) next.add(key);
+      else next.delete(key);
+      return next;
+    });
+  }
+
+  /** Shows the host what changed: the edited part glows once. */
+  protected aiEdited(quiz: QuizDocument, key: string): void {
+    this.quiz.set(quiz);
+    this.flashed.set(null);
+    clearTimeout(this.flashTimer);
+    queueMicrotask(() => this.flashed.set(key));
+    this.flashTimer = setTimeout(() => this.flashed.set(null), 1600);
+  }
 
   protected valueOf(event: Event): string {
     return (event.target as HTMLInputElement | HTMLTextAreaElement).value;

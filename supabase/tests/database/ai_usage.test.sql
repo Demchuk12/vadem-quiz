@@ -1,6 +1,6 @@
 -- The daily limit of AI generation.
 begin;
-select plan(7);
+select plan(8);
 
 create temp table fx on commit drop as select * from public.create_quiz('Quiz');
 grant select on fx to anon, service_role;
@@ -25,18 +25,22 @@ reset role;
 
 select is((select calls from private.ai_usage), 1, 'calls are counted');
 
-update private.ai_usage set calls = 15;
+update private.ai_usage set calls = 39;
 set local role service_role;
+select lives_ok(
+  $$select public.consume_ai_call((select quiz_id from fx), (select owner_token from fx))$$,
+  'one quiz has room to write and then edit: forty calls a day'
+);
 select throws_ok(
   $$select public.consume_ai_call((select quiz_id from fx), (select owner_token from fx))$$,
   'P0001', 'ai_limit', 'one quiz has a daily limit'
 );
 reset role;
 
-update private.ai_usage set calls = 14;
+update private.ai_usage set calls = 39;
 create temp table other on commit drop as select * from public.create_quiz('Other');
 grant select on other to service_role;
-insert into private.ai_usage (quiz_id, calls) select quiz_id, 136 from other;
+insert into private.ai_usage (quiz_id, calls) select quiz_id, 111 from other;
 set local role service_role;
 select throws_ok(
   $$select public.consume_ai_call((select quiz_id from fx), (select owner_token from fx))$$,

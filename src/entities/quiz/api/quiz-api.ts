@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Rpc } from '@shared/api';
+import type { EditSource } from '../model/ai-edit';
 import type { QuizDocument } from '../model/quiz-document';
 
 export interface NewQuiz {
@@ -28,6 +29,8 @@ export interface GenerateRoundRequest {
   provider: string;
   /** Ask for some questions with a photo from Wikipedia. */
   images: boolean;
+  /** Content to edit by the instruction in `prompt`, instead of writing from a topic. */
+  current?: EditSource[];
 }
 
 /** As the AI wrote it. A question's `imageUrl` is a photo still to be stored with the quiz. */
@@ -35,7 +38,7 @@ export interface GeneratedRoundResult {
   provider: string;
   categories: {
     title: string;
-    questions: { text: string; answer: string; imageUrl?: string }[];
+    questions: { text: string; answer: string; explanation?: string; imageUrl?: string }[];
   }[];
 }
 

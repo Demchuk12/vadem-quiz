@@ -10,22 +10,43 @@
   </div>
   @for (round of quiz().rounds; track $index; let r = $index) {
     <div vdTabPanel [value]="r + ''">
-      <div class="round">
-        <vd-field class="multiplier" label="Множник очок">
-          <vd-number-input decreaseLabel="Зменшити" increaseLabel="Збільшити">
-            <input
-              vdNumberInput
-              type="number"
-              min="1"
-              max="10"
-              [value]="quiz().roundMultipliers[r]"
-              (change)="setMultiplier(r, $event)"
+      <div
+        class="round"
+        [class.ai-working]="working().has(r + '')"
+        [class.ai-flash]="flashed() === r + ''"
+      >
+        <div class="round-head">
+          <vd-field class="multiplier" label="Множник очок">
+            <vd-number-input decreaseLabel="Зменшити" increaseLabel="Збільшити">
+              <input
+                vdNumberInput
+                type="number"
+                min="1"
+                max="10"
+                [value]="quiz().roundMultipliers[r]"
+                (change)="setMultiplier(r, $event)"
+              />
+            </vd-number-input>
+          </vd-field>
+          @if (round.categories.length > 0) {
+            <vq-ai-edit
+              kind="round"
+              [quizId]="quizId()"
+              [quiz]="quiz()"
+              [target]="{ round: r }"
+              (edited)="aiEdited($event, r + '')"
+              (working)="setWorking(r + '', $event)"
             />
-          </vd-number-input>
-        </vd-field>
+          }
+        </div>
 
         @for (category of round.categories; track $index; let c = $index) {
-          <section vdCard class="category">
+          <section
+            vdCard
+            class="category"
+            [class.ai-working]="working().has(r + '-' + c)"
+            [class.ai-flash]="flashed() === r + '-' + c"
+          >
             <div class="category-head">
               <vd-field [label]="'Категорія ' + (c + 1)">
                 <input
@@ -35,6 +56,15 @@
                   (input)="setCategoryTitle(r, c, $event)"
                 />
               </vd-field>
+              <vq-ai-edit
+                kind="category"
+                compact
+                [quizId]="quizId()"
+                [quiz]="quiz()"
+                [target]="{ round: r, category: c }"
+                (edited)="aiEdited($event, r + '-' + c)"
+                (working)="setWorking(r + '-' + c, $event)"
+              />
               <button
                 vdButton
                 variant="ghost"
@@ -48,7 +78,11 @@
 
             <div vdAccordion>
               @for (question of category.questions; track $index; let q = $index) {
-                <details vdAccordionItem>
+                <details
+                  vdAccordionItem
+                  [class.ai-working]="working().has(r + '-' + c + '-' + q)"
+                  [class.ai-flash]="flashed() === r + '-' + c + '-' + q"
+                >
                   <summary>
                     {{ points(question, r) }} ·
                     {{ isComplete(question) ? question.text || 'Картинка' : 'не заповнено' }}
@@ -98,6 +132,16 @@
                         [path]="question.answerImagePath"
                         label="Картинка до відповіді"
                         (pathChange)="setQuestion(r, c, q, { answerImagePath: $event })"
+                      />
+                    </div>
+                    <div class="question-ai">
+                      <vq-ai-edit
+                        kind="question"
+                        [quizId]="quizId()"
+                        [quiz]="quiz()"
+                        [target]="{ round: r, category: c, question: q }"
+                        (edited)="aiEdited($event, r + '-' + c + '-' + q)"
+                        (working)="setWorking(r + '-' + c + '-' + q, $event)"
                       />
                     </div>
                   </div>

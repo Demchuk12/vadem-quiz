@@ -24,3 +24,13 @@ export {
   type QuizQuestion,
 } from './model/quiz-document';
 export { SavedQuizzes, type SavedQuiz } from './model/saved-quizzes';
+export { AiWriter, type AiRequest, type AiResult } from './api/ai-writer';
+export {
+  applyEdit,
+  editSource,
+  restoreEdit,
+  titlesOutside,
+  type EditSource,
+  type EditTarget,
+} from './model/ai-edit';
+export { AiProviderIcon } from './ui/ai-provider-icon/ai-provider-icon';

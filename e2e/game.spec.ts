@@ -211,6 +211,84 @@ test('AI fills the editor as a draft, one round at a time', async ({ browser }) 
   await expect(host.getByRole('button', { name: 'Зберегти' })).toBeEnabled();
 });
 
+test('AI edits one question or a category, and the toast takes it back', async ({ browser }) => {
+  const { host } = await hostGame(browser);
+  const requests: Record<string, unknown>[] = [];
+  await host.route('**/functions/v1/generate-round', async (route) => {
+    const headers = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' };
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 200, headers });
+    if (route.request().method() === 'GET') {
+      return route.fulfill({ status: 200, headers, json: { providers: PROVIDERS } });
+    }
+    const body = route.request().postDataJSON();
+    requests.push(body);
+    type Current = { title: string; questions: { text: string; answer: string }[] }[];
+    return route.fulfill({
+      status: 200,
+      headers,
+      json: {
+        provider: 'groq',
+        categories: (body.current as Current).map((category) => ({
+          title: `AI ${category.title}`,
+          questions: category.questions.map((question) => ({
+            text: `AI: ${question.text}`,
+            answer: question.answer,
+            explanation: 'Пояснення від AI.',
+          })),
+        })),
+      },
+    });
+  });
+  await host.goto('/quizzes');
+  await host.getByRole('link', { name: 'Редагувати' }).first().click();
+
+  // One question: a quick option fills in the request, which carries just that question.
+  await host.locator('summary').filter({ hasText: 'Найдовша річка України?' }).click();
+  await host.getByRole('button', { name: 'Змінити питання з AI' }).click();
+  const panel = host.getByRole('dialog', { name: 'Змінити питання' });
+  await expect(panel).toContainText('«Географія» · 400 очок');
+  await panel.getByRole('button', { name: 'Пояснення' }).click();
+  await expect(panel.getByLabel('Що змінити')).toHaveValue('Додай коротке пояснення відповіді.');
+  await panel.getByRole('button', { name: 'Змінити', exact: true }).click();
+
+  const open = host.locator('details[open]');
+  const question = open.getByRole('textbox', { name: 'Питання', exact: true });
+  await expect(question).toHaveValue('AI: Найдовша річка України?');
+  await expect(open.getByLabel('Пояснення відповіді')).toHaveValue('Пояснення від AI.');
+  expect(requests[0]).toMatchObject({
+    prompt: 'Додай коротке пояснення відповіді.',
+    categories: 1,
+    questions: 1,
+    current: [
+      {
+        title: 'Географія',
+        questions: [{ text: 'Найдовша річка України?', answer: 'Дніпро', explanation: '' }],
+      },
+    ],
+  });
+  // The category keeps its name and the other question stays as it was.
+  const title = host.getByRole('textbox', { name: 'Категорія 1', exact: true });
+  await expect(title).toHaveValue('Географія');
+  await expect(host.locator('summary').first()).toContainText('Столиця України?');
+
+  await host
+    .getByRole('listitem')
+    .filter({ hasText: 'Питання змінено' })
+    .getByRole('button', { name: 'Скасувати' })
+    .click();
+  await expect(question).toHaveValue('Найдовша річка України?');
+
+  // A whole category, typed by hand.
+  await host.getByRole('button', { name: 'Змінити категорію з AI' }).first().click();
+  const category = host.getByRole('dialog', { name: 'Змінити категорію' });
+  await category.getByLabel('Що змінити').fill('Тільки про річки');
+  await category.getByRole('button', { name: 'Змінити', exact: true }).click();
+  await expect(title).toHaveValue('AI Географія');
+  await expect(question).toHaveValue('AI: Найдовша річка України?');
+  expect(requests[1]).toMatchObject({ prompt: 'Тільки про річки', categories: 1, questions: 2 });
+  await expect(host.getByRole('button', { name: 'Зберегти' })).toBeEnabled();
+});
+
 test('an interrupted generation continues from the failed round', async ({ browser }) => {
   const { host } = await hostGame(browser);
   await host.goto('/quizzes');

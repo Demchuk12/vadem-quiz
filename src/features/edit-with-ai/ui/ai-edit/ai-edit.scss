@@ -1,0 +1,48 @@
+:host {
+  display: contents;
+}
+.status {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.panel {
+  --vd-popover-width: 23rem;
+}
+form {
+  display: grid;
+  gap: var(--vd-space-3);
+}
+h3 {
+  font-size: var(--vd-text-md);
+  font-weight: var(--vd-weight-semibold);
+  letter-spacing: var(--vd-tracking-tight);
+}
+.context {
+  margin-block-start: var(--vd-space-0-5);
+  color: var(--vd-color-text-muted);
+  font-size: var(--vd-text-sm);
+  overflow-wrap: anywhere;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-1-5);
+}
+footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+.writer {
+  display: inline-flex;
+  gap: var(--vd-space-1-5);
+  align-items: center;
+  color: var(--vd-color-text-muted);
+  font-size: var(--vd-text-sm);
+}

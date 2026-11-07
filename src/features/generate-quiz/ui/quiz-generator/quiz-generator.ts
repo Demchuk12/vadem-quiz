@@ -10,21 +10,19 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
-  QuizApi,
-  type AiProvider,
-  type GeneratedRound,
-  type GeneratedRoundResult,
+  AiProviderIcon,
+  AiWriter,
   SavedQuizzes,
   applyGeneratedRound,
   quizProgress,
   roundShape,
   type QuizDocument,
 } from '@entities/quiz';
-import { Media, apiAction } from '@shared/api';
+import { apiAction } from '@shared/api';
 import { VdAlertDialog } from '@vadem/ui/alert-dialog';
 import { VdButton } from '@vadem/ui/button';
-import { VdCheckbox } from '@vadem/ui/checkbox';
 import { VD_CARD } from '@vadem/ui/card';
+import { VdCheckbox } from '@vadem/ui/checkbox';
 import { VdField } from '@vadem/ui/field';
 import { VdIcon } from '@vadem/ui/icon';
 import { VdInput } from '@vadem/ui/input';
@@ -45,6 +43,7 @@ interface Progress {
   selector: 'vq-quiz-generator',
   imports: [
     ReactiveFormsModule,
+    AiProviderIcon,
     VdAlertDialog,
     VdButton,
     VD_CARD,
@@ -64,27 +63,18 @@ export class QuizGenerator {
   readonly quiz = input.required<QuizDocument>();
   readonly generated = output<QuizDocument>();
 
-  private readonly api = inject(QuizApi);
-  private readonly media = inject(Media);
+  protected readonly ai = inject(AiWriter);
   private readonly saved = inject(SavedQuizzes);
   private readonly toaster = inject(VdToaster);
   private readonly action = apiAction();
 
   protected readonly maxLength = MAX_PROMPT_LENGTH;
-  /** Only the AIs this deployment has keys for. A choice appears once there is more than one. */
-  protected readonly providers = signal<AiProvider[]>([]);
-  protected readonly provider = signal('auto');
   protected readonly busy = this.action.busy;
   protected readonly confirming = signal(false);
   private readonly currentRound = signal(0);
-  private readonly currentStep = signal<'text' | 'pictures'>('text');
-  protected readonly status = computed(() => {
-    if (!this.busy()) return '';
-    const of = `${this.currentRound()} з ${this.quiz().rounds.length}`;
-    return this.currentStep() === 'pictures'
-      ? `Додаємо фото до раунду ${of}…`
-      : `Пишемо раунд ${of}…`;
-  });
+  protected readonly status = computed(() =>
+    this.busy() ? `Пишемо раунд ${this.currentRound()} з ${this.quiz().rounds.length}…` : '',
+  );
 
   protected readonly form = inject(NonNullableFormBuilder).group({
     prompt: [
@@ -98,13 +88,6 @@ export class QuizGenerator {
     ],
     images: false,
   });
-
-  constructor() {
-    this.api
-      .aiProviders()
-      .then((providers) => this.providers.set(providers))
-      .catch(() => this.providers.set([]));
-  }
 
   private readonly prompt = toSignal(this.form.controls.prompt.valueChanges, { initialValue: '' });
   private readonly interrupted = signal<Progress | null>(null);
@@ -139,17 +122,17 @@ export class QuizGenerator {
     const token = this.saved.find(this.quizId())?.token;
     if (!token) return;
     const prompt = this.form.controls.prompt.value.trim();
+    const writers = new Set<string>();
 
     const done = await this.action.run(
       async () => {
         let quiz = this.quiz();
         const roundCount = quiz.rounds.length;
         const avoid = [...(from?.avoid ?? [])];
-        const writers = new Set<string>();
         for (let round = from?.round ?? 0; round < roundCount; round += 1) {
           this.interrupted.set({ prompt, round, avoid: [...avoid] });
           this.currentRound.set(round + 1);
-          const result = await this.api.generateRound({
+          const result = await this.ai.write({
             quizId: this.quizId(),
             token,
             prompt,
@@ -157,52 +140,22 @@ export class QuizGenerator {
             roundCount,
             ...roundShape(quiz, round),
             avoid,
-            provider: this.provider(),
             images: this.form.controls.images.value,
           });
-          writers.add(this.labelOf(result.provider));
-          this.currentStep.set('pictures');
-          quiz = applyGeneratedRound(quiz, round, await this.storeImages(result));
-          this.currentStep.set('text');
-          avoid.push(...result.categories.map((category) => category.title));
+          writers.add(result.writer);
+          quiz = applyGeneratedRound(quiz, round, result.round);
+          avoid.push(...result.round.categories.map((category) => category.title));
           this.generated.emit(quiz);
         }
         this.interrupted.set(null);
-        this.writers = [...writers];
       },
       { errorTitle: 'Не все вдалося згенерувати' },
     );
     if (done) {
       this.toaster.success(
         'Квіз написано',
-        `Писав ${this.writers.join(', ')}. Перевірте факти й збережіть його.`,
+        `Писав ${[...writers].join(', ')}. Перевірте факти й збережіть його.`,
       );
     }
-  }
-
-  private writers: string[] = [];
-
-  /** A picture that fails to arrive only costs itself: the question reads well without it. */
-  private async storeImages(result: GeneratedRoundResult): Promise<GeneratedRound> {
-    return {
-      categories: await Promise.all(
-        result.categories.map(async (category) => ({
-          title: category.title,
-          questions: await Promise.all(
-            category.questions.map(async ({ text, answer, imageUrl }) => ({
-              text,
-              answer,
-              imagePath: imageUrl
-                ? await this.media.uploadFrom(this.quizId(), imageUrl).catch(() => null)
-                : null,
-            })),
-          ),
-        })),
-      ),
-    };
-  }
-
-  private labelOf(id: string): string {
-    return this.providers().find((provider) => provider.id === id)?.label ?? id;
   }
 }

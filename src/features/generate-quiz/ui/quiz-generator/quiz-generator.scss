@@ -22,10 +22,3 @@ form {
 .provider-field {
   max-inline-size: 18rem;
 }
-.provider-icon {
-  --vd-icon-size: var(--vd-space-5);
-
-  flex: none;
-  inline-size: var(--vd-space-5);
-  block-size: var(--vd-space-5);
-}

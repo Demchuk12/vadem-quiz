@@ -18,25 +18,21 @@
       Додати питання з фото
     </label>
     <p class="hint">Близько третини питань отримають фото з Вікіпедії.</p>
-    @if (providers().length > 1) {
+    @if (ai.providers().length > 1) {
       <vd-field
         class="provider-field"
         label="Хто пише питання"
         hint="«Авто» бере першу вільну модель: якщо в однієї вичерпано ліміт, раунд напише інша."
       >
-        <vd-select [value]="provider()" (valueChange)="provider.set($any($event))">
-          @if (provider() === 'auto') {
-            <vd-icon slot="start" name="git-branch" class="provider-icon" />
-          } @else {
-            <img slot="start" class="provider-icon" [src]="'ai/' + provider() + '.svg'" alt="" />
-          }
+        <vd-select [value]="ai.provider()" (valueChange)="ai.choose($any($event))">
+          <vq-ai-provider-icon slot="start" [provider]="ai.provider()" />
           <vd-option value="auto" label="Авто">
-            <vd-icon name="git-branch" class="provider-icon" />
+            <vq-ai-provider-icon provider="auto" />
             Авто
           </vd-option>
-          @for (option of providers(); track option.id) {
+          @for (option of ai.providers(); track option.id) {
             <vd-option [value]="option.id" [label]="option.label">
-              <img class="provider-icon" [src]="'ai/' + option.id + '.svg'" alt="" />
+              <vq-ai-provider-icon [provider]="option.id" />
               {{ option.label }}
             </vd-option>
           }

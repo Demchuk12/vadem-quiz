@@ -1,0 +1,71 @@
+@if (compact()) {
+  <button
+    vdButton
+    variant="ghost"
+    iconOnly
+    class="trigger"
+    [vdPopoverTrigger]="popover"
+    [loading]="busy()"
+    [attr.aria-label]="label()"
+  >
+    <vd-icon name="star" />
+  </button>
+} @else {
+  <button
+    vdButton
+    size="sm"
+    variant="secondary"
+    class="trigger"
+    [vdPopoverTrigger]="popover"
+    [loading]="busy()"
+  >
+    <vd-icon slot="start" name="star" />
+    {{ label() }}
+  </button>
+}
+<span class="status" aria-live="polite">{{ busy() ? 'AI переписує…' : '' }}</span>
+
+<div
+  vdPopover
+  #popover="vdPopover"
+  class="panel"
+  [placement]="kind() === 'question' ? 'top' : 'bottom'"
+  [attr.aria-labelledby]="headingId"
+>
+  <form (submit)="submit($event, popover)">
+    <header>
+      <h3 [id]="headingId">{{ title() }}</h3>
+      <p class="context">{{ context() }}</p>
+    </header>
+
+    <div class="chips" role="group" aria-label="Швидкі варіанти">
+      @for (chip of texts().chips; track chip.label) {
+        <button type="button" vdButton size="sm" variant="secondary" (click)="pick(chip)">
+          {{ chip.label }}
+        </button>
+      }
+    </div>
+
+    <vd-field label="Що змінити">
+      <textarea
+        vdInput
+        rows="3"
+        [attr.maxlength]="maxLength"
+        [placeholder]="texts().placeholder"
+        [value]="instruction()"
+        (input)="instruction.set(valueOf($event))"
+      ></textarea>
+    </vd-field>
+
+    <footer>
+      <span class="writer">
+        <vq-ai-provider-icon [provider]="ai.provider()" />
+        {{ ai.labelOf(ai.provider()) }}
+      </span>
+      <button vdButton size="sm" variant="primary" type="submit" [disabled]="!ready()">
+        <vd-icon slot="start" name="star" />
+        Змінити
+      </button>
+    </footer>
+  </form>
+</div>
