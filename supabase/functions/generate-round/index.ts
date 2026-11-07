@@ -1,8 +1,8 @@
 // Fills one round of a quiz with AI-written questions. AI keys are secrets of this function, which is
 // why it exists at all: the app has no other server, and a browser cannot keep a key.
 // Secrets: GEMINI_API_KEY, GROQ_API_KEY, OPENROUTER_API_KEY. A provider without a key is not offered.
-// Optional model overrides: GEMINI_MODEL, GEMINI_FALLBACK_MODEL, GROQ_MODEL, OPENROUTER_MODEL,
-// OPENROUTER_FALLBACK_MODEL.
+// Optional model overrides: GEMINI_MODEL, GEMINI_FALLBACK_MODEL, GROQ_MODEL, GROQ_FALLBACK_MODEL,
+// OPENROUTER_MODEL, OPENROUTER_FALLBACK_MODEL.
 //
 // GET  -> { providers: [{ id, label }] }: the ones this deployment can use.
 // POST -> { categories, provider }: one round, from the chosen provider or, with "auto", from the
@@ -11,7 +11,8 @@
 
 /** Stays under the platform's request limit, however many attempts it takes. */
 const TIME_BUDGET_MS = 130_000;
-const ATTEMPT_TIMEOUT_MS = 60_000;
+/** Free models can be slow: one attempt may take most of the budget. */
+const ATTEMPT_TIMEOUT_MS = 90_000;
 const MIN_ATTEMPT_MS = 15_000;
 const RETRY_DELAY_MS = 2_000;
 const MAX_PROMPT_LENGTH = 500;
@@ -352,6 +353,7 @@ function openAiCompatible(
   model: string,
   responseFormat: unknown,
   extraHeaders: Record<string, string> = {},
+  extraBody: Record<string, unknown> = {},
 ): Attempt {
   return {
     label: model,
@@ -371,6 +373,7 @@ function openAiCompatible(
               { role: 'user', content: request.prompt },
             ],
             response_format: responseFormat,
+            ...extraBody,
           }),
         },
         timeoutMs,
@@ -396,14 +399,21 @@ const PROVIDERS: Provider[] = [
     id: 'groq',
     label: 'Groq',
     attempts: () => {
-      const attempt = openAiCompatible(
-        'https://api.groq.com/openai/v1/chat/completions',
-        Deno.env.get('GROQ_API_KEY') ?? '',
-        Deno.env.get('GROQ_MODEL') ?? 'openai/gpt-oss-120b',
-        { type: 'json_schema', json_schema: { name: 'round', strict: true, schema: STRICT_SCHEMA } },
-      );
-      // Fast, but now and then its JSON fails validation: a third try costs a few seconds.
-      return [attempt, attempt, attempt];
+      // gpt-oss reasons before it answers. Low effort keeps a round well inside the free
+      // tokens-per-minute limit and stops long rounds from being cut off.
+      const groq = (model: string) =>
+        openAiCompatible(
+          'https://api.groq.com/openai/v1/chat/completions',
+          Deno.env.get('GROQ_API_KEY') ?? '',
+          model,
+          { type: 'json_schema', json_schema: { name: 'round', strict: true, schema: STRICT_SCHEMA } },
+          {},
+          { reasoning_effort: 'low' },
+        );
+      const model = Deno.env.get('GROQ_MODEL') ?? 'openai/gpt-oss-120b';
+      // The smaller model has limits of its own, so it stands in when the main one is used up.
+      const fallback = Deno.env.get('GROQ_FALLBACK_MODEL') ?? 'openai/gpt-oss-20b';
+      return [groq(model), groq(model), groq(fallback)];
     },
   },
   {
