@@ -22,6 +22,8 @@ export interface Room {
   question_image_path: string | null;
   answer_text: string | null;
   answer_image_path: string | null;
+  /** Set only once the answer is revealed, and only when the quiz has one. */
+  answer_explanation: string | null;
   buzz_winner_player_id: string | null;
   spent_player_ids: string[];
   version: number;

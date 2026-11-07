@@ -99,6 +99,12 @@ game and offer one arrow back; the stream view has no links at all, because it i
 screen. Leaving is safe: a player's session stays on the device and the join page offers the way back.
 Unsaved editor changes ask first, since a whole AI draft could otherwise be lost to one click.
 
+## D15 — Answer explanation follows the answer's secrecy
+
+An optional explanation per question lets the host say why an answer is right. It is stored with the
+question in `private`, copied into the room's snapshot, given to the host by `host_answer`, and
+reaches `public.rooms` only on reveal, like the answer. An empty one is never shown.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

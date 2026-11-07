@@ -20,6 +20,9 @@
       @if (answerImage(); as src) {
         <img [src]="src" alt="Ілюстрація до відповіді" />
       }
+      @if (room.answer_explanation; as explanation) {
+        <p class="explanation">{{ explanation }}</p>
+      }
     </div>
   }
 }

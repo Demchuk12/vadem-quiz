@@ -14,6 +14,7 @@ export interface JoinedRoom {
 export interface HostAnswer {
   answer_text: string;
   answer_image_path: string | null;
+  explanation: string;
 }
 /** What proves a call comes from the host of a room. */
 export interface HostKey {

@@ -24,6 +24,7 @@ const room = (patch: Partial<Room> = {}): Room => ({
   question_image_path: null,
   answer_text: null,
   answer_image_path: null,
+  answer_explanation: null,
   buzz_winner_player_id: null,
   spent_player_ids: [],
   version: 1,

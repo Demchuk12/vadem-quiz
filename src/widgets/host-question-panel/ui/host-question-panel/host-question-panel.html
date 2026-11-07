@@ -7,6 +7,9 @@
       @if (hostAnswer.answer_text) {
         <p>{{ hostAnswer.answer_text }}</p>
       }
+      @if (hostAnswer.explanation) {
+        <p class="explanation">{{ hostAnswer.explanation }}</p>
+      }
       @if (hostAnswer.answer_image_path; as path) {
         <img [src]="media.publicUrl(path)" alt="Картинка до відповіді" />
       }

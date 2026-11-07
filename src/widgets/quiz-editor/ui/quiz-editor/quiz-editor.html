@@ -74,6 +74,18 @@
                         ></textarea>
                       </vd-field>
                     </div>
+                    <vd-field
+                      label="Пояснення відповіді"
+                      hint="Необов'язково. Ведучий бачить його з відповіддю, гравці після того, як вона відкриється."
+                    >
+                      <textarea
+                        vdInput
+                        rows="2"
+                        maxlength="2000"
+                        [value]="question.explanation"
+                        (input)="setQuestion(r, c, q, { explanation: valueOf($event) })"
+                      ></textarea>
+                    </vd-field>
                     <div class="pair">
                       <vq-question-image
                         [quizId]="quizId()"

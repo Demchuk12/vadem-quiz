@@ -12,6 +12,10 @@
   overflow-wrap: anywhere;
   white-space: pre-line;
 
+  .explanation {
+    color: var(--vd-color-text-muted);
+  }
+
   img {
     max-inline-size: 12rem;
     border-radius: var(--vd-radius-sm);

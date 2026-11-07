@@ -114,6 +114,7 @@ describe('generated rounds', () => {
       imagePath: null,
       answerText: 'A1',
       answerImagePath: null,
+      explanation: '',
     });
     expect(second!.basePoints).toBe(400);
     expect(next.rounds[1]).toBe(doc.rounds[1]);
@@ -153,6 +154,7 @@ describe('parseQuizDocument', () => {
   it('fills in optional fields', () => {
     const { document } = parseQuizDocument(file(), 'id');
     expect(document.rounds[0]!.categories[0]!.questions[0]!.imagePath).toBeNull();
+    expect(document.rounds[0]!.categories[0]!.questions[0]!.explanation).toBe('');
   });
 
   it('keeps images of this quiz and drops others, counting them', () => {

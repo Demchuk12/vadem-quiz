@@ -43,3 +43,10 @@ img {
 .answer .text {
   font-size: var(--vd-text-xl);
 }
+
+.explanation {
+  color: var(--vd-color-text-muted);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+  text-wrap: pretty;
+}

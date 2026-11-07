@@ -33,8 +33,10 @@ test('a full game: lobby, buzzer, judging, rounds, final standings', async ({ br
   await expect(buzzer(ann)).toHaveAttribute('data-state', 'locked');
   await pressBuzzer(ann);
   await expect(buzzer(ann)).toHaveAttribute('data-state', 'locked');
+  await expect(host.getByText('ТАЄМНЕ-ПОЯСНЕННЯ: столиця з 1934 року.')).toBeVisible();
   for (const page of [ann, bob, stream]) {
     expect(await page.content()).not.toContain('ТАЄМНА-ВІДПОВІДЬ');
+    expect(await page.content()).not.toContain('ТАЄМНЕ-ПОЯСНЕННЯ');
   }
 
   // Open: the first press wins, everyone else is locked and told who answers.
@@ -59,6 +61,8 @@ test('a full game: lobby, buzzer, judging, rounds, final standings', async ({ br
   await expect(score(bob)).toHaveText('200');
   await expect(ann.getByText('ТАЄМНА-ВІДПОВІДЬ-КИЇВ')).toBeVisible();
   await expect(stream.getByText('ТАЄМНА-ВІДПОВІДЬ-КИЇВ')).toBeVisible();
+  await expect(ann.getByText('ТАЄМНЕ-ПОЯСНЕННЯ: столиця з 1934 року.')).toBeVisible();
+  await expect(stream.getByText('ТАЄМНЕ-ПОЯСНЕННЯ: столиця з 1934 року.')).toBeVisible();
 
   await host.getByRole('button', { name: 'До дошки' }).click();
   const played = host.getByRole('group', { name: 'Географія' }).getByRole('button').first();

@@ -17,7 +17,12 @@ export const QUIZ_JSON = JSON.stringify({
         {
           title: 'Географія',
           questions: [
-            { basePoints: 200, text: 'Столиця України?', answerText: 'ТАЄМНА-ВІДПОВІДЬ-КИЇВ' },
+            {
+              basePoints: 200,
+              text: 'Столиця України?',
+              answerText: 'ТАЄМНА-ВІДПОВІДЬ-КИЇВ',
+              explanation: 'ТАЄМНЕ-ПОЯСНЕННЯ: столиця з 1934 року.',
+            },
             { basePoints: 400, text: 'Найдовша річка України?', answerText: 'Дніпро' },
           ],
         },

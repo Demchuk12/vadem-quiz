@@ -5,6 +5,8 @@ export interface QuizQuestion {
   imagePath: string | null;
   answerText: string;
   answerImagePath: string | null;
+  /** Optional: why the answer is right. Revealed together with it. */
+  explanation: string;
 }
 
 export interface QuizCategory {
@@ -32,6 +34,7 @@ const emptyQuestion = (basePoints: number): QuizQuestion => ({
   imagePath: null,
   answerText: '',
   answerImagePath: null,
+  explanation: '',
 });
 
 const emptyCategory = (): QuizCategory => ({
@@ -154,6 +157,7 @@ export function applyGeneratedRound(
         imagePath: null,
         answerText: question.answer,
         answerImagePath: null,
+        explanation: '',
       })),
     })),
   );
@@ -242,6 +246,7 @@ export function parseQuizDocument(
                 imagePath: ownImage(question['imagePath'], at),
                 answerText: asString(question['answerText'], at),
                 answerImagePath: ownImage(question['answerImagePath'], at),
+                explanation: asString(question['explanation'], at),
               };
             }),
           };
