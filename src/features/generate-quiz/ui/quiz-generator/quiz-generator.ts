@@ -25,7 +25,7 @@ import { VD_CARD } from '@vadem/ui/card';
 import { VdField } from '@vadem/ui/field';
 import { VdIcon } from '@vadem/ui/icon';
 import { VdInput } from '@vadem/ui/input';
-import { VdSegment, VdSegmented } from '@vadem/ui/segmented';
+import { VdOption, VdSelect } from '@vadem/ui/select';
 import { VdToaster } from '@vadem/ui/toast';
 
 const MAX_PROMPT_LENGTH = 500;
@@ -48,8 +48,8 @@ interface Progress {
     VdField,
     VdIcon,
     VdInput,
-    VdSegment,
-    VdSegmented,
+    VdOption,
+    VdSelect,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './quiz-generator.scss',

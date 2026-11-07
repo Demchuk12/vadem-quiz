@@ -169,12 +169,10 @@ test('AI fills the editor as a draft, one round at a time', async ({ browser }) 
   await expect(host.getByRole('button', { name: 'Зберегти' })).toBeDisabled();
 
   // Only the AIs with keys are offered, and the choice is sent with every round.
-  const choice = host.getByRole('radiogroup', { name: 'Хто пише питання' });
-  await expect(choice.getByRole('radio')).toHaveCount(3);
-  for (const name of ['Авто', 'Gemini', 'Groq']) {
-    await expect(choice.getByRole('radio', { name })).toBeAttached();
-  }
-  await choice.getByRole('radio', { name: 'Groq' }).click();
+  await host.getByRole('combobox', { name: 'Хто пише питання' }).click();
+  const options = host.getByRole('option');
+  await expect(options).toHaveText(['Авто', 'Gemini', 'Groq']);
+  await options.filter({ hasText: 'Groq' }).click();
   await host.getByLabel('Тема квізу').fill('Кіно 90-х');
   await host.getByRole('button', { name: 'Згенерувати' }).click();
   // The quiz already has questions, so replacing them needs a yes.

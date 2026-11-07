@@ -14,7 +14,10 @@ form {
   font-size: var(--vd-text-sm);
 }
 
-.choice-hint {
-  color: var(--vd-color-text-subtle);
-  font-size: var(--vd-text-sm);
+.provider-icon {
+  --vd-icon-size: var(--vd-space-5);
+
+  flex: none;
+  inline-size: var(--vd-space-5);
+  block-size: var(--vd-space-5);
 }
