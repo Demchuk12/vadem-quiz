@@ -166,6 +166,8 @@ function instructions(request: RoundRequest): string {
       : 'Leave "image" empty for every question.',
     'Reply with JSON only, in this shape: ' +
       '{"categories":[{"title":"...","questions":[{"text":"...","answer":"...","image":""}]}]}',
+    `Before replying, count: the "categories" array has ${request.categories} items, and every ` +
+      `"questions" array has ${request.questions} items.`,
   ]
     .filter(Boolean)
     .join('\n');
@@ -233,28 +235,40 @@ const GEMINI_SCHEMA = {
   required: ['categories'],
 };
 
-/** Schemas shape the answer but do not fix the counts, and a short round would break the board. */
+const isQuestion = (question: GeneratedQuestion | undefined) =>
+  typeof question?.text === 'string' &&
+  question.text.trim() !== '' &&
+  typeof question?.answer === 'string' &&
+  question.answer.trim() !== '' &&
+  (question.image === undefined || typeof question.image === 'string');
+
+/**
+ * Schemas shape the answer but do not fix the counts, and a short round would break the board.
+ * Extra categories or questions are dropped: models often write one too many.
+ */
 function checkRound(value: unknown, request: RoundRequest): GeneratedRound {
-  const categories = (value as GeneratedRound | null)?.categories;
-  const valid =
-    Array.isArray(categories) &&
-    categories.length === request.categories &&
-    categories.every(
+  const written = (value as GeneratedRound | null)?.categories;
+  const categories = (Array.isArray(written) ? written : [])
+    .filter(
       (category) =>
         typeof category?.title === 'string' &&
         category.title.trim() !== '' &&
-        Array.isArray(category.questions) &&
-        category.questions.length === request.questions &&
-        category.questions.every(
-          (question) =>
-            typeof question?.text === 'string' &&
-            question.text.trim() !== '' &&
-            typeof question?.answer === 'string' &&
-            question.answer.trim() !== '' &&
-            (question.image === undefined || typeof question.image === 'string'),
-        ),
+        Array.isArray(category.questions),
+    )
+    .map((category) => ({
+      title: category.title,
+      questions: category.questions.filter(isQuestion).slice(0, request.questions),
+    }))
+    .filter((category) => category.questions.length === request.questions)
+    .slice(0, request.categories);
+  if (categories.length < request.categories) {
+    const counts = (Array.isArray(written) ? written : []).map((c) =>
+      Array.isArray(c?.questions) ? c.questions.length : 0,
     );
-  if (!valid) throw new Error('A round of the wrong shape');
+    throw new Error(
+      `Wanted ${request.categories}x${request.questions}, got [${counts.join(',')}]`,
+    );
+  }
   return { categories };
 }
 
@@ -388,7 +402,8 @@ const PROVIDERS: Provider[] = [
         Deno.env.get('GROQ_MODEL') ?? 'openai/gpt-oss-120b',
         { type: 'json_schema', json_schema: { name: 'round', strict: true, schema: STRICT_SCHEMA } },
       );
-      return [attempt, attempt];
+      // Fast, but now and then its JSON fails validation: a third try costs a few seconds.
+      return [attempt, attempt, attempt];
     },
   },
   {
