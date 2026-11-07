@@ -1,0 +1,8 @@
+@if (prompt.canPrompt()) {
+  <button vdButton size="sm" (click)="prompt.install()">
+    <vd-icon slot="start" name="download" />
+    Встановити застосунок
+  </button>
+} @else if (prompt.needsManualSteps()) {
+  <p>Щоб встановити: у Safari «Поділитися», потім «На Початковий екран».</p>
+}

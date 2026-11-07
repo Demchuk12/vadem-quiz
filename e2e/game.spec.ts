@@ -385,6 +385,33 @@ test('headers stay tidy on a phone, with a very long title', async ({ browser })
   }
 });
 
+test('the app describes itself for installing, and offers the browser dialog', async ({ page }) => {
+  await page.goto('/join');
+  const manifestUrl = await page.locator('link[rel=manifest]').getAttribute('href');
+  const manifest = await (await page.request.get(`/${manifestUrl}`)).json();
+  expect(manifest.display).toBe('standalone');
+  expect(manifest.icons.some((icon: { purpose: string }) => icon.purpose === 'maskable')).toBe(
+    true,
+  );
+  for (const icon of manifest.icons) {
+    expect((await page.request.get(`/${icon.src}`)).headers()['content-type']).toContain(
+      'image/png',
+    );
+  }
+
+  const install = page.getByRole('button', { name: 'Встановити застосунок' });
+  await expect(install).toHaveCount(0);
+  await page.evaluate(() => {
+    const event = Object.assign(new Event('beforeinstallprompt', { cancelable: true }), {
+      prompt: () => Promise.resolve(),
+      userChoice: Promise.resolve({ outcome: 'accepted' }),
+    });
+    window.dispatchEvent(event);
+  });
+  await install.click();
+  await expect(install).toHaveCount(0);
+});
+
 test('the join page fits a phone and offers the form on the first screen', async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 360, height: 780 } });
   const page = await context.newPage();

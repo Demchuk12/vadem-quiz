@@ -56,6 +56,11 @@ h2 {
   color: var(--vd-color-text-muted);
 }
 footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2);
+  align-items: center;
+  justify-content: space-between;
   padding-block-start: var(--vd-space-4);
   border-block-start: var(--vd-border-width) solid var(--vd-color-border);
 }

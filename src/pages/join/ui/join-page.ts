@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { InstallAppButton } from '@features/install-app';
 import { JoinForm } from '@features/join-room';
 import { TileBanner, VademLogo } from '@shared/ui';
 import { VdButton } from '@vadem/ui/button';
 
 @Component({
   selector: 'vq-join-page',
-  imports: [RouterLink, JoinForm, TileBanner, VademLogo, VdButton],
+  imports: [RouterLink, InstallAppButton, JoinForm, TileBanner, VademLogo, VdButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './join-page.scss',
   templateUrl: './join-page.html',

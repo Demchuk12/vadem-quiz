@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { InstallPrompt } from '@shared/lib';
 import { VdToasterOutlet } from '@vadem/ui/toast';
+import { AppUpdates } from './app-updates';
 
 @Component({
   selector: 'vq-root',
@@ -8,4 +10,10 @@ import { VdToasterOutlet } from '@vadem/ui/toast';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.html',
 })
-export class App {}
+export class App {
+  constructor() {
+    inject(AppUpdates).watch();
+    // The browser announces installability once, possibly before any page that offers it opens.
+    inject(InstallPrompt);
+  }
+}

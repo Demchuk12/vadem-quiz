@@ -30,6 +30,12 @@ To play from a phone on the same network, serve with `npx ng serve --host 0.0.0.
 
 Quiz access is stored in the browser that created the quiz, so export quizzes you want to keep.
 
+## Install as an app
+
+The site is a PWA: Chrome and Edge offer **Встановити застосунок** on the join page, and on iPhone it
+is Share, then Add to Home Screen. Only the app itself is cached. The game always needs a network.
+An installed iPhone app keeps its own storage, so quizzes made in Safari do not appear in it.
+
 ## Checks
 
 ```sh

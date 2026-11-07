@@ -86,6 +86,12 @@ prompt. Tests replace the function: they must not depend on, or spend, a real qu
 gets briefly overloaded (503), so the function retries and then falls back to a lighter model, and the
 editor resumes an interrupted run from the failed round rather than spending the daily limit again.
 
+## D13 — PWA caches the app, never the game
+
+The service worker holds only the built files. Database calls, realtime and presses always go to the
+network: a cached answer in a live game would show a stale state. A new version waits for the player
+to press Update, because a reload in the middle of a question could cost them the press.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path
