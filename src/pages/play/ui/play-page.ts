@@ -23,6 +23,7 @@ import {
   formatScore,
   normalizeRoomCode,
   type PlayerSession,
+  VerdictScene,
 } from '@entities/room';
 import { BuzzButton } from '@features/buzz';
 import { VademLogo } from '@shared/ui';
@@ -33,6 +34,7 @@ import { VdIcon } from '@vadem/ui/icon';
 @Component({
   selector: 'vq-play-page',
   imports: [
+    VerdictScene,
     RouterLink,
     VdButton,
     VdIcon,

@@ -1,13 +1,4 @@
-<div class="burst" aria-hidden="true">
-  @for (block of blocks; track $index) {
-    <span
-      class="block"
-      [style.--x]="block.x"
-      [style.--y]="block.y"
-      [style.animation-delay]="block.delay"
-    ></span>
-  }
-</div>
+<vq-confetti class="burst" [count]="18" />
 <h2>Гру завершено</h2>
 @if (winner(); as player) {
   <p>Перемагає {{ player.nickname }}: {{ format(player.score) }}</p>

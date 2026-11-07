@@ -1,0 +1,24 @@
+<div class="live" role="status">
+  @if (shown(); as verdict) {
+    {{ verdict.nickname }}: {{ verdict.correct ? 'правильно' : 'неправильно' }},
+    {{ verdict.change }}
+  }
+</div>
+@for (verdict of shown() ? [shown()!] : []; track verdict.id) {
+  <div class="scene" [attr.data-correct]="verdict.correct" aria-hidden="true">
+    @if (verdict.correct) {
+      <vq-confetti [count]="mode() === 'stage' ? 28 : 18" [spread]="mode() === 'stage' ? 18 : 11" />
+    }
+    <div class="plate">
+      <span class="badge">
+        <vd-icon [name]="verdict.correct ? 'check' : 'x-circle'" />
+      </span>
+      @if (mode() === 'stage') {
+        <span class="name">{{ verdict.nickname }}</span>
+      } @else {
+        <span class="name">{{ verdict.correct ? 'Правильно!' : 'Цього разу без вас' }}</span>
+      }
+      <span class="change">{{ verdict.change }}</span>
+    </div>
+  </div>
+}

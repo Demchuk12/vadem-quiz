@@ -143,6 +143,15 @@ is delayed by 200 ms in CSS, so a fast load never flashes it and no timer code i
 editor shows the outline of a quiz instead, so nothing jumps when the content arrives. Under
 reduced motion the tile only glows.
 
+## D20 — Verdicts come from scores, not just states
+
+A correct answer and a skipped question both reveal the answer, so the room's state alone cannot
+tell them apart: the cue used to call a skip "correct". A verdict is now read from the transition
+out of "buzzed" together with the answerer's score: reopened buzzers mean wrong, a risen score
+means correct, whichever realtime update arrives first. The screens celebrate verdicts: the stream
+for everyone, a phone only for its player (with a vibration), and the standings show every score
+change, the host's corrections included. Confetti is the quiz's own: question marks and tiles.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

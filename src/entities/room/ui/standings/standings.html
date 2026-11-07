@@ -14,6 +14,7 @@
         [negative]="entry.player.score < 0"
         [current]="entry.player.id === currentPlayerId()"
         [inactive]="isOffline(entry.player)"
+        [change]="changes().get(entry.player.id) ?? null"
       >
         @if (isOffline(entry.player)) {
           <span vdBadge>Офлайн</span>

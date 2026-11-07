@@ -1,4 +1,13 @@
-import { DOCUMENT, DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
+import {
+  DOCUMENT,
+  DestroyRef,
+  Injectable,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core';
 import type { RealtimeChannel, RealtimePresenceState } from '@supabase/supabase-js';
 import { SUPABASE } from '@shared/api';
 import {
@@ -9,9 +18,13 @@ import {
   rankPlayers,
   upsertById,
 } from '../lib/game-logic';
+import { VerdictTracker, type Verdict } from '../lib/verdicts';
 import type { Player, Room, RoomCell } from './room';
 
 export type RoomLoadStatus = 'loading' | 'ready' | 'not_found' | 'error';
+
+/** How long the screens show a verdict; the animations in ui/verdict fit inside it. */
+const VERDICT_MS = 2200;
 
 interface PresenceMeta {
   playerId: string;
@@ -42,6 +55,8 @@ export class RoomStore {
     const winnerId = this.room()?.buzz_winner_player_id;
     return winnerId ? (this.players().find((p) => p.id === winnerId) ?? null) : null;
   });
+  /** The host's latest call on an answer, while the screens show it; null in between. */
+  readonly verdict = signal<Verdict | null>(null);
   readonly currentCell = computed(() => {
     const cellId = this.room()?.current_cell_id;
     return cellId ? (this.cells().find((c) => c.id === cellId) ?? null) : null;
@@ -52,6 +67,16 @@ export class RoomStore {
   private eventCount = 0;
 
   constructor() {
+    const tracker = new VerdictTracker();
+    let verdictTimer: ReturnType<typeof setTimeout> | undefined;
+    effect(() => {
+      const verdict = tracker.observe(this.room(), this.players());
+      if (!verdict) return;
+      untracked(() => this.verdict.set(verdict));
+      clearTimeout(verdictTimer);
+      verdictTimer = setTimeout(() => this.verdict.set(null), VERDICT_MS);
+    });
+
     const reload = () => {
       if (this.document.visibilityState === 'visible') void this.reload();
     };
@@ -62,6 +87,7 @@ export class RoomStore {
 
     inject(DestroyRef).onDestroy(() => {
       this.destroyed = true;
+      clearTimeout(verdictTimer);
       this.document.removeEventListener('visibilitychange', reload);
       view?.removeEventListener('online', reload);
       if (this.channel) void this.supabase.removeChannel(this.channel);

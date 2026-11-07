@@ -7,6 +7,7 @@ import {
   Standings,
   WinnerBanner,
   playGameSounds,
+  VerdictScene,
 } from '@entities/room';
 import { Sound } from '@shared/lib';
 import { SidebarLayout } from '@shared/ui';
@@ -17,6 +18,7 @@ import { RoomJoinInfo } from '@widgets/room-join-info';
 @Component({
   selector: 'vq-stream-page',
   imports: [
+    VerdictScene,
     GameBoard,
     QuestionView,
     RoomHeader,

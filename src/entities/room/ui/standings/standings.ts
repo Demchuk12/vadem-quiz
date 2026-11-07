@@ -4,16 +4,19 @@ import {
   DOCUMENT,
   ElementRef,
   afterRenderEffect,
+  effect,
+  untracked,
   booleanAttribute,
   inject,
   input,
   output,
+  signal,
 } from '@angular/core';
 import { VdBadge } from '@vadem/ui/badge';
 import { VdButton } from '@vadem/ui/button';
 import { VdEmptyState, VdEmptyStateTitle } from '@vadem/ui/empty-state';
 import { VdIcon } from '@vadem/ui/icon';
-import { VD_LEADERBOARD } from '@vadem/ui/leaderboard';
+import { VD_LEADERBOARD, type VdLeaderboardChange } from '@vadem/ui/leaderboard';
 import { formatScore } from '../../lib/game-logic';
 import type { Player } from '../../model/room';
 import { RoomStore } from '../../model/room-store';
@@ -41,8 +44,35 @@ export class Standings {
   protected readonly store = inject(RoomStore);
   protected readonly format = formatScore;
 
+  /** The latest change of each player's score, shown once beside it. */
+  protected readonly changes = signal<ReadonlyMap<string, VdLeaderboardChange>>(new Map());
+
   constructor() {
     this.animateReordering();
+    this.trackChanges();
+  }
+
+  /** Every score change, a verdict or the host's correction, rises from the score once. */
+  private trackChanges(): void {
+    let previous: Map<string, number> | null = null;
+    effect(() => {
+      const players = this.store.players();
+      const scores = new Map(players.map((player) => [player.id, player.score]));
+      if (previous) {
+        const changed = new Map(untracked(this.changes));
+        for (const [id, score] of scores) {
+          const before = previous.get(id);
+          if (before === undefined || before === score) continue;
+          const delta = score - before;
+          changed.set(id, {
+            label: delta > 0 ? `+${formatScore(delta)}` : formatScore(delta),
+            tone: delta > 0 ? 'gain' : 'loss',
+          });
+        }
+        this.changes.set(changed);
+      }
+      previous = scores;
+    });
   }
 
   /** A row that changed places slides there, so the room sees who overtook whom. */

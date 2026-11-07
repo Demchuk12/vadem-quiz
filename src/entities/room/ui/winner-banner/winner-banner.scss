@@ -14,43 +14,5 @@ p {
   @include motion.enter(vq-pop);
 }
 .burst {
-  position: absolute;
-  inset-block-start: 50%;
   inset-inline-start: 12rem;
-  display: none;
-  pointer-events: none;
-}
-.block {
-  position: absolute;
-  inline-size: var(--vd-space-4);
-  aspect-ratio: 1;
-  border-radius: var(--vd-radius-xs);
-  background-color: var(--vd-accent-500);
-  opacity: 0;
-  animation: burst 1600ms var(--vd-ease-out) backwards;
-}
-.block:nth-child(3n) {
-  background-color: var(--vd-color-warning);
-}
-@keyframes burst {
-  from {
-    opacity: 1;
-    translate: 0 0;
-    rotate: 0deg;
-    scale: 0.4;
-  }
-  65% {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-    translate: var(--x) var(--y);
-    rotate: 200deg;
-    scale: 1;
-  }
-}
-@media (prefers-reduced-motion: no-preference) {
-  .burst {
-    display: block;
-  }
 }

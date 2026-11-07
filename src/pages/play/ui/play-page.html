@@ -12,6 +12,7 @@
     <span class="score" aria-label="Ваш рахунок">{{ format(me()?.score ?? 0) }}</span>
   </header>
 
+  <vq-verdict mode="phone" [playerId]="playerId()" />
   @switch (room.state) {
     @case ('lobby') {
       <section vdCard class="stack">

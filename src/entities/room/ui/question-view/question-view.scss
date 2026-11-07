@@ -50,3 +50,30 @@ img {
   white-space: pre-line;
   text-wrap: pretty;
 }
+
+/* A wrong answer: the card shakes its head. The answer turns over like a board tile. */
+@media (prefers-reduced-motion: no-preference) {
+  :host(.wrong) {
+    animation: shake 460ms var(--vd-ease-in-out);
+  }
+  .answer {
+    transform-origin: top;
+    animation: turn 520ms var(--vd-ease-out) backwards;
+  }
+}
+@keyframes shake {
+  20%,
+  60% {
+    translate: calc(var(--vd-space-3) * -1) 0;
+  }
+  40%,
+  80% {
+    translate: var(--vd-space-3) 0;
+  }
+}
+@keyframes turn {
+  from {
+    opacity: 0;
+    transform: perspective(60rem) rotateX(-80deg);
+  }
+}

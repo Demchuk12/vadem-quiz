@@ -16,7 +16,10 @@ import { RoomStore } from '../../model/room-store';
   imports: [VdBadge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './question-view.scss',
-  host: { '[attr.data-large]': 'large() ? "" : null' },
+  host: {
+    '[attr.data-large]': 'large() ? "" : null',
+    '[class.wrong]': 'store.verdict()?.correct === false',
+  },
   templateUrl: './question-view.html',
 })
 export class QuestionView {

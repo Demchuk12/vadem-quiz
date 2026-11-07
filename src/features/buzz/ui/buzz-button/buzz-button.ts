@@ -41,7 +41,8 @@ export class BuzzButton {
   protected readonly label = computed(() => {
     switch (this.state()) {
       case 'ready':
-        return 'Відповісти!';
+        // Someone just missed: the others get the floor.
+        return this.store.verdict()?.correct === false ? 'Ваш шанс!' : 'Відповісти!';
       case 'won':
         return 'Ви відповідаєте!';
       case 'spent':

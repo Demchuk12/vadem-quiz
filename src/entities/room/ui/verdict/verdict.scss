@@ -1,0 +1,160 @@
+// Fits inside the store's VERDICT_MS (2200 ms), which then removes the scene.
+$length: 2100ms;
+
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.live {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.scene {
+  --tone: var(--vd-color-success);
+  --tone-subtle: var(--vd-color-success-subtle);
+  --tone-text: var(--vd-color-success-text);
+
+  position: relative;
+  display: grid;
+  place-items: center;
+  animation: leave $length var(--vd-ease-in-out) forwards;
+
+  &[data-correct='false'] {
+    --tone: var(--vd-color-danger);
+    --tone-subtle: var(--vd-color-danger-subtle);
+    --tone-text: var(--vd-color-danger-text);
+  }
+}
+.plate {
+  // Above the confetti, which flies out from behind it.
+  position: relative;
+  display: grid;
+  gap: var(--vd-space-2);
+  justify-items: center;
+  padding-block: var(--vd-space-6);
+  padding-inline: var(--vd-space-10);
+  border: var(--vd-focus-ring-width) solid var(--tone);
+  border-radius: var(--vd-radius-xl);
+  background-color: var(--vd-color-surface-raised);
+  box-shadow: var(--vd-shadow-lg);
+  text-align: center;
+}
+.badge {
+  display: grid;
+  place-items: center;
+  inline-size: var(--vd-space-16);
+  aspect-ratio: 1;
+  border-radius: var(--vd-radius-full);
+  background-color: var(--tone);
+  color: var(--vd-color-on-status);
+  // The icon is sized in em.
+  font-size: var(--vd-text-3xl);
+}
+.name {
+  max-inline-size: 22ch;
+  font-size: var(--vd-text-2xl);
+  font-weight: var(--vd-weight-bold);
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.change {
+  color: var(--tone-text);
+  font-size: var(--vd-text-4xl);
+  font-weight: var(--vd-weight-extrabold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--vd-tracking-tight);
+  line-height: 1;
+}
+
+// On a phone the whole screen takes the colour for a moment.
+:host([data-mode='phone']) .scene {
+  inline-size: 100%;
+  block-size: 100%;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--tone-subtle);
+    animation: wash $length var(--vd-ease-out) forwards;
+  }
+}
+:host([data-mode='phone']) .plate {
+  position: relative;
+  margin-inline: var(--vd-space-4);
+}
+:host([data-mode='stage']) .change {
+  // Read from across the room on a shared screen: the largest step, larger still.
+  font-size: calc(var(--vd-text-4xl) * 1.6);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .plate {
+    animation: pop 520ms var(--vd-ease-spring) backwards;
+  }
+  .badge {
+    animation: stamp 420ms var(--vd-ease-out) 120ms backwards;
+  }
+  .scene[data-correct='false'] .plate {
+    animation:
+      pop 520ms var(--vd-ease-spring) backwards,
+      shake 420ms var(--vd-ease-in-out) 260ms;
+  }
+}
+
+@keyframes leave {
+  0%,
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes wash {
+  0% {
+    opacity: 0;
+  }
+  12%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+}
+@keyframes stamp {
+  from {
+    opacity: 0;
+    scale: 1.8;
+    rotate: -18deg;
+  }
+}
+@keyframes shake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  20%,
+  60% {
+    translate: calc(var(--vd-space-3) * -1) 0;
+  }
+  40%,
+  80% {
+    translate: var(--vd-space-3) 0;
+  }
+}

@@ -59,11 +59,20 @@ test('a full game: lobby, buzzer, judging, rounds, final standings', async ({ br
   await expect(score(ann)).toHaveText('−200');
   await expect(buzzer(ann)).toHaveAttribute('data-state', 'spent');
   await expect(buzzer(bob)).toHaveAttribute('data-state', 'ready');
+  // The verdict plays: on the stream for everyone, on the phone of the one who answered.
+  await expect(stream.getByText('Анна: неправильно, −200')).toBeAttached();
+  await expect(ann.getByText('Цього разу без вас')).toBeVisible();
+  await expect(bob.getByText('Цього разу без вас')).toHaveCount(0);
+  await expect(buzzer(bob)).toHaveText('Ваш шанс!');
 
   // Right: plus points, the answer is revealed to everyone, the tile closes.
   await pressBuzzer(bob);
   await host.getByRole('button', { name: 'Правильно', exact: true }).click();
   await expect(score(bob)).toHaveText('200');
+  await expect(stream.getByText('Богдан: правильно, +200')).toBeAttached();
+  // The change rises from the score in the standings.
+  await expect(stream.locator('.vd-leaderboard__change', { hasText: '+200' })).toBeVisible();
+  await expect(bob.getByText('Правильно!')).toBeVisible();
   await expect(ann.getByText('ТАЄМНА-ВІДПОВІДЬ-КИЇВ')).toBeVisible();
   await expect(stream.getByText('ТАЄМНА-ВІДПОВІДЬ-КИЇВ')).toBeVisible();
   await expect(ann.getByText('ТАЄМНЕ-ПОЯСНЕННЯ: столиця з 1934 року.')).toBeVisible();
@@ -82,6 +91,7 @@ test('a full game: lobby, buzzer, judging, rounds, final standings', async ({ br
   await host.getByRole('group', { name: 'Географія' }).getByRole('button', { name: '400' }).click();
   await host.getByRole('button', { name: 'Пропустити' }).click();
   await expect(ann.getByText('Дніпро')).toBeVisible();
+  await expect(stream.getByText(': правильно,')).toHaveCount(0);
   await host.getByRole('button', { name: 'До дошки' }).click();
   await expect(ann.getByText('Раунд 1 завершено')).toBeVisible();
   await expect(score(bob)).toHaveText('200');

@@ -6,6 +6,7 @@ export {
   type NewRoom,
 } from './api/room-api';
 export { playGameSounds } from './lib/game-sounds';
+export type { Verdict } from './lib/verdicts';
 export { buzzerStateFor, everyoneSpent, formatScore, normalizeRoomCode } from './lib/game-logic';
 export { RoomLinks } from './lib/room-links';
 export { HostSession } from './model/host-session';
@@ -17,4 +18,5 @@ export { QuestionView } from './ui/question-view/question-view';
 export { RoomBadges } from './ui/room-badges/room-badges';
 export { RoomStatus } from './ui/room-status/room-status';
 export { Standings } from './ui/standings/standings';
+export { Verdict as VerdictScene } from './ui/verdict/verdict';
 export { WinnerBanner } from './ui/winner-banner/winner-banner';
