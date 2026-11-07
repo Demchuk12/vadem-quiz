@@ -135,6 +135,14 @@ changes elsewhere survive. A picture stays while its answer does: then the quest
 the same thing. Edits cost calls, so one quiz now gets 40 a day instead of 15; the app keeps 150.
 Groq reasons more on small edits, where tokens are cheap and a wrong fact is the main risk.
 
+## D19 — A question mark for waiting, and only when the wait is real
+
+Long waits (joining a game, a slow page, an AI round) show the quiz's own loader: a board tile in
+which the question mark from the background pattern writes itself and its dot drops in. Its fade-in
+is delayed by 200 ms in CSS, so a fast load never flashes it and no timer code is needed. The
+editor shows the outline of a quiz instead, so nothing jumps when the content arrives. Under
+reduced motion the tile only glows.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

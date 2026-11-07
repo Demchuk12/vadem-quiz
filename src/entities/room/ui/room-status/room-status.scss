@@ -2,6 +2,8 @@
   display: grid;
   gap: var(--vd-space-4);
 }
-[vdSkeleton] {
-  block-size: var(--vd-space-16);
+/* The wait before a game is the one the players notice: it gets the middle of the screen. */
+.loader {
+  place-self: center;
+  margin-block: clamp(var(--vd-space-12), 22svh, var(--vd-space-24));
 }

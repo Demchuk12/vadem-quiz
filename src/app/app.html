@@ -1,2 +1,5 @@
 <router-outlet />
+@if (navigating()) {
+  <vq-question-loader size="sm" class="navigating" label="Завантажуємо сторінку…" />
+}
 <vd-toaster label="Сповіщення" closeLabel="Закрити" />

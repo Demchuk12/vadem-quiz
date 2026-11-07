@@ -44,7 +44,9 @@
         <vd-icon slot="start" name="star" />
         {{ actionLabel() }}
       </button>
-      <span class="status" aria-live="polite">{{ status() }}</span>
+      @if (busy()) {
+        <vq-question-loader size="sm" [label]="status()" />
+      }
     </div>
   </form>
 </section>

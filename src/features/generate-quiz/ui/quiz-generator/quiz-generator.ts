@@ -19,6 +19,7 @@ import {
   type QuizDocument,
 } from '@entities/quiz';
 import { apiAction } from '@shared/api';
+import { QuestionLoader } from '@shared/ui';
 import { VdAlertDialog } from '@vadem/ui/alert-dialog';
 import { VdButton } from '@vadem/ui/button';
 import { VD_CARD } from '@vadem/ui/card';
@@ -44,6 +45,7 @@ interface Progress {
   imports: [
     ReactiveFormsModule,
     AiProviderIcon,
+    QuestionLoader,
     VdAlertDialog,
     VdButton,
     VD_CARD,
@@ -72,8 +74,8 @@ export class QuizGenerator {
   protected readonly busy = this.action.busy;
   protected readonly confirming = signal(false);
   private readonly currentRound = signal(0);
-  protected readonly status = computed(() =>
-    this.busy() ? `Пишемо раунд ${this.currentRound()} з ${this.quiz().rounds.length}…` : '',
+  protected readonly status = computed(
+    () => `Пишемо раунд ${this.currentRound()} з ${this.quiz().rounds.length}…`,
   );
 
   protected readonly form = inject(NonNullableFormBuilder).group({

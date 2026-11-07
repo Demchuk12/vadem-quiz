@@ -1,0 +1,133 @@
+// One loop: the mark writes itself, the dot drops and bounces, the tile holds, then lets go.
+$loop: 2400ms;
+
+:host {
+  --tile-size: 5.5rem;
+
+  display: grid;
+  gap: var(--vd-space-4);
+  justify-items: center;
+  color: var(--vd-color-action);
+  // Appears only after a short wait: a fast load never flashes it.
+  animation: appear var(--vd-duration-base) var(--vd-ease-out) 200ms backwards;
+}
+:host([data-size='sm']) {
+  --tile-size: 1.75rem;
+
+  display: inline-flex;
+  gap: var(--vd-space-2);
+  align-items: center;
+
+  .label {
+    text-align: start;
+  }
+}
+.tile {
+  inline-size: var(--tile-size);
+  block-size: var(--tile-size);
+  overflow: visible;
+}
+.frame {
+  fill: currentColor;
+  fill-opacity: 0.14;
+  stroke: currentColor;
+  stroke-width: 2.5;
+}
+.mark {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 100;
+}
+.dot {
+  fill: currentColor;
+}
+.label {
+  color: var(--vd-color-text-muted);
+  font-size: var(--vd-text-sm);
+  text-align: center;
+  text-wrap: balance;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tile {
+    animation: breathe $loop var(--vd-ease-in-out) infinite;
+  }
+  .mark {
+    animation: write $loop var(--vd-ease-in-out) infinite;
+  }
+  .dot {
+    animation: drop $loop var(--vd-ease-out) infinite;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile {
+    animation: glow $loop var(--vd-ease-in-out) infinite alternate;
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes write {
+  0% {
+    stroke-dashoffset: 100;
+    opacity: 1;
+  }
+  38%,
+  80% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  95%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+@keyframes drop {
+  0%,
+  34% {
+    opacity: 0;
+    translate: 0 -30px;
+  }
+  44% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -7px;
+  }
+  56%,
+  80% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  95%,
+  100% {
+    opacity: 0;
+    translate: 0 0;
+  }
+}
+@keyframes breathe {
+  0%,
+  40% {
+    scale: 1;
+  }
+  48% {
+    scale: 1.05;
+  }
+  58%,
+  100% {
+    scale: 1;
+  }
+}
+@keyframes glow {
+  from {
+    opacity: 0.55;
+  }
+}

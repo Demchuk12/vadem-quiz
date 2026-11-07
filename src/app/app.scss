@@ -1,0 +1,14 @@
+/* Floats over whatever page is leaving, out of the way of its content. */
+.navigating {
+  position: fixed;
+  inset-block-start: var(--vd-space-4);
+  inset-inline-start: 50%;
+  z-index: 10;
+  translate: -50% 0;
+  padding-block: var(--vd-space-2);
+  padding-inline: var(--vd-space-3) var(--vd-space-4);
+  border: var(--vd-border-width) solid var(--vd-color-border);
+  border-radius: var(--vd-radius-full);
+  background-color: var(--vd-color-surface-raised);
+  box-shadow: var(--vd-shadow-md);
+}

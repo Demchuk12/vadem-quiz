@@ -1,6 +1,26 @@
 @switch (load()) {
   @case ('loading') {
-    <div role="status" aria-label="Завантаження квізу"><div vdSkeleton></div></div>
+    <vq-question-loader size="sm" class="skeleton-loader" label="Відкриваємо квіз…" />
+    <div class="skeleton" aria-hidden="true">
+      <div class="skeleton-card">
+        <div vdSkeleton shape="text" size="sm" class="w-25"></div>
+        <div vdSkeleton shape="rectangle" class="field-lg"></div>
+      </div>
+      <div class="skeleton-tabs">
+        @for (tab of [1, 2, 3]; track tab) {
+          <div vdSkeleton shape="text" class="tab"></div>
+        }
+      </div>
+      @for (card of [1, 2]; track card) {
+        <div class="skeleton-card">
+          <div vdSkeleton shape="text" size="sm" class="w-25"></div>
+          <div vdSkeleton shape="rectangle" class="field"></div>
+          @for (row of [1, 2, 3]; track row) {
+            <div vdSkeleton shape="rectangle" class="row"></div>
+          }
+        </div>
+      }
+    </div>
   }
   @case ('forbidden') {
     <div vdAlert variant="danger" role="alert">

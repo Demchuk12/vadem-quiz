@@ -1,8 +1,6 @@
 @switch (status()) {
   @case ('loading') {
-    <div role="status" aria-label="Завантаження гри">
-      <div vdSkeleton></div>
-    </div>
+    <vq-question-loader class="loader" label="Підключаємося до гри…" />
   }
   @case ('not_found') {
     <div vdAlert variant="danger" role="alert">

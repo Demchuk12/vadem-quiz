@@ -54,3 +54,38 @@
     display: none;
   }
 }
+
+/* The editor's outline while the quiz loads, so nothing jumps when it arrives. */
+.skeleton-loader {
+  justify-self: start;
+}
+.skeleton {
+  display: grid;
+  gap: var(--vd-space-6);
+}
+.skeleton-card {
+  display: grid;
+  gap: var(--vd-space-3);
+  padding: var(--vd-space-6);
+  border: var(--vd-border-width) solid var(--vd-color-border);
+  border-radius: var(--vd-radius-xl);
+}
+.skeleton-tabs {
+  display: flex;
+  gap: var(--vd-space-6);
+}
+.tab {
+  --vd-skeleton-inline-size: 5rem;
+}
+.w-25 {
+  --vd-skeleton-inline-size: 25%;
+}
+.field-lg {
+  --vd-skeleton-block-size: var(--vd-space-16);
+}
+.field {
+  --vd-skeleton-block-size: var(--vd-space-10);
+}
+.row {
+  --vd-skeleton-block-size: var(--vd-space-12);
+}

@@ -9,10 +9,6 @@ form {
   gap: var(--vd-space-3);
   align-items: center;
 }
-.status {
-  color: var(--vd-color-text-muted);
-  font-size: var(--vd-text-sm);
-}
 .hint {
   margin-block-start: calc(-1 * var(--vd-space-2));
   color: var(--vd-color-text-subtle);
