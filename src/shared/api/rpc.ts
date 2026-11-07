@@ -26,8 +26,11 @@ export class Rpc {
   }
 
   /** Calls an Edge Function, which reports failures as `{ code }`. */
-  async invoke<T>(name: string, body: Record<string, unknown>): Promise<T> {
-    const { data, error } = await this.supabase.functions.invoke(name, { body });
+  async invoke<T>(name: string, body?: Record<string, unknown>): Promise<T> {
+    const { data, error } = await this.supabase.functions.invoke(name, {
+      method: body ? 'POST' : 'GET',
+      body,
+    });
     if (!error) return data as T;
     if (error instanceof FunctionsHttpError) {
       const failure = await (error.context as Response).json().catch(() => null);

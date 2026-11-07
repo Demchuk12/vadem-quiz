@@ -13,6 +13,21 @@
         [attr.maxlength]="maxLength"
       ></textarea>
     </vd-field>
+    @if (providers().length > 1) {
+      <vd-segmented
+        aria-label="Хто пише питання"
+        [value]="provider()"
+        (valueChange)="provider.set($any($event))"
+      >
+        <vd-segment value="auto">Авто</vd-segment>
+        @for (option of providers(); track option.id) {
+          <vd-segment [value]="option.id">{{ option.label }}</vd-segment>
+        }
+      </vd-segmented>
+      <p class="choice-hint">
+        «Авто» бере першу вільну модель: якщо в однієї вичерпано ліміт, наступний раунд напише інша.
+      </p>
+    }
     <div class="actions">
       <button vdButton type="submit" [loading]="busy()">
         <vd-icon slot="start" name="star" />

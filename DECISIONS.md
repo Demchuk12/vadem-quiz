@@ -105,6 +105,16 @@ An optional explanation per question lets the host say why an answer is right. I
 question in `private`, copied into the room's snapshot, given to the host by `host_answer`, and
 reaches `public.rooms` only on reveal, like the answer. An empty one is never shown.
 
+## D16 — Several free AIs, chosen or chained
+
+Free tiers run out or get overloaded, so the function knows Gemini, Groq and OpenRouter and offers only
+those with a key. "Auto" tries them in that order within one round, which together with resuming from
+the failed round keeps a generation going when one AI is unavailable. Groq and OpenRouter share the
+OpenAI chat format, so one adapter serves both. OpenRouter is limited in code to ":free" models and
+its free router, which stands in when the chosen free model is rate-limited: a paid model would
+spend credits. Model names are secrets with defaults, because free
+models come and go.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

@@ -11,6 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   QuizApi,
+  type AiProvider,
   SavedQuizzes,
   applyGeneratedRound,
   quizProgress,
@@ -24,6 +25,7 @@ import { VD_CARD } from '@vadem/ui/card';
 import { VdField } from '@vadem/ui/field';
 import { VdIcon } from '@vadem/ui/icon';
 import { VdInput } from '@vadem/ui/input';
+import { VdSegment, VdSegmented } from '@vadem/ui/segmented';
 import { VdToaster } from '@vadem/ui/toast';
 
 const MAX_PROMPT_LENGTH = 500;
@@ -38,7 +40,17 @@ interface Progress {
 /** Writes the quiz from a topic. The result is a draft in the editor: the host reviews and saves it. */
 @Component({
   selector: 'vq-quiz-generator',
-  imports: [ReactiveFormsModule, VdAlertDialog, VdButton, VD_CARD, VdField, VdIcon, VdInput],
+  imports: [
+    ReactiveFormsModule,
+    VdAlertDialog,
+    VdButton,
+    VD_CARD,
+    VdField,
+    VdIcon,
+    VdInput,
+    VdSegment,
+    VdSegmented,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './quiz-generator.scss',
   templateUrl: './quiz-generator.html',
@@ -54,6 +66,9 @@ export class QuizGenerator {
   private readonly action = apiAction();
 
   protected readonly maxLength = MAX_PROMPT_LENGTH;
+  /** Only the AIs this deployment has keys for. A choice appears once there is more than one. */
+  protected readonly providers = signal<AiProvider[]>([]);
+  protected readonly provider = signal('auto');
   protected readonly busy = this.action.busy;
   protected readonly confirming = signal(false);
   private readonly currentRound = signal(0);
@@ -72,6 +87,13 @@ export class QuizGenerator {
       ],
     ],
   });
+
+  constructor() {
+    this.api
+      .aiProviders()
+      .then((providers) => this.providers.set(providers))
+      .catch(() => this.providers.set([]));
+  }
 
   private readonly prompt = toSignal(this.form.controls.prompt.valueChanges, { initialValue: '' });
   private readonly interrupted = signal<Progress | null>(null);
@@ -112,6 +134,7 @@ export class QuizGenerator {
         let quiz = this.quiz();
         const roundCount = quiz.rounds.length;
         const avoid = [...(from?.avoid ?? [])];
+        const writers = new Set<string>();
         for (let round = from?.round ?? 0; round < roundCount; round += 1) {
           this.interrupted.set({ prompt, round, avoid: [...avoid] });
           this.currentRound.set(round + 1);
@@ -123,15 +146,29 @@ export class QuizGenerator {
             roundCount,
             ...roundShape(quiz, round),
             avoid,
+            provider: this.provider(),
           });
+          writers.add(this.labelOf(result.provider));
           quiz = applyGeneratedRound(quiz, round, result);
           avoid.push(...result.categories.map((category) => category.title));
           this.generated.emit(quiz);
         }
         this.interrupted.set(null);
+        this.writers = [...writers];
       },
       { errorTitle: 'Не все вдалося згенерувати' },
     );
-    if (done) this.toaster.success('Квіз написано', 'Перевірте факти й збережіть його.');
+    if (done) {
+      this.toaster.success(
+        'Квіз написано',
+        `Писав ${this.writers.join(', ')}. Перевірте факти й збережіть його.`,
+      );
+    }
+  }
+
+  private writers: string[] = [];
+
+  private labelOf(id: string): string {
+    return this.providers().find((provider) => provider.id === id)?.label ?? id;
   }
 }

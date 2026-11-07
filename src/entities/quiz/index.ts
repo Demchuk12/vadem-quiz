@@ -1,4 +1,10 @@
-export { QuizApi, type GenerateRoundRequest, type NewQuiz } from './api/quiz-api';
+export {
+  QuizApi,
+  type AiProvider,
+  type GenerateRoundRequest,
+  type GeneratedRoundResult,
+  type NewQuiz,
+} from './api/quiz-api';
 export {
   QuizImportError,
   addCategory,

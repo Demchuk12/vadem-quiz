@@ -2,6 +2,11 @@ import AxeBuilder from '@axe-core/playwright';
 import { devices, expect, test, type Page } from '@playwright/test';
 import { QUIZ_JSON, hostGame, joinGame } from './helpers';
 
+const PROVIDERS = [
+  { id: 'gemini', label: 'Gemini' },
+  { id: 'groq', label: 'Groq' },
+];
+
 const buzzer = (page: Page) => page.locator('button.vd-buzzer');
 const pressBuzzer = (page: Page) => buzzer(page).click({ force: true });
 const score = (page: Page) => page.getByLabel('Ваш рахунок');
@@ -134,20 +139,21 @@ test('the create button stays level with the input when the error appears', asyn
 
 test('AI fills the editor as a draft, one round at a time', async ({ browser }) => {
   const { host } = await hostGame(browser);
-  await host.goto('/quizzes');
-  await host.getByRole('link', { name: 'Редагувати' }).first().click();
-  await expect(host.getByRole('button', { name: 'Зберегти' })).toBeDisabled();
 
   const requests: Record<string, unknown>[] = [];
   await host.route('**/functions/v1/generate-round', async (route) => {
     const headers = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' };
     if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 200, headers });
+    if (route.request().method() === 'GET') {
+      return route.fulfill({ status: 200, headers, json: { providers: PROVIDERS } });
+    }
     const body = route.request().postDataJSON();
     requests.push(body);
     return route.fulfill({
       status: 200,
       headers,
       json: {
+        provider: body.provider === 'auto' ? 'gemini' : body.provider,
         categories: Array.from({ length: body.categories }, (_, c) => ({
           title: `AI раунд ${body.round} категорія ${c + 1}`,
           questions: Array.from({ length: body.questions }, (_, q) => ({
@@ -158,7 +164,17 @@ test('AI fills the editor as a draft, one round at a time', async ({ browser }) 
       },
     });
   });
+  await host.goto('/quizzes');
+  await host.getByRole('link', { name: 'Редагувати' }).first().click();
+  await expect(host.getByRole('button', { name: 'Зберегти' })).toBeDisabled();
 
+  // Only the AIs with keys are offered, and the choice is sent with every round.
+  const choice = host.getByRole('radiogroup', { name: 'Хто пише питання' });
+  await expect(choice.getByRole('radio')).toHaveCount(3);
+  for (const name of ['Авто', 'Gemini', 'Groq']) {
+    await expect(choice.getByRole('radio', { name })).toBeAttached();
+  }
+  await choice.getByRole('radio', { name: 'Groq' }).click();
   await host.getByLabel('Тема квізу').fill('Кіно 90-х');
   await host.getByRole('button', { name: 'Згенерувати' }).click();
   // The quiz already has questions, so replacing them needs a yes.
@@ -174,6 +190,8 @@ test('AI fills the editor as a draft, one round at a time', async ({ browser }) 
   expect(requests.map((r) => r['round'])).toEqual([1, 2]);
   expect(requests[1]!['avoid']).toEqual(['AI раунд 1 категорія 1']);
   expect(requests[0]!['prompt']).toBe('Кіно 90-х');
+  expect(requests.map((r) => r['provider'])).toEqual(['groq', 'groq']);
+  await expect(host.getByText('Писав Groq.', { exact: false })).toBeVisible();
 
   // A draft: nothing is stored until the host saves it.
   await expect(host.getByRole('button', { name: 'Зберегти' })).toBeEnabled();
@@ -190,6 +208,9 @@ test('an interrupted generation continues from the failed round', async ({ brows
   await host.route('**/functions/v1/generate-round', async (route) => {
     const headers = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' };
     if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 200, headers });
+    if (route.request().method() === 'GET') {
+      return route.fulfill({ status: 200, headers, json: { providers: PROVIDERS } });
+    }
     const body = route.request().postDataJSON();
     rounds.push(body.round);
     if (body.round === 2 && busy) {
@@ -200,6 +221,7 @@ test('an interrupted generation continues from the failed round', async ({ brows
       status: 200,
       headers,
       json: {
+        provider: 'gemini',
         categories: Array.from({ length: body.categories }, (_, c) => ({
           title: `Раунд ${body.round} категорія ${c + 1}`,
           questions: Array.from({ length: body.questions }, (_, q) => ({

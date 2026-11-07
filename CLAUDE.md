@@ -28,7 +28,8 @@ src/features/   one user action each: buzz, join-room, run-question, adjust-scor
 src/entities/   room (with players and tiles, too entangled to split), quiz
 src/shared/     api (Supabase, RPC, media), lib (storage, sound), ui (QR)
 supabase/       migrations (the only way to change game state), pgTAP tests, the generate-round
-                Edge Function (holds the AI key; its only secrets are GEMINI_API_KEY, GEMINI_MODEL)
+                Edge Function (holds the AI keys: GEMINI_API_KEY, GROQ_API_KEY, OPENROUTER_API_KEY;
+                model names are optional secrets, see the function's header)
 e2e/            Playwright: multi-browser game, press race, axe
 ```
 

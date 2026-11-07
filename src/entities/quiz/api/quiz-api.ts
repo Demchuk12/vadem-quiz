@@ -7,6 +7,12 @@ export interface NewQuiz {
   owner_token: string;
 }
 
+/** An AI that can write rounds: this deployment has its key. */
+export interface AiProvider {
+  id: string;
+  label: string;
+}
+
 export interface GenerateRoundRequest {
   quizId: string;
   token: string;
@@ -18,7 +24,11 @@ export interface GenerateRoundRequest {
   questions: number;
   /** Category titles already used by earlier rounds. */
   avoid: string[];
+  /** A provider id, or "auto" for the first one that answers. */
+  provider: string;
 }
+
+export type GeneratedRoundResult = GeneratedRound & { provider: string };
 
 @Injectable({ providedIn: 'root' })
 export class QuizApi {
@@ -37,7 +47,13 @@ export class QuizApi {
     return this.rpc.call('delete_quiz', { p_quiz_id: quizId, p_token: token });
   }
 
-  generateRound(request: GenerateRoundRequest): Promise<GeneratedRound> {
+  aiProviders(): Promise<AiProvider[]> {
+    return this.rpc
+      .invoke<{ providers: AiProvider[] }>('generate-round')
+      .then((result) => result.providers);
+  }
+
+  generateRound(request: GenerateRoundRequest): Promise<GeneratedRoundResult> {
     return this.rpc.invoke('generate-round', { ...request });
   }
 }
