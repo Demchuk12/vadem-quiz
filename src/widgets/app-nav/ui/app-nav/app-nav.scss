@@ -1,0 +1,30 @@
+nav {
+  --vq-logo-size: var(--vd-space-6);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2) var(--vd-space-4);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--vd-space-2) var(--vd-space-4);
+  border-block-end: var(--vd-border-width) solid var(--vd-color-border);
+}
+.home {
+  display: inline-flex;
+  border-radius: var(--vd-radius-sm);
+}
+.home:focus-visible {
+  outline: var(--vd-focus-ring-width) solid var(--vd-color-focus);
+  outline-offset: var(--vd-focus-ring-offset);
+}
+.links {
+  display: flex;
+  gap: var(--vd-space-1);
+}
+/* A position, so it has its own look, not only a color: filled like a pressed tab. */
+.active {
+  --vd-button-bg: var(--vd-color-action-subtle);
+  --vd-button-bg-hover: var(--vd-color-action-subtle);
+  --vd-button-fg: var(--vd-color-text);
+  --vd-button-fg-hover: var(--vd-color-text);
+}

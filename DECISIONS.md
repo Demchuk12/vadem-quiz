@@ -92,6 +92,13 @@ The service worker holds only the built files. Database calls, realtime and pres
 network: a cached answer in a live game would show a stale state. A new version waits for the player
 to press Update, because a reload in the middle of a question could cost them the press.
 
+## D14 — A menu outside the game, a way back inside it
+
+Layout routes keep the site menu on the site's pages only. Game screens keep the whole window for the
+game and offer one arrow back; the stream view has no links at all, because it is shown on a shared
+screen. Leaving is safe: a player's session stays on the device and the join page offers the way back.
+Unsaved editor changes ask first, since a whole AI draft could otherwise be lost to one click.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

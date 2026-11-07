@@ -16,10 +16,6 @@
     @if (quiz(); as document) {
       <div class="bar">
         <div class="bar-nav">
-          <a vdButton variant="ghost" size="sm" class="back" routerLink="/quizzes">
-            <vd-icon slot="start" name="arrow-left" />
-            Квізи
-          </a>
           <span class="progress" aria-live="polite">
             Заповнено {{ progress().complete }} з {{ progress().total }}
             @if (dirty()) {

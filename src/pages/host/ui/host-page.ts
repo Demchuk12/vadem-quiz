@@ -7,6 +7,7 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   GameBoard,
   HostSession,
@@ -35,6 +36,7 @@ import { RoomJoinInfo } from '@widgets/room-join-info';
 @Component({
   selector: 'vq-host-page',
   imports: [
+    RouterLink,
     VD_ALERT,
     VdButton,
     VD_CARD,

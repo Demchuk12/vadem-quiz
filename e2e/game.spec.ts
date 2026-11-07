@@ -412,6 +412,79 @@ test('the app describes itself for installing, and offers the browser dialog', a
   await expect(install).toHaveCount(0);
 });
 
+test('the menu leads between pages and marks the current one', async ({ page }) => {
+  await page.goto('/');
+  const menu = page.getByRole('navigation', { name: 'Головне меню' });
+  await expect(menu.getByRole('link', { name: 'Увійти в гру' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
+
+  await menu.getByRole('link', { name: 'Мої квізи' }).click();
+  await expect(page.getByRole('heading', { name: 'Мої квізи' })).toBeVisible();
+  await expect(menu.getByRole('link', { name: 'Мої квізи' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
+  await expect(menu.getByRole('link', { name: 'Увійти в гру' })).not.toHaveAttribute(
+    'aria-current',
+  );
+
+  await menu.getByRole('link', { name: 'Vadem, на головну' }).click();
+  await expect(page.getByRole('heading', { name: 'Квіз із друзями' })).toBeVisible();
+});
+
+test('a phone shows the menu without sideways scrolling or a second scroll', async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ viewport: { width: 320, height: 700 } });
+  const page = await context.newPage();
+  for (const path of ['/join', '/quizzes']) {
+    await page.goto(path);
+    await expect(page.getByRole('navigation', { name: 'Головне меню' })).toBeVisible();
+    const fits = await page.evaluate(
+      () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+    );
+    expect(fits, path).toBe(true);
+  }
+});
+
+test('leaving the editor with unsaved changes asks first', async ({ browser }) => {
+  const { host } = await hostGame(browser);
+  await host.goto('/quizzes');
+  await host.getByRole('link', { name: 'Редагувати' }).first().click();
+  await expect(host.getByRole('button', { name: 'Зберегти' })).toBeDisabled();
+  await host.getByLabel('Назва квізу').fill('Нова назва');
+
+  const menuLink = host.getByRole('navigation').getByRole('link', { name: 'Мої квізи' });
+  host.once('dialog', (dialog) => dialog.dismiss());
+  await menuLink.click();
+  await expect(host.getByLabel('Назва квізу')).toHaveValue('Нова назва');
+
+  host.once('dialog', (dialog) => dialog.accept());
+  await menuLink.click();
+  await expect(host.getByRole('heading', { name: 'Мої квізи' })).toBeVisible();
+});
+
+test('game screens have a way out and a player can come back', async ({ browser }) => {
+  const { host, code } = await hostGame(browser);
+  const ann = await joinGame(browser, code, 'Анна');
+  await expect(ann.getByRole('navigation', { name: 'Головне меню' })).toHaveCount(0);
+
+  await ann.getByRole('link', { name: 'Вийти з гри' }).click();
+  await ann.getByRole('link', { name: `Повернутися до гри ${code}` }).click();
+  await expect(ann.getByRole('heading', { name: `Ви в кімнаті ${code}` })).toBeVisible();
+
+  await host.getByRole('link', { name: 'До моїх квізів' }).click();
+  await expect(host.getByRole('heading', { name: 'Мої квізи' })).toBeVisible();
+
+  const context = await browser.newContext();
+  const stream = await context.newPage();
+  await stream.goto(`/stream/${code}`);
+  await expect(stream.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(stream.getByRole('link')).toHaveCount(0);
+});
+
 test('the join page fits a phone and offers the form on the first screen', async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 360, height: 780 } });
   const page = await context.newPage();

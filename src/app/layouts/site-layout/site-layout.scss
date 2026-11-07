@@ -1,0 +1,13 @@
+:host {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-block-size: 100dvh;
+}
+/* The page fills what the menu leaves, so a full-height page does not cause scrolling. */
+main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+router-outlet {
+  display: none;
+}

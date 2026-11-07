@@ -7,6 +7,17 @@
   </div>
 } @else if (store.room(); as room) {
   <vq-room-header>
+    <a
+      slot="back"
+      vdButton
+      variant="ghost"
+      size="sm"
+      iconOnly
+      routerLink="/quizzes"
+      aria-label="До моїх квізів"
+    >
+      <vd-icon name="arrow-left" />
+    </a>
     <a vdButton size="sm" target="_blank" rel="noopener" [href]="streamUrl()">
       <vd-icon slot="start" name="monitor" />
       Екран для стріму

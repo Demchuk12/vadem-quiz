@@ -19,6 +19,8 @@
 @mixin narrow-page($width, $gap: var(--vd-space-6), $padding-end: var(--vd-space-6)) {
   @include stack($gap);
 
+  // In a grid, auto margins alone would shrink the column to its content.
+  inline-size: 100%;
   max-inline-size: $width;
   margin-inline: auto;
   padding: var(--vd-space-6) var(--vd-space-4) $padding-end;

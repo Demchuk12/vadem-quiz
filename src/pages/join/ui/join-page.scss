@@ -3,7 +3,7 @@
 
 :host {
   display: grid;
-  min-block-size: 100dvh;
+  grid-template-columns: minmax(0, 1fr);
 }
 .hero {
   position: relative;
@@ -14,12 +14,12 @@
 }
 /* On a phone the whole V sits above the text, without overlapping it. */
 .banner {
-  --vq-tile-size: 2.125rem;
-  --vq-tile-font: 0.625rem;
+  --vq-tile-size: 1.625rem;
+  --vq-tile-font: 0.5rem;
   --vq-tile-gap: var(--vd-space-1);
 
   position: relative;
-  block-size: 14.75rem;
+  block-size: 11.5rem;
 }
 .hero-text {
   @include layout.stack(var(--vd-space-3));
@@ -36,7 +36,7 @@ h1 {
 }
 .hero-text p {
   color: var(--vd-color-text-muted);
-  font-size: var(--vd-text-lg);
+  font-size: var(--vd-text-md);
   text-wrap: balance;
 }
 .panel {
@@ -54,15 +54,6 @@ h2 {
 }
 .hint {
   color: var(--vd-color-text-muted);
-}
-footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--vd-space-2);
-  align-items: center;
-  justify-content: space-between;
-  padding-block-start: var(--vd-space-4);
-  border-block-start: var(--vd-border-width) solid var(--vd-color-border);
 }
 
 @media (width >= 56rem) {
@@ -92,5 +83,8 @@ footer {
   }
   h1 {
     font-size: var(--vd-text-4xl);
+  }
+  .hero-text p {
+    font-size: var(--vd-text-lg);
   }
 }

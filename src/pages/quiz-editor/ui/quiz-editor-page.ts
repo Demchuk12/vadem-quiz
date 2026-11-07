@@ -18,9 +18,9 @@ import {
 import { QuizGenerator } from '@features/generate-quiz';
 import { QuizTransfer } from '@features/transfer-quiz';
 import { apiAction } from '@shared/api';
+import type { HasUnsavedChanges } from '@shared/lib';
 import { VD_ALERT } from '@vadem/ui/alert';
 import { VdButton } from '@vadem/ui/button';
-import { VdIcon } from '@vadem/ui/icon';
 import { VdSkeleton } from '@vadem/ui/skeleton';
 import { VdToaster } from '@vadem/ui/toast';
 import { QuizEditor } from '@widgets/quiz-editor';
@@ -29,21 +29,13 @@ type LoadState = 'loading' | 'ready' | 'forbidden' | 'error';
 
 @Component({
   selector: 'vq-quiz-editor-page',
-  imports: [
-    RouterLink,
-    VD_ALERT,
-    VdButton,
-    VdIcon,
-    VdSkeleton,
-    QuizEditor,
-    QuizGenerator,
-    QuizTransfer,
-  ],
+  imports: [RouterLink, VD_ALERT, VdButton, VdSkeleton, QuizEditor, QuizGenerator, QuizTransfer],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(window:beforeunload)': 'warnBeforeClosing($event)' },
   styleUrl: './quiz-editor-page.scss',
   templateUrl: './quiz-editor-page.html',
 })
-export class QuizEditorPage implements OnInit {
+export class QuizEditorPage implements OnInit, HasUnsavedChanges {
   readonly quizId = input.required<string>();
 
   private readonly api = inject(QuizApi);
@@ -61,6 +53,15 @@ export class QuizEditorPage implements OnInit {
   });
 
   private saved: SavedQuiz | undefined;
+
+  hasUnsavedChanges(): boolean {
+    return this.dirty();
+  }
+
+  /** Browsers show their own question when the event is cancelled. */
+  protected warnBeforeClosing(event: BeforeUnloadEvent): void {
+    if (this.dirty()) event.preventDefault();
+  }
 
   async ngOnInit(): Promise<void> {
     this.saved = this.savedQuizzes.find(this.quizId());

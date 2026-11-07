@@ -1,7 +1,6 @@
 <section class="hero">
   <div class="banner"><vq-tile-banner /></div>
   <div class="hero-text">
-    <vq-vadem-logo />
     <h1>Квіз із друзями</h1>
     <p>Хто перший натиснув, той і відповідає.</p>
   </div>
@@ -11,10 +10,13 @@
   <div class="panel-content">
     <h2>Приєднатися до гри</h2>
     <p class="hint">Введіть код кімнати від ведучого й оберіть нікнейм.</p>
+    @if (lastGame; as game) {
+      <a vdButton [routerLink]="['/play', game]">
+        <vd-icon slot="start" name="arrow-right" />
+        Повернутися до гри {{ game }}
+      </a>
+    }
     <vq-join-form [code]="code()" />
-    <footer>
-      <a vdButton variant="ghost" routerLink="/quizzes">Я ведучий</a>
-      <vq-install-app-button />
-    </footer>
+    <vq-install-app-button />
   </div>
 </div>

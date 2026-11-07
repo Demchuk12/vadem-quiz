@@ -52,7 +52,7 @@ export async function hostGame(browser: Browser, quizJson = QUIZ_JSON): Promise<
   await host.getByRole('button', { name: 'Зберегти' }).click();
   await expect(host.getByRole('button', { name: 'Зберегти' })).toBeDisabled();
 
-  await host.getByRole('link', { name: 'Квізи' }).click();
+  await host.getByRole('link', { name: 'Мої квізи' }).click();
   await host.getByRole('button', { name: 'Нова гра' }).first().click();
   await host.waitForURL(/\/host\/[A-Z0-9]{5}$/);
   await expect(host.getByRole('button', { name: 'Почати гру' })).toBeVisible();

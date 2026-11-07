@@ -9,7 +9,7 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   GameBoard,
   QuestionView,
@@ -26,11 +26,16 @@ import {
 } from '@entities/room';
 import { BuzzButton } from '@features/buzz';
 import { VademLogo } from '@shared/ui';
+import { VdButton } from '@vadem/ui/button';
 import { VD_CARD } from '@vadem/ui/card';
+import { VdIcon } from '@vadem/ui/icon';
 
 @Component({
   selector: 'vq-play-page',
   imports: [
+    RouterLink,
+    VdButton,
+    VdIcon,
     VD_CARD,
     BuzzButton,
     GameBoard,
