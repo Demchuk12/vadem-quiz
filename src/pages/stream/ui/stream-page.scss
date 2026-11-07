@@ -2,9 +2,7 @@
 
 :host {
   @include layout.page(var(--vd-space-6), var(--vd-space-6));
-
-  min-block-size: 100dvh;
-  align-content: start;
+  @include layout.fill-empty-space(var(--vd-space-6), var(--vd-space-6));
 
   --vq-sidebar-size: 22rem;
   --vq-sidebar-gap: var(--vd-space-6);

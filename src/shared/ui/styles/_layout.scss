@@ -50,3 +50,25 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/// Makes the screen at least as tall as the window and shows the game's objects only in the height
+/// its content leaves free. With a full screen the block has no height, so nothing is covered.
+/// Pass the host's own padding: the block reaches past it to the screen's edges.
+@mixin fill-empty-space($padding-inline, $padding-end) {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
+
+  &::after {
+    content: '';
+    flex: 1 1 0;
+    margin-inline: calc(#{$padding-inline} * -1);
+    margin-block-end: calc(#{$padding-end} * -1);
+    background-image: url('/brand/game-pattern.svg');
+    background-position: center top;
+    background-size: 60rem;
+    opacity: 0.55;
+    mask-image: linear-gradient(to bottom, transparent, black 10rem);
+    pointer-events: none;
+  }
+}

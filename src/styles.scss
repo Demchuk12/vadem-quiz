@@ -10,10 +10,6 @@ html {
   /* No double-tap zoom or pull-to-refresh in the middle of a question. Pinch zoom stays. */
   touch-action: manipulation;
   overscroll-behavior: none;
-}
-
-body {
-  margin: 0;
   background-color: var(--vd-color-bg);
   background-image: radial-gradient(
     60rem 28rem at 50% -8rem,
@@ -21,6 +17,43 @@ body {
     transparent
   );
   background-repeat: no-repeat;
+}
+
+/* Transparent, so that the pattern below can sit between the page's color and its content. */
+body {
+  margin: 0;
+  background: none;
+}
+
+/*
+ * The game's objects in the side margins of centered screens. They fade out exactly at the edge of the
+ * column, so they never sit under content. Full-width screens use layout.fill-empty-space instead.
+ */
+@media (width >= 64rem) {
+  body:has(vq-quizzes-page) {
+    --vq-column: 48rem;
+  }
+  body:has(vq-quiz-editor-page) {
+    --vq-column: 60rem;
+  }
+  body:has(vq-quizzes-page, vq-quiz-editor-page)::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: url('/brand/game-pattern.svg');
+    background-position: center top;
+    background-size: 60rem;
+    opacity: 0.55;
+    mask-image: linear-gradient(
+      to right,
+      black calc(50% - var(--vq-column) / 2 - 12rem),
+      transparent calc(50% - var(--vq-column) / 2),
+      transparent calc(50% + var(--vq-column) / 2),
+      black calc(50% + var(--vq-column) / 2 + 12rem)
+    );
+    pointer-events: none;
+  }
 }
 
 /* A board tile answers the pointer like a physical block. */

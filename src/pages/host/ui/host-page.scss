@@ -2,6 +2,7 @@
 
 :host {
   @include layout.page;
+  @include layout.fill-empty-space(var(--vd-space-4), var(--vd-space-4));
 }
 .stack {
   @include layout.stack;

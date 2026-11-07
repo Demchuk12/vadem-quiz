@@ -2,9 +2,7 @@
 
 :host {
   @include layout.page($padding: var(--vd-space-3) var(--vd-space-4) var(--vd-space-8));
-
-  min-block-size: 100dvh;
-  align-content: start;
+  @include layout.fill-empty-space(var(--vd-space-4), var(--vd-space-8));
 }
 header {
   @include layout.app-header;

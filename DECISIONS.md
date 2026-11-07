@@ -65,6 +65,14 @@ carry the green in the accent block, following the logo README's rule that the a
 the library's originals are unchanged. Motion is one-shot and shows a change, with one exception: the
 ready buzzer pulses, because that is what the player must not miss. It is all off under reduced motion.
 
+## D11 — Page background is generated vector art
+
+Question marks, tiles, buzzers and stars come from `tools/game-pattern.mjs` as one small SVG instead
+of a generated picture: it stays sharp on any screen, weighs a few KB and matches the palette exactly.
+Its colors are fixed in the script, because an SVG used as a background cannot read CSS tokens, so a
+new accent means regenerating it. It appears only in space that is really free: the side margins of
+centered screens, and on full-width screens a block taking the height the content leaves over.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path
