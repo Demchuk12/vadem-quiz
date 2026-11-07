@@ -73,6 +73,17 @@ Its colors are fixed in the script, because an SVG used as a background cannot r
 new accent means regenerating it. It appears only in space that is really free: the side margins of
 centered screens, and on full-width screens a block taking the height the content leaves over.
 
+## D12 — AI writes a draft, through one Edge Function
+
+The AI key cannot live in a browser, so `generate-round` is the app's only server code. It writes one
+round per call: a whole quiz can exceed a free tier's per-minute limit, and a failure then costs one
+round instead of everything. The result only fills the editor, because models state wrong facts with
+confidence, so a person reviews it before saving. `consume_ai_call` is granted to the service role
+alone and limits each quiz and the whole app per day: anyone can create a quiz, so a per-quiz limit by
+itself would not protect the shared free quota. Gemini is the provider because its free tier fits a
+game among friends, and free-tier requests may be used by Google, so no personal data belongs in a
+prompt. Tests replace the function: they must not depend on, or spend, a real quota.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

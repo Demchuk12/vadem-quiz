@@ -1,0 +1,15 @@
+@use 'shared/ui/styles/layout';
+
+form {
+  @include layout.stack(var(--vd-space-3));
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-3);
+  align-items: center;
+}
+.status {
+  color: var(--vd-color-text-muted);
+  font-size: var(--vd-text-sm);
+}

@@ -15,6 +15,7 @@ import {
   type QuizDocument,
   type SavedQuiz,
 } from '@entities/quiz';
+import { QuizGenerator } from '@features/generate-quiz';
 import { QuizTransfer } from '@features/transfer-quiz';
 import { apiAction } from '@shared/api';
 import { VD_ALERT } from '@vadem/ui/alert';
@@ -28,7 +29,16 @@ type LoadState = 'loading' | 'ready' | 'forbidden' | 'error';
 
 @Component({
   selector: 'vq-quiz-editor-page',
-  imports: [RouterLink, VD_ALERT, VdButton, VdIcon, VdSkeleton, QuizEditor, QuizTransfer],
+  imports: [
+    RouterLink,
+    VD_ALERT,
+    VdButton,
+    VdIcon,
+    VdSkeleton,
+    QuizEditor,
+    QuizGenerator,
+    QuizTransfer,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './quiz-editor-page.scss',
   templateUrl: './quiz-editor-page.html',

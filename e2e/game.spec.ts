@@ -128,6 +128,75 @@ test('the create button stays level with the input when the error appears', asyn
   expect(Math.abs(await offset())).toBeLessThan(1);
 });
 
+test('AI fills the editor as a draft, one round at a time', async ({ browser }) => {
+  const { host } = await hostGame(browser);
+  await host.goto('/quizzes');
+  await host.getByRole('link', { name: 'Редагувати' }).first().click();
+  await expect(host.getByRole('button', { name: 'Зберегти' })).toBeDisabled();
+
+  const requests: Record<string, unknown>[] = [];
+  await host.route('**/functions/v1/generate-round', async (route) => {
+    const headers = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' };
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 200, headers });
+    const body = route.request().postDataJSON();
+    requests.push(body);
+    return route.fulfill({
+      status: 200,
+      headers,
+      json: {
+        categories: Array.from({ length: body.categories }, (_, c) => ({
+          title: `AI раунд ${body.round} категорія ${c + 1}`,
+          questions: Array.from({ length: body.questions }, (_, q) => ({
+            text: `Питання ${q + 1}`,
+            answer: `Відповідь ${q + 1}`,
+          })),
+        })),
+      },
+    });
+  });
+
+  await host.getByLabel('Тема квізу').fill('Кіно 90-х');
+  await host.getByRole('button', { name: 'Згенерувати' }).click();
+  // The quiz already has questions, so replacing them needs a yes.
+  await host.getByRole('alertdialog').getByRole('button', { name: 'Замінити' }).click();
+
+  await expect(host.getByRole('textbox', { name: 'Категорія 1', exact: true })).toHaveValue(
+    'AI раунд 1 категорія 1',
+  );
+  await host.getByRole('tab', { name: 'Раунд 2' }).click();
+  await expect(host.getByRole('textbox', { name: 'Категорія 1', exact: true })).toHaveValue(
+    'AI раунд 2 категорія 1',
+  );
+  expect(requests.map((r) => r['round'])).toEqual([1, 2]);
+  expect(requests[1]!['avoid']).toEqual(['AI раунд 1 категорія 1']);
+  expect(requests[0]!['prompt']).toBe('Кіно 90-х');
+
+  // A draft: nothing is stored until the host saves it.
+  await expect(host.getByRole('button', { name: 'Зберегти' })).toBeEnabled();
+});
+
+test('a used-up AI limit is explained and leaves the quiz as it was', async ({ browser }) => {
+  const { host } = await hostGame(browser);
+  await host.goto('/quizzes');
+  await host.getByRole('link', { name: 'Редагувати' }).first().click();
+  await expect(host.getByRole('button', { name: 'Зберегти' })).toBeDisabled();
+  await host.route('**/functions/v1/generate-round', (route) =>
+    route.fulfill({
+      status: route.request().method() === 'OPTIONS' ? 200 : 429,
+      headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' },
+      json: { code: 'ai_limit' },
+    }),
+  );
+  await host.getByLabel('Тема квізу').fill('Кіно');
+  await host.getByRole('button', { name: 'Згенерувати' }).click();
+  await host.getByRole('alertdialog').getByRole('button', { name: 'Замінити' }).click();
+  await expect(host.getByText('Ліміт AI на сьогодні вичерпано')).toBeVisible();
+  await expect(host.getByRole('textbox', { name: 'Категорія 1', exact: true })).toHaveValue(
+    'Географія',
+  );
+  await expect(host.getByRole('button', { name: 'Зберегти' })).toBeDisabled();
+});
+
 test('only the device that created the game gets the controls', async ({ browser }) => {
   const { code } = await hostGame(browser);
   const context = await browser.newContext();

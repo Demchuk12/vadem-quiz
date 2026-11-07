@@ -118,6 +118,47 @@ export function removeCategory(doc: QuizDocument, round: number, category: numbe
   return updateRound(doc, round, (categories) => categories.filter((_, i) => i !== category));
 }
 
+/** One round as the AI writes it: text only, the values come from the quiz. */
+export interface GeneratedRound {
+  categories: { title: string; questions: { text: string; answer: string }[] }[];
+}
+
+/** What the AI has to write so that a round keeps the shape the host set up. */
+export function roundShape(
+  doc: QuizDocument,
+  round: number,
+): { categories: number; questions: number } {
+  const categories = doc.rounds[round]?.categories ?? [];
+  return {
+    categories: categories.length || DEFAULT_CATEGORIES_PER_ROUND,
+    questions:
+      Math.max(0, ...categories.map((c) => c.questions.length)) || DEFAULT_BASE_POINTS.length,
+  };
+}
+
+/** Puts a generated round into the quiz. It keeps the point values, and replaces any pictures. */
+export function applyGeneratedRound(
+  doc: QuizDocument,
+  round: number,
+  generated: GeneratedRound,
+): QuizDocument {
+  return updateRound(doc, round, (categories) =>
+    generated.categories.map((category, c) => ({
+      title: category.title,
+      questions: category.questions.map((question, q) => ({
+        basePoints:
+          categories[c]?.questions[q]?.basePoints ??
+          DEFAULT_BASE_POINTS[q] ??
+          DEFAULT_BASE_POINTS[DEFAULT_BASE_POINTS.length - 1]!,
+        text: question.text,
+        imagePath: null,
+        answerText: question.answer,
+        answerImagePath: null,
+      })),
+    })),
+  );
+}
+
 export class QuizImportError extends Error {}
 
 function asString(value: unknown, where: string): string {

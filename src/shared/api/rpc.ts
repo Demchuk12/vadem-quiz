@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
+import { FunctionsHttpError } from '@supabase/supabase-js';
 import { ApiError } from './api-error';
 import { SUPABASE } from './supabase';
 
-/** Calls a database function. Every change to the game state goes through these. */
+/** Calls the backend. Every change to the game state goes through database functions. */
 @Injectable({ providedIn: 'root' })
 export class Rpc {
   private readonly supabase = inject(SUPABASE);
@@ -22,5 +23,16 @@ export class Rpc {
     const row = rows[0];
     if (!row) throw new ApiError('network');
     return row;
+  }
+
+  /** Calls an Edge Function, which reports failures as `{ code }`. */
+  async invoke<T>(name: string, body: Record<string, unknown>): Promise<T> {
+    const { data, error } = await this.supabase.functions.invoke(name, { body });
+    if (!error) return data as T;
+    if (error instanceof FunctionsHttpError) {
+      const failure = await (error.context as Response).json().catch(() => null);
+      throw new ApiError(failure?.code ?? 'network');
+    }
+    throw new ApiError('network');
   }
 }

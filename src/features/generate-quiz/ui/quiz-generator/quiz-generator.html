@@ -1,0 +1,34 @@
+<section vdCard>
+  <form [formGroup]="form" (ngSubmit)="start()">
+    <vd-field
+      label="Тема квізу"
+      hint="AI напише чернетку, а ви її перевірите: він буває впевнено неправий у фактах."
+      error="Опишіть тему: від 3 до 500 символів."
+    >
+      <textarea
+        vdInput
+        rows="2"
+        formControlName="prompt"
+        placeholder="Наприклад: кіно 90-х, середня складність"
+        [attr.maxlength]="maxLength"
+      ></textarea>
+    </vd-field>
+    <div class="actions">
+      <button vdButton type="submit" [loading]="busy()">
+        <vd-icon slot="start" name="star" />
+        Згенерувати
+      </button>
+      <span class="status" aria-live="polite">{{ status() }}</span>
+    </div>
+  </form>
+</section>
+
+<vd-alert-dialog
+  title="Замінити питання?"
+  description="AI перепише всі раунди цього квізу, разом із картинками. Поки ви не збережете, збережена версія лишається цілою."
+  confirmLabel="Замінити"
+  cancelLabel="Скасувати"
+  [open]="confirming()"
+  [action]="replace"
+  (openChange)="confirming.set($event)"
+/>

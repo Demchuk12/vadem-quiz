@@ -27,7 +27,8 @@ src/widgets/    self-contained screen blocks: room-header, host-question-panel, 
 src/features/   one user action each: buzz, join-room, run-question, adjust-score...
 src/entities/   room (with players and tiles, too entangled to split), quiz
 src/shared/     api (Supabase, RPC, media), lib (storage, sound), ui (QR)
-supabase/       migrations (the only way to change game state) and pgTAP tests
+supabase/       migrations (the only way to change game state), pgTAP tests, the generate-round
+                Edge Function (holds the AI key; its only secrets are GEMINI_API_KEY, GEMINI_MODEL)
 e2e/            Playwright: multi-browser game, press race, axe
 ```
 

@@ -1,10 +1,23 @@
 import { Injectable, inject } from '@angular/core';
 import { Rpc } from '@shared/api';
-import type { QuizDocument } from '../model/quiz-document';
+import type { GeneratedRound, QuizDocument } from '../model/quiz-document';
 
 export interface NewQuiz {
   quiz_id: string;
   owner_token: string;
+}
+
+export interface GenerateRoundRequest {
+  quizId: string;
+  token: string;
+  prompt: string;
+  /** Counted from 1. */
+  round: number;
+  roundCount: number;
+  categories: number;
+  questions: number;
+  /** Category titles already used by earlier rounds. */
+  avoid: string[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -22,5 +35,9 @@ export class QuizApi {
   }
   delete(quizId: string, token: string): Promise<void> {
     return this.rpc.call('delete_quiz', { p_quiz_id: quizId, p_token: token });
+  }
+
+  generateRound(request: GenerateRoundRequest): Promise<GeneratedRound> {
+    return this.rpc.invoke('generate-round', { ...request });
   }
 }

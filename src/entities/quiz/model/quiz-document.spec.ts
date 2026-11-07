@@ -1,11 +1,13 @@
 import {
   QuizImportError,
   addCategory,
+  applyGeneratedRound,
   emptyQuiz,
   parseQuizDocument,
   pointsOf,
   quizProgress,
   removeCategory,
+  roundShape,
   updateCategory,
   updateQuestion,
 } from './quiz-document';
@@ -74,6 +76,54 @@ describe('completeness', () => {
     expect(quizProgress(withImage).complete).toBe(75);
     const blank = updateQuestion(done, { round: 0, category: 0, question: 0 }, { answerText: ' ' });
     expect(quizProgress(blank).complete).toBe(74);
+  });
+});
+
+describe('generated rounds', () => {
+  const generated = {
+    categories: [
+      {
+        title: 'Кіно',
+        questions: [
+          { text: 'Q1', answer: 'A1' },
+          { text: 'Q2', answer: 'A2' },
+        ],
+      },
+    ],
+  };
+
+  it('asks for the shape the host set up, and for the default on an empty round', () => {
+    const doc = emptyQuiz('T');
+    expect(roundShape(doc, 0)).toEqual({ categories: 5, questions: 5 });
+    expect(roundShape(removeCategory(doc, 0, 0), 0)).toEqual({ categories: 4, questions: 5 });
+    const empty = { ...doc, rounds: doc.rounds.map(() => ({ categories: [] })) };
+    expect(roundShape(empty, 0)).toEqual({ categories: 5, questions: 5 });
+  });
+
+  it('keeps the point values and other rounds, and clears old pictures', () => {
+    const doc = updateQuestion(
+      emptyQuiz('T'),
+      { round: 0, category: 0, question: 0 },
+      { basePoints: 300, imagePath: 'id/a.webp' },
+    );
+    const next = applyGeneratedRound(doc, 0, generated);
+    const [first, second] = next.rounds[0]!.categories[0]!.questions;
+    expect(first).toEqual({
+      basePoints: 300,
+      text: 'Q1',
+      imagePath: null,
+      answerText: 'A1',
+      answerImagePath: null,
+    });
+    expect(second!.basePoints).toBe(400);
+    expect(next.rounds[1]).toBe(doc.rounds[1]);
+    expect(next.rounds[0]!.categories).toHaveLength(1);
+  });
+
+  it('gives values to questions the round did not have', () => {
+    const doc = { ...emptyQuiz('T'), rounds: [{ categories: [] }] };
+    const next = applyGeneratedRound(doc, 0, generated);
+    expect(next.rounds[0]!.categories[0]!.questions.map((q) => q.basePoints)).toEqual([200, 400]);
   });
 });
 
