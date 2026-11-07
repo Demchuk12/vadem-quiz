@@ -122,8 +122,15 @@ export function removeCategory(doc: QuizDocument, round: number, category: numbe
 }
 
 /** One round as the AI writes it: text only, the values come from the quiz. */
+export interface GeneratedQuestion {
+  text: string;
+  answer: string;
+  /** A picture already stored with the quiz. */
+  imagePath?: string | null;
+}
+
 export interface GeneratedRound {
-  categories: { title: string; questions: { text: string; answer: string }[] }[];
+  categories: { title: string; questions: GeneratedQuestion[] }[];
 }
 
 /** What the AI has to write so that a round keeps the shape the host set up. */
@@ -139,7 +146,7 @@ export function roundShape(
   };
 }
 
-/** Puts a generated round into the quiz. It keeps the point values, and replaces any pictures. */
+/** Puts a generated round into the quiz. It keeps the point values and replaces the pictures. */
 export function applyGeneratedRound(
   doc: QuizDocument,
   round: number,
@@ -154,7 +161,7 @@ export function applyGeneratedRound(
           DEFAULT_BASE_POINTS[q] ??
           DEFAULT_BASE_POINTS[DEFAULT_BASE_POINTS.length - 1]!,
         text: question.text,
-        imagePath: null,
+        imagePath: question.imagePath ?? null,
         answerText: question.answer,
         answerImagePath: null,
         explanation: '',

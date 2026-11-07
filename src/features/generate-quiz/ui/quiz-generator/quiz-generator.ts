@@ -12,15 +12,18 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import {
   QuizApi,
   type AiProvider,
+  type GeneratedRound,
+  type GeneratedRoundResult,
   SavedQuizzes,
   applyGeneratedRound,
   quizProgress,
   roundShape,
   type QuizDocument,
 } from '@entities/quiz';
-import { apiAction } from '@shared/api';
+import { Media, apiAction } from '@shared/api';
 import { VdAlertDialog } from '@vadem/ui/alert-dialog';
 import { VdButton } from '@vadem/ui/button';
+import { VdCheckbox } from '@vadem/ui/checkbox';
 import { VD_CARD } from '@vadem/ui/card';
 import { VdField } from '@vadem/ui/field';
 import { VdIcon } from '@vadem/ui/icon';
@@ -45,6 +48,7 @@ interface Progress {
     VdAlertDialog,
     VdButton,
     VD_CARD,
+    VdCheckbox,
     VdField,
     VdIcon,
     VdInput,
@@ -61,6 +65,7 @@ export class QuizGenerator {
   readonly generated = output<QuizDocument>();
 
   private readonly api = inject(QuizApi);
+  private readonly media = inject(Media);
   private readonly saved = inject(SavedQuizzes);
   private readonly toaster = inject(VdToaster);
   private readonly action = apiAction();
@@ -72,9 +77,14 @@ export class QuizGenerator {
   protected readonly busy = this.action.busy;
   protected readonly confirming = signal(false);
   private readonly currentRound = signal(0);
-  protected readonly status = computed(() =>
-    this.busy() ? `Пишемо раунд ${this.currentRound()} з ${this.quiz().rounds.length}…` : '',
-  );
+  private readonly currentStep = signal<'text' | 'pictures'>('text');
+  protected readonly status = computed(() => {
+    if (!this.busy()) return '';
+    const of = `${this.currentRound()} з ${this.quiz().rounds.length}`;
+    return this.currentStep() === 'pictures'
+      ? `Додаємо фото до раунду ${of}…`
+      : `Пишемо раунд ${of}…`;
+  });
 
   protected readonly form = inject(NonNullableFormBuilder).group({
     prompt: [
@@ -86,6 +96,7 @@ export class QuizGenerator {
         Validators.pattern(/\S/),
       ],
     ],
+    images: false,
   });
 
   constructor() {
@@ -147,9 +158,12 @@ export class QuizGenerator {
             ...roundShape(quiz, round),
             avoid,
             provider: this.provider(),
+            images: this.form.controls.images.value,
           });
           writers.add(this.labelOf(result.provider));
-          quiz = applyGeneratedRound(quiz, round, result);
+          this.currentStep.set('pictures');
+          quiz = applyGeneratedRound(quiz, round, await this.storeImages(result));
+          this.currentStep.set('text');
           avoid.push(...result.categories.map((category) => category.title));
           this.generated.emit(quiz);
         }
@@ -167,6 +181,26 @@ export class QuizGenerator {
   }
 
   private writers: string[] = [];
+
+  /** A picture that fails to arrive only costs itself: the question reads well without it. */
+  private async storeImages(result: GeneratedRoundResult): Promise<GeneratedRound> {
+    return {
+      categories: await Promise.all(
+        result.categories.map(async (category) => ({
+          title: category.title,
+          questions: await Promise.all(
+            category.questions.map(async ({ text, answer, imageUrl }) => ({
+              text,
+              answer,
+              imagePath: imageUrl
+                ? await this.media.uploadFrom(this.quizId(), imageUrl).catch(() => null)
+                : null,
+            })),
+          ),
+        })),
+      ),
+    };
+  }
 
   private labelOf(id: string): string {
     return this.providers().find((provider) => provider.id === id)?.label ?? id;

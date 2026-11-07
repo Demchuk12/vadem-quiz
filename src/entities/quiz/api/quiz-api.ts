@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Rpc } from '@shared/api';
-import type { GeneratedRound, QuizDocument } from '../model/quiz-document';
+import type { QuizDocument } from '../model/quiz-document';
 
 export interface NewQuiz {
   quiz_id: string;
@@ -26,9 +26,18 @@ export interface GenerateRoundRequest {
   avoid: string[];
   /** A provider id, or "auto" for the first one that answers. */
   provider: string;
+  /** Ask for some questions with a photo from Wikipedia. */
+  images: boolean;
 }
 
-export type GeneratedRoundResult = GeneratedRound & { provider: string };
+/** As the AI wrote it. A question's `imageUrl` is a photo still to be stored with the quiz. */
+export interface GeneratedRoundResult {
+  provider: string;
+  categories: {
+    title: string;
+    questions: { text: string; answer: string; imageUrl?: string }[];
+  }[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class QuizApi {

@@ -30,7 +30,7 @@ export class Media {
   }
 
   /** Compresses in the browser, which saves far more storage and traffic than any server limit. */
-  async compress(file: File): Promise<Blob> {
+  async compress(file: Blob): Promise<Blob> {
     const bitmap = await createImageBitmap(file);
     const size = scaledSize(bitmap.width, bitmap.height);
     const canvas = document.createElement('canvas');
@@ -50,7 +50,7 @@ export class Media {
   }
 
   /** Returns the storage path. The random name is what keeps an unopened question's image secret. */
-  async upload(quizId: string, file: File): Promise<string> {
+  async upload(quizId: string, file: Blob): Promise<string> {
     const blob = await this.compress(file);
     const extension = blob.type === 'image/webp' ? 'webp' : 'jpg';
     const path = `${quizId}/${crypto.randomUUID()}.${extension}`;
@@ -59,5 +59,12 @@ export class Media {
       .upload(path, blob, { contentType: blob.type, cacheControl: '31536000', upsert: false });
     if (error) throw new ApiError('network');
     return path;
+  }
+
+  /** Copies a picture from the web into the quiz, through the same compression as an upload. */
+  async uploadFrom(quizId: string, url: string): Promise<string> {
+    const response = await fetch(url).catch(() => null);
+    if (!response?.ok) throw new ApiError('network');
+    return this.upload(quizId, await response.blob());
   }
 }

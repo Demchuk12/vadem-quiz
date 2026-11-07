@@ -18,6 +18,7 @@ export {
   roundShape,
   updateCategory,
   updateQuestion,
+  type GeneratedQuestion,
   type GeneratedRound,
   type QuizDocument,
   type QuizQuestion,

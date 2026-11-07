@@ -115,6 +115,16 @@ its free router, which stands in when the chosen free model is rate-limited: a p
 spend credits. Model names are secrets with defaults, because free
 models come and go.
 
+## D17 — Photo questions from Wikipedia, not generated images
+
+Free image generation is scarce and slow, and a drawn landmark can be wrong. Instead the AI names
+an English Wikipedia article for about a third of the questions, and the function asks Wikipedia
+once per round for each article's lead photo, free licences only. The browser downloads the photo
+and stores it through the same compression as a manual upload, so the bucket, its rules and
+`save_quiz` stay as they are. Each such question must read well without its photo: a photo that
+is missing or fails to arrive costs only itself, never the round. No key, no new limit: Wikipedia
+needs only a descriptive User-Agent, and a quiz gains a few megabytes of storage.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

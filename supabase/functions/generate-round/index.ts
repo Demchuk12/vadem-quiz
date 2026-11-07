@@ -6,7 +6,8 @@
 //
 // GET  -> { providers: [{ id, label }] }: the ones this deployment can use.
 // POST -> { categories, provider }: one round, from the chosen provider or, with "auto", from the
-//         first that answers.
+//         first that answers. With `images`, some questions carry `imageUrl`: the free-licensed
+//         lead photo of a Wikipedia article the AI named. The browser stores it with the quiz.
 
 /** Stays under the platform's request limit, however many attempts it takes. */
 const TIME_BUDGET_MS = 130_000;
@@ -18,6 +19,10 @@ const MAX_CATEGORIES = 8;
 const MAX_QUESTIONS = 8;
 const MAX_AVOID = 40;
 const SITE_URL = 'https://vadem-quiz.vercel.app';
+const WIKIPEDIA_API = 'https://en.wikipedia.org/w/api.php';
+/** Wikimedia serves thumbnails from more than one host, all with open CORS. */
+const IMAGE_HOST = /^https:\/\/[a-z]+\.wikimedia\.org\//;
+const IMAGE_SIZE = 1024;
 
 const HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -38,10 +43,19 @@ interface RoundRequest {
   questions: number;
   avoid: string[];
   provider: Choice;
+  images: boolean;
+}
+
+interface GeneratedQuestion {
+  text: string;
+  answer: string;
+  /** From the AI: a Wikipedia article title, or empty. Replaced by `imageUrl` before replying. */
+  image?: string;
+  imageUrl?: string;
 }
 
 interface GeneratedRound {
-  categories: { title: string; questions: { text: string; answer: string }[] }[];
+  categories: { title: string; questions: GeneratedQuestion[] }[];
 }
 
 class Failure extends Error {
@@ -89,7 +103,8 @@ function parseRequest(body: unknown): RoundRequest {
     !isCount(b['questions'], MAX_QUESTIONS) ||
     avoid.length > MAX_AVOID ||
     !avoid.every((item) => typeof item === 'string') ||
-    !['auto', 'gemini', 'groq', 'openrouter'].includes(provider as string)
+    !['auto', 'gemini', 'groq', 'openrouter'].includes(provider as string) ||
+    (b['images'] !== undefined && typeof b['images'] !== 'boolean')
   ) {
     throw new Failure(400, 'invalid_prompt');
   }
@@ -103,6 +118,7 @@ function parseRequest(body: unknown): RoundRequest {
     questions: b['questions'],
     avoid: avoid as string[],
     provider: provider as Choice,
+    images: b['images'] === true,
   };
 }
 
@@ -141,8 +157,15 @@ function instructions(request: RoundRequest): string {
     request.avoid.length > 0
       ? `Do not reuse these category titles from earlier rounds: ${request.avoid.join(', ')}.`
       : '',
+    request.images
+      ? 'Give about one question in three of each category a picture. For those, set "image" to ' +
+        'the exact title of the English Wikipedia article whose main photo shows the subject: a ' +
+        'landmark, painting, animal, person, flag or the like. The question text must still make ' +
+        'sense and be answerable without the picture, and must not name what the picture shows. ' +
+        'Leave "image" empty for every other question.'
+      : 'Leave "image" empty for every question.',
     'Reply with JSON only, in this shape: ' +
-      '{"categories":[{"title":"...","questions":[{"text":"...","answer":"..."}]}]}',
+      '{"categories":[{"title":"...","questions":[{"text":"...","answer":"...","image":""}]}]}',
   ]
     .filter(Boolean)
     .join('\n');
@@ -167,8 +190,12 @@ const STRICT_SCHEMA = {
             items: {
               type: 'object',
               additionalProperties: false,
-              required: ['text', 'answer'],
-              properties: { text: { type: 'string' }, answer: { type: 'string' } },
+              required: ['text', 'answer', 'image'],
+              properties: {
+                text: { type: 'string' },
+                answer: { type: 'string' },
+                image: { type: 'string' },
+              },
             },
           },
         },
@@ -190,7 +217,11 @@ const GEMINI_SCHEMA = {
             type: 'array',
             items: {
               type: 'object',
-              properties: { text: { type: 'string' }, answer: { type: 'string' } },
+              properties: {
+                text: { type: 'string' },
+                answer: { type: 'string' },
+                image: { type: 'string' },
+              },
               required: ['text', 'answer'],
             },
           },
@@ -219,7 +250,8 @@ function checkRound(value: unknown, request: RoundRequest): GeneratedRound {
             typeof question?.text === 'string' &&
             question.text.trim() !== '' &&
             typeof question?.answer === 'string' &&
-            question.answer.trim() !== '',
+            question.answer.trim() !== '' &&
+            (question.image === undefined || typeof question.image === 'string'),
         ),
     );
   if (!valid) throw new Error('A round of the wrong shape');
@@ -396,6 +428,64 @@ const KEYS: Record<ProviderId, string> = {
 
 const available = () => PROVIDERS.filter((provider) => !!Deno.env.get(KEYS[provider.id]));
 
+/** Lead photos of the named articles, in one request. A missing one only costs that picture. */
+async function attachImages(round: GeneratedRound, wanted: boolean): Promise<GeneratedRound> {
+  const titles = [
+    ...new Set(
+      round.categories.flatMap((category) =>
+        category.questions.map((question) => question.image?.trim() ?? '').filter(Boolean),
+      ),
+    ),
+  ].slice(0, wanted ? 50 : 0);
+  const urls = new Map<string, string>();
+  if (titles.length > 0) {
+    try {
+      const query = new URLSearchParams({
+        action: 'query',
+        format: 'json',
+        formatversion: '2',
+        prop: 'pageimages',
+        piprop: 'thumbnail',
+        pithumbsize: String(IMAGE_SIZE),
+        pilicense: 'free',
+        redirects: '1',
+        titles: titles.join('|'),
+      });
+      const response = await fetch(`${WIKIPEDIA_API}?${query}`, {
+        headers: { 'User-Agent': `VademQuiz/1.0 (${SITE_URL})` },
+        signal: AbortSignal.timeout(10_000),
+      });
+      const data = await response.json();
+      const renamed = new Map<string, string>();
+      for (const step of [...(data?.query?.normalized ?? []), ...(data?.query?.redirects ?? [])]) {
+        renamed.set(step.from, step.to);
+      }
+      const pages = new Map<string, string>();
+      for (const page of data?.query?.pages ?? []) {
+        const source = page?.thumbnail?.source;
+        if (typeof source === 'string' && IMAGE_HOST.test(source)) pages.set(page.title, source);
+      }
+      for (const title of titles) {
+        let resolved = title;
+        for (let hop = 0; hop < 3 && renamed.has(resolved); hop += 1) resolved = renamed.get(resolved)!;
+        const url = pages.get(resolved);
+        if (url) urls.set(title, url);
+      }
+    } catch (error) {
+      console.error('Wikipedia images failed', String(error));
+    }
+  }
+  return {
+    categories: round.categories.map((category) => ({
+      title: category.title,
+      questions: category.questions.map(({ text, answer, image }) => {
+        const imageUrl = urls.get(image?.trim() ?? '');
+        return imageUrl ? { text, answer, imageUrl } : { text, answer };
+      }),
+    })),
+  };
+}
+
 async function generate(
   request: RoundRequest,
 ): Promise<GeneratedRound & { provider: ProviderId }> {
@@ -440,7 +530,8 @@ Deno.serve(async (req) => {
   try {
     const request = parseRequest(await req.json().catch(() => null));
     await consumeCall(request);
-    return reply(200, await generate(request));
+    const { provider, ...round } = await generate(request);
+    return reply(200, { ...(await attachImages(round, request.images)), provider });
   } catch (error) {
     if (error instanceof Failure) return reply(error.status, { code: error.code });
     console.error('generate-round failed', error);

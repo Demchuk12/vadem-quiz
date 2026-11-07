@@ -159,11 +159,23 @@ test('AI fills the editor as a draft, one round at a time', async ({ browser }) 
           questions: Array.from({ length: body.questions }, (_, q) => ({
             text: `Питання ${q + 1}`,
             answer: `Відповідь ${q + 1}`,
+            // One photo that arrives and one that does not.
+            ...(body.images && q === 0 && c < 2
+              ? { imageUrl: `https://upload.wikimedia.org/test/${c === 0 ? 'photo' : 'gone'}.png` }
+              : {}),
           })),
         })),
       },
     });
   });
+  await host.route('https://upload.wikimedia.org/**', (route) =>
+    route.request().url().endsWith('photo.png')
+      ? route.fulfill({
+          path: 'public/icons/icon-192.png',
+          headers: { 'access-control-allow-origin': '*' },
+        })
+      : route.fulfill({ status: 404, headers: { 'access-control-allow-origin': '*' } }),
+  );
   await host.goto('/quizzes');
   await host.getByRole('link', { name: 'Редагувати' }).first().click();
   await expect(host.getByRole('button', { name: 'Зберегти' })).toBeDisabled();
@@ -174,6 +186,7 @@ test('AI fills the editor as a draft, one round at a time', async ({ browser }) 
   await expect(options).toHaveText(['Авто', 'Gemini', 'Groq']);
   await options.filter({ hasText: 'Groq' }).click();
   await host.getByLabel('Тема квізу').fill('Кіно 90-х');
+  await host.getByRole('checkbox', { name: 'Додати питання з фото' }).check();
   await host.getByRole('button', { name: 'Згенерувати' }).click();
   // The quiz already has questions, so replacing them needs a yes.
   await host.getByRole('alertdialog').getByRole('button', { name: 'Замінити' }).click();
@@ -189,6 +202,9 @@ test('AI fills the editor as a draft, one round at a time', async ({ browser }) 
   expect(requests[1]!['avoid']).toEqual(['AI раунд 1 категорія 1']);
   expect(requests[0]!['prompt']).toBe('Кіно 90-х');
   expect(requests.map((r) => r['provider'])).toEqual(['groq', 'groq']);
+  expect(requests.map((r) => r['images'])).toEqual([true, true]);
+  // The photo is stored with the quiz; the one that failed leaves its question without a picture.
+  await expect(host.getByRole('tabpanel').locator('img[src*="quiz-media"]')).toHaveCount(1);
   await expect(host.getByText('Писав Groq.', { exact: false })).toBeVisible();
 
   // A draft: nothing is stored until the host saves it.
