@@ -50,7 +50,8 @@ export async function hostGame(browser: Browser, quizJson = QUIZ_JSON): Promise<
   });
   await expect(host.getByText('Заповнено 3 з 3')).toBeVisible();
   await host.getByRole('button', { name: 'Зберегти' }).click();
-  await expect(host.getByRole('button', { name: 'Зберегти' })).toBeDisabled();
+  // Not the button's state: it also counts as disabled while the request is still in flight.
+  await expect(host.getByText('Квіз збережено')).toBeVisible();
 
   await host.getByRole('link', { name: 'Мої квізи' }).click();
   await host.getByRole('button', { name: 'Нова гра' }).first().click();

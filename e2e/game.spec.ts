@@ -286,7 +286,7 @@ test('an uploaded picture is compressed and reaches the players', async ({ brows
   expect(size).toBe(1280);
 
   await host.getByRole('button', { name: 'Зберегти' }).click();
-  await expect(host.getByRole('button', { name: 'Зберегти' })).toBeDisabled();
+  await expect(host.getByText('Квіз збережено').last()).toBeVisible();
 });
 
 for (const [name, path] of [
