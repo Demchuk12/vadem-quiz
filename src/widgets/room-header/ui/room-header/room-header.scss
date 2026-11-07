@@ -1,16 +1,35 @@
-:host {
-  --vq-logo-size: var(--vd-space-6);
+@use 'shared/ui/styles/layout';
 
+:host {
+  @include layout.app-header;
+}
+.title {
   display: flex;
-  flex-wrap: wrap;
+  flex: 1 1 0;
   gap: var(--vd-space-2);
   align-items: center;
+  min-inline-size: 0;
 }
 h1 {
-  margin-inline-end: auto;
+  @include layout.truncate;
+
   font-size: var(--vd-text-xl);
-  overflow-wrap: anywhere;
 }
 :host([data-large]) h1 {
   font-size: var(--vd-text-2xl);
+}
+.actions {
+  display: flex;
+  gap: var(--vd-space-2);
+  align-items: center;
+}
+/* On a phone the actions take their own full row, with the text lined up to the title's edge. */
+@media (width < 40rem) {
+  .actions {
+    flex-basis: 100%;
+    justify-content: space-between;
+  }
+  .sound {
+    margin-inline-start: calc(var(--vd-space-3) * -1);
+  }
 }

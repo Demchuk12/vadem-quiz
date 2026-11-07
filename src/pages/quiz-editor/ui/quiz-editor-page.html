@@ -15,27 +15,31 @@
   @case ('ready') {
     @if (quiz(); as document) {
       <div class="bar">
-        <a vdButton variant="ghost" size="sm" routerLink="/quizzes">
-          <vd-icon slot="start" name="arrow-left" />
-          Квізи
-        </a>
-        <span class="progress" aria-live="polite">
-          Заповнено {{ progress().complete }} з {{ progress().total }}
-          @if (dirty()) {
-            · є незбережені зміни
-          }
-        </span>
-        <vq-quiz-transfer [quizId]="quizId()" [quiz]="document" (imported)="change($event)" />
-        <button
-          vdButton
-          size="sm"
-          variant="primary"
-          [loading]="saving()"
-          [disabled]="!dirty()"
-          (click)="save()"
-        >
-          Зберегти
-        </button>
+        <div class="bar-nav">
+          <a vdButton variant="ghost" size="sm" class="back" routerLink="/quizzes">
+            <vd-icon slot="start" name="arrow-left" />
+            Квізи
+          </a>
+          <span class="progress" aria-live="polite">
+            Заповнено {{ progress().complete }} з {{ progress().total }}
+            @if (dirty()) {
+              <span class="unsaved">· є незбережені зміни</span>
+            }
+          </span>
+        </div>
+        <div class="bar-actions">
+          <vq-quiz-transfer [quizId]="quizId()" [quiz]="document" (imported)="change($event)" />
+          <button
+            vdButton
+            size="sm"
+            variant="primary"
+            [loading]="saving()"
+            [disabled]="!dirty()"
+            (click)="save()"
+          >
+            Зберегти
+          </button>
+        </div>
       </div>
 
       <vq-quiz-editor [quizId]="quizId()" [quiz]="document" (quizChange)="change($event)" />

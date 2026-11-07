@@ -7,17 +7,15 @@
   align-content: start;
 }
 header {
-  --vq-logo-size: var(--vd-space-6);
+  @include layout.app-header;
 
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--vd-space-2);
-  align-items: center;
+  flex-wrap: nowrap;
 }
 .me {
-  margin-inline-end: auto;
+  @include layout.truncate;
+
+  flex: 1 1 0;
   font-weight: var(--vd-weight-semibold);
-  overflow-wrap: anywhere;
 }
 .score {
   font-size: var(--vd-text-xl);

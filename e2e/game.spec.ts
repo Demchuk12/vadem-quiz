@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
-import { hostGame, joinGame } from './helpers';
+import { devices, expect, test, type Page } from '@playwright/test';
+import { QUIZ_JSON, hostGame, joinGame } from './helpers';
 
 const buzzer = (page: Page) => page.locator('button.vd-buzzer');
 const pressBuzzer = (page: Page) => buzzer(page).click({ force: true });
@@ -115,6 +115,17 @@ test('a nickname cannot be taken twice and a bad code is explained', async ({ br
   await page.getByLabel('Нікнейм').fill('Олег');
   await page.getByRole('button', { name: 'Приєднатися' }).click();
   await expect(page.getByRole('alert')).toContainText('не знайдено');
+});
+
+test('the create button stays level with the input when the error appears', async ({ page }) => {
+  await page.goto('/quizzes');
+  const input = page.getByLabel('Назва нового квізу');
+  const button = page.getByRole('button', { name: 'Створити' });
+  const offset = async () => (await button.boundingBox())!.y - (await input.boundingBox())!.y;
+  expect(Math.abs(await offset())).toBeLessThan(1);
+  await button.click();
+  await expect(page.getByText('Вкажіть назву.')).toBeVisible();
+  expect(Math.abs(await offset())).toBeLessThan(1);
 });
 
 test('only the device that created the game gets the controls', async ({ browser }) => {
@@ -237,6 +248,28 @@ test('a phone fits the buzzer in every state, without sideways scrolling', async
   await expect(buzzer(ann)).toHaveAttribute('data-state', 'won');
   await expect(buzzer(ann)).toBeInViewport({ ratio: 1 });
   expect(await noOverflow()).toBe(true);
+});
+
+test('headers stay tidy on a phone, with a very long title', async ({ browser }) => {
+  const longTitle = JSON.stringify({
+    ...JSON.parse(QUIZ_JSON),
+    title: 'Дуже довга назва квізу, яка точно не вміщується в один рядок телефона',
+  });
+  const { host, code } = await hostGame(browser, longTitle);
+  const context = await browser.newContext({ ...devices['iPhone 13'] });
+  const stream = await context.newPage();
+  await stream.goto(`/stream/${code}`);
+  for (const page of [host, stream]) {
+    await page.setViewportSize({ width: 390, height: 800 });
+    const title = page.getByRole('heading', { level: 1 });
+    await expect(title).toBeVisible();
+    expect((await title.boundingBox())!.height).toBeLessThan(40);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+      ),
+    ).toBe(true);
+  }
 });
 
 test('the join page fits a phone and offers the form on the first screen', async ({ browser }) => {

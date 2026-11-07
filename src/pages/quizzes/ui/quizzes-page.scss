@@ -13,6 +13,15 @@
   overflow: hidden;
   background-color: var(--vd-color-surface-sunken);
 }
+@media (width < 40rem) {
+  .hero {
+    --vq-tile-size: 1.125rem;
+    --vq-tile-gap: 0.1875rem;
+    --vq-banner-x: 74%;
+
+    min-block-size: 10rem;
+  }
+}
 .hero::after {
   content: '';
   position: absolute;

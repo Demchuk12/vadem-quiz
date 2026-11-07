@@ -1,0 +1,498 @@
+{
+  "title": "Test",
+  "roundMultipliers": [1, 2, 3],
+  "rounds": [
+    {
+      "categories": [
+        {
+          "title": "Географія",
+          "questions": [
+            {
+              "basePoints": 200,
+              "text": "Столиця Франції?",
+              "answerText": "Париж",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 400,
+              "text": "Найбільший океан на Землі?",
+              "answerText": "Тихий",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 600,
+              "text": "На якому материку розташована пустеля Сахара?",
+              "answerText": "В Африці",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 800,
+              "text": "Столиця Австралії?",
+              "answerText": "Канберра",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 1000,
+              "text": "Найглибше озеро у світі?",
+              "answerText": "Байкал",
+              "imagePath": null,
+              "answerImagePath": null
+            }
+          ]
+        },
+        {
+          "title": "Кіно",
+          "questions": [
+            {
+              "basePoints": 200,
+              "text": "Як звати хлопчика-чарівника зі шрамом у формі блискавки?",
+              "answerText": "Гаррі Поттер",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 400,
+              "text": "Хто зіграв Джека у фільмі «Титанік»?",
+              "answerText": "Леонардо Ді Капріо",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 600,
+              "text": "Хто зняв «Кримінальне чтиво»?",
+              "answerText": "Квентін Тарантіно",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 800,
+              "text": "Яка студія створила «Історію іграшок»?",
+              "answerText": "Pixar",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 1000,
+              "text": "Який фільм першим неанглійською мовою отримав «Оскар» як найкращий фільм?",
+              "answerText": "«Паразити»",
+              "imagePath": null,
+              "answerImagePath": null
+            }
+          ]
+        },
+        {
+          "title": "Наука",
+          "questions": [
+            {
+              "basePoints": 200,
+              "text": "Хімічна формула води?",
+              "answerText": "H₂O",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 400,
+              "text": "Скільки планет у Сонячній системі?",
+              "answerText": "Вісім",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 600,
+              "text": "Який метал позначають символом Au?",
+              "answerText": "Золото",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 800,
+              "text": "Хто створив загальну теорію відносності?",
+              "answerText": "Альберт Ейнштейн",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 1000,
+              "text": "Яка частинка атома не має електричного заряду?",
+              "answerText": "Нейтрон",
+              "imagePath": null,
+              "answerImagePath": null
+            }
+          ]
+        },
+        {
+          "title": "Україна",
+          "questions": [
+            {
+              "basePoints": 200,
+              "text": "Найдовша річка України?",
+              "answerText": "Дніпро",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 400,
+              "text": "Хто автор «Кобзаря»?",
+              "answerText": "Тарас Шевченко",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 600,
+              "text": "Найвища гора України?",
+              "answerText": "Говерла",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 800,
+              "text": "У якому році Україна проголосила незалежність?",
+              "answerText": "У 1991",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 1000,
+              "text": "Яке місто було столицею радянської України до 1934 року?",
+              "answerText": "Харків",
+              "imagePath": null,
+              "answerImagePath": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "categories": [
+        {
+          "title": "Історія",
+          "questions": [
+            {
+              "basePoints": 200,
+              "text": "Хто став першим президентом США?",
+              "answerText": "Джордж Вашингтон",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 400,
+              "text": "У якому році почалася Друга світова війна?",
+              "answerText": "У 1939",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 600,
+              "text": "Яка цивілізація збудувала Мачу-Пікчу?",
+              "answerText": "Інки",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 800,
+              "text": "Який князь хрестив Русь у 988 році?",
+              "answerText": "Володимир Великий",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 1000,
+              "text": "У якому році впала Берлінська стіна?",
+              "answerText": "У 1989",
+              "imagePath": null,
+              "answerImagePath": null
+            }
+          ]
+        },
+        {
+          "title": "Музика",
+          "questions": [
+            {
+              "basePoints": 200,
+              "text": "Скільки струн у класичної гітари?",
+              "answerText": "Шість",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 400,
+              "text": "Вокалістом якого гурту був Фредді Мерк’юрі?",
+              "answerText": "Queen",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 600,
+              "text": "Хто написав оперу «Чарівна флейта»?",
+              "answerText": "Моцарт",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 800,
+              "text": "Який український гурт переміг на Євробаченні 2022 року?",
+              "answerText": "Kalush Orchestra",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 1000,
+              "text": "Хто написав музику гімну України?",
+              "answerText": "Михайло Вербицький",
+              "imagePath": null,
+              "answerImagePath": null
+            }
+          ]
+        },
+        {
+          "title": "Спорт",
+          "questions": [
+            {
+              "basePoints": 200,
+              "text": "Скільки гравців однієї команди на футбольному полі?",
+              "answerText": "Одинадцять",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 400,
+              "text": "У якому виді спорту проводять Вімблдонський турнір?",
+              "answerText": "У тенісі",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 600,
+              "text": "Раз на скільки років проходять літні Олімпійські ігри?",
+              "answerText": "Раз на чотири роки",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 800,
+              "text": "Який український футболіст отримав «Золотий м’яч» 2004 року?",
+              "answerText": "Андрій Шевченко",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 1000,
+              "text": "У якому місті відбулися перші сучасні Олімпійські ігри 1896 року?",
+              "answerText": "В Афінах",
+              "imagePath": null,
+              "answerImagePath": null
+            }
+          ]
+        },
+        {
+          "title": "Література",
+          "questions": [
+            {
+              "basePoints": 200,
+              "text": "Хто написав серію про Гаррі Поттера?",
+              "answerText": "Джоан Роулінг",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 400,
+              "text": "Хто автор трагедії «Ромео і Джульєтта»?",
+              "answerText": "Вільям Шекспір",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 600,
+              "text": "Хто написав «Лісову пісню»?",
+              "answerText": "Леся Українка",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 800,
+              "text": "Як звати капітана в романі «Мобі Дік»?",
+              "answerText": "Ахав",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 1000,
+              "text": "Хто автор повісті «Тіні забутих предків»?",
+              "answerText": "Михайло Коцюбинський",
+              "imagePath": null,
+              "answerImagePath": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "categories": [
+        {
+          "title": "Космос",
+          "questions": [
+            {
+              "basePoints": 200,
+              "text": "Найближча до Сонця планета?",
+              "answerText": "Меркурій",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 400,
+              "text": "Хто першим ступив на Місяць?",
+              "answerText": "Ніл Армстронг",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 600,
+              "text": "Найбільша планета Сонячної системи?",
+              "answerText": "Юпітер",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 800,
+              "text": "У якій галактиці ми живемо?",
+              "answerText": "Чумацький Шлях",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 1000,
+              "text": "Хто став першим космонавтом незалежної України?",
+              "answerText": "Леонід Каденюк",
+              "imagePath": null,
+              "answerImagePath": null
+            }
+          ]
+        },
+        {
+          "title": "Технології",
+          "questions": [
+            {
+              "basePoints": 200,
+              "text": "Яка компанія випускає iPhone?",
+              "answerText": "Apple",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 400,
+              "text": "Хто заснував Microsoft разом із Полом Алленом?",
+              "answerText": "Білл Гейтс",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 600,
+              "text": "Скільки бітів в одному байті?",
+              "answerText": "Вісім",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 800,
+              "text": "Хто отримав патент на телефон у 1876 році?",
+              "answerText": "Александер Белл",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 1000,
+              "text": "На честь кого названа мова програмування Python?",
+              "answerText": "Комік-група «Монті Пайтон»",
+              "imagePath": null,
+              "answerImagePath": null
+            }
+          ]
+        },
+        {
+          "title": "Їжа",
+          "questions": [
+            {
+              "basePoints": 200,
+              "text": "З чого роблять гуакамоле?",
+              "answerText": "З авокадо",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 400,
+              "text": "З якої країни походить піца?",
+              "answerText": "З Італії",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 600,
+              "text": "Який овоч дає борщу його колір?",
+              "answerText": "Буряк",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 800,
+              "text": "Який сир кладуть у грецький салат?",
+              "answerText": "Фету",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 1000,
+              "text": "З якого горіха роблять марципан?",
+              "answerText": "З мигдалю",
+              "imagePath": null,
+              "answerImagePath": null
+            }
+          ]
+        },
+        {
+          "title": "Тварини",
+          "questions": [
+            {
+              "basePoints": 200,
+              "text": "Яка тварина найбільша на планеті?",
+              "answerText": "Синій кит",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 400,
+              "text": "Скільки ніг у павука?",
+              "answerText": "Вісім",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 600,
+              "text": "Яка наземна тварина найшвидша?",
+              "answerText": "Гепард",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 800,
+              "text": "Який птах найбільший у світі?",
+              "answerText": "Страус",
+              "imagePath": null,
+              "answerImagePath": null
+            },
+            {
+              "basePoints": 1000,
+              "text": "Скільки сердець у восьминога?",
+              "answerText": "Три",
+              "imagePath": null,
+              "answerImagePath": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

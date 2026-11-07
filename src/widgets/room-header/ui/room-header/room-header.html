@@ -1,15 +1,20 @@
 @if (store.room(); as room) {
-  <vq-vadem-logo mark />
-  <h1>{{ room.quiz_title }}</h1>
+  <div class="title">
+    <vq-vadem-logo mark />
+    <h1>{{ room.quiz_title }}</h1>
+  </div>
   <vq-room-badges />
-  <button
-    vdButton
-    size="sm"
-    variant="ghost"
-    [attr.aria-pressed]="sound.enabled()"
-    (click)="sound.toggle()"
-  >
-    Звук: {{ sound.enabled() ? 'увімкнено' : 'вимкнено' }}
-  </button>
-  <ng-content />
+  <div class="actions">
+    <button
+      vdButton
+      size="sm"
+      variant="ghost"
+      class="sound"
+      [attr.aria-pressed]="sound.enabled()"
+      (click)="sound.toggle()"
+    >
+      Звук: {{ sound.enabled() ? 'увімкнено' : 'вимкнено' }}
+    </button>
+    <ng-content />
+  </div>
 }

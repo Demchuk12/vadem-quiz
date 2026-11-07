@@ -3,19 +3,57 @@
 :host {
   @include layout.narrow-page(60rem, $padding-end: var(--vd-space-16));
 }
+/* Reaches the page's edges and scrolls under nothing: what is behind it stays faintly visible. */
 .bar {
   position: sticky;
   inset-block-start: 0;
   z-index: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--vd-space-2);
+  gap: var(--vd-space-2) var(--vd-space-3);
   align-items: center;
-  padding-block: var(--vd-space-3);
+  justify-content: space-between;
+  margin-block-start: calc(var(--vd-space-6) * -1);
+  margin-inline: calc(var(--vd-space-4) * -1);
+  padding: var(--vd-space-3) var(--vd-space-4);
+  border-block-end: var(--vd-border-width) solid var(--vd-color-border);
   background-color: var(--vd-color-bg);
 }
+@supports (backdrop-filter: blur(1px)) {
+  .bar {
+    background-color: var(--vd-color-surface-glass);
+    backdrop-filter: blur(var(--vd-space-3));
+  }
+}
+.bar-nav {
+  display: flex;
+  gap: var(--vd-space-2);
+  align-items: center;
+  min-inline-size: 0;
+}
 .progress {
-  margin-inline-end: auto;
   color: var(--vd-color-text-muted);
   font-size: var(--vd-text-sm);
+  font-variant-numeric: tabular-nums;
+}
+.bar-actions {
+  display: flex;
+  gap: var(--vd-space-2);
+}
+@media (width < 40rem) {
+  .bar-nav,
+  .bar-actions {
+    flex-basis: 100%;
+  }
+  .back {
+    margin-inline-start: calc(var(--vd-space-3) * -1);
+  }
+  /* The actions share the row evenly, so nothing is left hanging at its end. */
+  .bar-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .unsaved {
+    display: none;
+  }
 }

@@ -30,3 +30,23 @@
   font-weight: $weight;
   overflow-wrap: anywhere;
 }
+
+/// The bar on top of a game screen: a hairline below, the same on every screen.
+@mixin app-header {
+  --vq-logo-size: var(--vd-space-6);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2) var(--vd-space-3);
+  align-items: center;
+  padding-block-end: var(--vd-space-3);
+  border-block-end: var(--vd-border-width) solid var(--vd-color-border);
+}
+
+/// One line that shortens with an ellipsis instead of pushing its neighbours away.
+@mixin truncate {
+  overflow: hidden;
+  min-inline-size: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
