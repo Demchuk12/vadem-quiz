@@ -152,6 +152,14 @@ means correct, whichever realtime update arrives first. The screens celebrate ve
 for everyone, a phone only for its player (with a vibration), and the standings show every score
 change, the host's corrections included. Confetti is the quiz's own: question marks and tiles.
 
+## D21 — One difficulty scale, no repeats, photos with answers
+
+Rounds used to know only the earlier category titles, so they asked the same facts again, and
+"later rounds are harder" left the climb to the model. Each round now gets the answers already in
+the quiz and a place on one 1-to-10 scale (three rounds: 1-4, 4-7, 7-10), and the function sends
+back a reply that repeats an answer or a category, like any other unusable reply. A generated
+photo shows the answer, so it belongs to the answer and appears only once that is revealed.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

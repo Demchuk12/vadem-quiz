@@ -25,6 +25,8 @@ export interface GenerateRoundRequest {
   questions: number;
   /** Category titles already used by earlier rounds. */
   avoid: string[];
+  /** Answers already in the quiz, which the AI must not ask about again. */
+  avoidAnswers: string[];
   /** A provider id, or "auto" for the first one that answers. */
   provider: string;
   /** Ask for some questions with a photo from Wikipedia. */

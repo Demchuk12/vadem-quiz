@@ -56,7 +56,7 @@ export class AiWriter {
     };
   }
 
-  /** A photo that fails to arrive only costs itself: the question reads well without it. */
+  /** A photo that fails to arrive only costs itself: the answer reads well without it. */
   private async storeImages(
     quizId: string,
     result: Awaited<ReturnType<QuizApi['generateRound']>>,
@@ -68,7 +68,7 @@ export class AiWriter {
           questions: await Promise.all(
             category.questions.map(async ({ imageUrl, ...question }) => ({
               ...question,
-              imagePath: imageUrl
+              answerImagePath: imageUrl
                 ? await this.media.uploadFrom(quizId, imageUrl).catch(() => null)
                 : null,
             })),

@@ -15,9 +15,12 @@
     </vd-field>
     <label class="vd-choice">
       <input type="checkbox" vdCheckbox formControlName="images" />
-      Додати питання з фото
+      Додати фото до відповідей
     </label>
-    <p class="hint">Близько третини питань отримають фото з Вікіпедії.</p>
+    <p class="hint">
+      Близько третини відповідей отримають фото з Вікіпедії. Його побачать, коли відповідь
+      відкриють.
+    </p>
     @if (ai.providers().length > 1) {
       <vd-field
         class="provider-field"

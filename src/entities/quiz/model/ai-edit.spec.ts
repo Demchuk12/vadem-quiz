@@ -1,4 +1,4 @@
-import { applyEdit, editSource, restoreEdit, titlesOutside } from './ai-edit';
+import { answersOutside, applyEdit, editSource, restoreEdit, titlesOutside } from './ai-edit';
 import { emptyQuiz, updateCategory, updateQuestion, type QuizDocument } from './quiz-document';
 
 function quiz(): QuizDocument {
@@ -50,6 +50,20 @@ describe('editSource', () => {
   });
 });
 
+describe('answersOutside', () => {
+  it('lists the answers an edit must not repeat', () => {
+    const doc = updateQuestion(
+      quiz(),
+      { round: 1, category: 0, question: 0 },
+      { answerText: 'Футбол' },
+    );
+    const forQuestion = answersOutside(doc, { round: 0, category: 0, question: 1 });
+    expect(forQuestion).toContain('Футбол');
+    expect(forQuestion).not.toContain('Джеймс Кемерон');
+    expect(answersOutside(doc, { round: 1 })).toEqual(['Джеймс Кемерон']);
+  });
+});
+
 describe('titlesOutside', () => {
   it('lists the titles an edit must not repeat', () => {
     const doc = quiz();
@@ -88,8 +102,12 @@ describe('applyEdit', () => {
       answerImagePath: null,
       explanation: '',
     });
-    const photo = applyEdit(quiz(), at, one('Інше', 'Інше', { imagePath: 'q/new.webp' }));
-    expect(photo.rounds[0]!.categories[0]!.questions[1]!.imagePath).toBe('q/new.webp');
+    // A new photo shows the answer, so it goes with the answer, never ahead of it.
+    const photo = applyEdit(quiz(), at, one('Інше', 'Інше', { answerImagePath: 'q/new.webp' }));
+    expect(photo.rounds[0]!.categories[0]!.questions[1]).toMatchObject({
+      imagePath: null,
+      answerImagePath: 'q/new.webp',
+    });
   });
 
   it('renames a category it rewrites', () => {

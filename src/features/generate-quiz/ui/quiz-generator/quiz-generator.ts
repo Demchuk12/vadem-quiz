@@ -37,6 +37,7 @@ interface Progress {
   prompt: string;
   round: number;
   avoid: string[];
+  avoidAnswers: string[];
 }
 
 /** Writes the quiz from a topic. The result is a draft in the editor: the host reviews and saves it. */
@@ -131,8 +132,15 @@ export class QuizGenerator {
         let quiz = this.quiz();
         const roundCount = quiz.rounds.length;
         const avoid = [...(from?.avoid ?? [])];
+        // Every round knows what earlier rounds asked, so no fact comes up twice.
+        const avoidAnswers = [...(from?.avoidAnswers ?? [])];
         for (let round = from?.round ?? 0; round < roundCount; round += 1) {
-          this.interrupted.set({ prompt, round, avoid: [...avoid] });
+          this.interrupted.set({
+            prompt,
+            round,
+            avoid: [...avoid],
+            avoidAnswers: [...avoidAnswers],
+          });
           this.currentRound.set(round + 1);
           const result = await this.ai.write({
             quizId: this.quizId(),
@@ -142,11 +150,17 @@ export class QuizGenerator {
             roundCount,
             ...roundShape(quiz, round),
             avoid,
+            avoidAnswers,
             images: this.form.controls.images.value,
           });
           writers.add(result.writer);
           quiz = applyGeneratedRound(quiz, round, result.round);
           avoid.push(...result.round.categories.map((category) => category.title));
+          avoidAnswers.push(
+            ...result.round.categories.flatMap((category) =>
+              category.questions.map((question) => question.answer),
+            ),
+          );
           this.generated.emit(quiz);
         }
         this.interrupted.set(null);

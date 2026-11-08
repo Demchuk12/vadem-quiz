@@ -196,7 +196,7 @@ test('AI fills the editor as a draft, one round at a time', async ({ browser }) 
   await expect(options).toHaveText(['Авто', 'Gemini', 'Groq']);
   await options.filter({ hasText: 'Groq' }).click();
   await host.getByLabel('Тема квізу').fill('Кіно 90-х');
-  await host.getByRole('checkbox', { name: 'Додати питання з фото' }).check();
+  await host.getByRole('checkbox', { name: 'Додати фото до відповідей' }).check();
   await host.getByRole('button', { name: 'Згенерувати' }).click();
   // The quiz already has questions, so replacing them needs a yes.
   await host.getByRole('alertdialog').getByRole('button', { name: 'Замінити' }).click();
@@ -213,8 +213,15 @@ test('AI fills the editor as a draft, one round at a time', async ({ browser }) 
   expect(requests[0]!['prompt']).toBe('Кіно 90-х');
   expect(requests.map((r) => r['provider'])).toEqual(['groq', 'groq']);
   expect(requests.map((r) => r['images'])).toEqual([true, true]);
-  // The photo is stored with the quiz; the one that failed leaves its question without a picture.
-  await expect(host.getByRole('tabpanel').locator('img[src*="quiz-media"]')).toHaveCount(1);
+  // Round 2 knows round 1's answers, so it cannot ask the same things again.
+  expect(requests[0]!['avoidAnswers']).toEqual([]);
+  expect(requests[1]!['avoidAnswers']).toContain('Відповідь 1');
+  // The photo goes with the answer, never ahead of it; the one that failed leaves none.
+  const panel = host.getByRole('tabpanel');
+  await expect(panel.locator('img[src*="quiz-media"]')).toHaveCount(1);
+  // Folded questions are outside the accessibility tree, so the pictures are found by their text.
+  await expect(panel.locator('img[alt="Картинка до відповіді"]')).toHaveCount(1);
+  await expect(panel.locator('img[alt="Картинка до питання"]')).toHaveCount(0);
   await expect(host.getByText('Писав Groq.', { exact: false })).toBeVisible();
 
   // A draft: nothing is stored until the host saves it.

@@ -53,6 +53,23 @@ export function titlesOutside(doc: QuizDocument, target: EditTarget): string[] {
   );
 }
 
+/** Answers outside the target, which an edit must not ask about again. */
+export function answersOutside(doc: QuizDocument, target: EditTarget): string[] {
+  return doc.rounds.flatMap((round, r) =>
+    round.categories.flatMap((category, c) =>
+      category.questions
+        .filter(
+          (_, q) =>
+            r !== target.round ||
+            (target.category !== undefined &&
+              (c !== target.category || (target.question !== undefined && q !== target.question))),
+        )
+        .map((question) => question.answerText.trim())
+        .filter(Boolean),
+    ),
+  );
+}
+
 const sameAnswer = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
 
 function replaceTarget(
@@ -78,8 +95,8 @@ function replaceTarget(
 }
 
 /**
- * Puts an edit into the quiz. Point values stay. A picture stays while its answer does, since
- * then the question is still about the same thing; a new photo from the AI replaces it.
+ * Puts an edit into the quiz. Point values stay. Pictures stay while the answer does, since then
+ * the question is still about the same thing; a new photo from the AI goes with the answer.
  */
 export function applyEdit(
   doc: QuizDocument,
@@ -96,9 +113,9 @@ export function applyEdit(
       return {
         basePoints: old.basePoints,
         text: fresh.text,
-        imagePath: fresh.imagePath ?? (keeps ? old.imagePath : null),
+        imagePath: keeps ? old.imagePath : null,
         answerText: fresh.answer,
-        answerImagePath: keeps ? old.answerImagePath : null,
+        answerImagePath: fresh.answerImagePath ?? (keeps ? old.answerImagePath : null),
         explanation: fresh.explanation ?? old.explanation,
       };
     };

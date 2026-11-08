@@ -7,7 +7,8 @@
 // GET  -> { providers: [{ id, label }] }: the ones this deployment can use.
 // POST -> { categories, provider }: one round, from the chosen provider or, with "auto", from the
 //         first that answers. With `images`, some questions carry `imageUrl`: the free-licensed
-//         lead photo of a Wikipedia article the AI named. The browser stores it with the quiz.
+//         lead photo of the Wikipedia article about the answer. The browser stores it with the
+//         answer, so it shows only once the answer is revealed.
 //         With `current`, the AI edits that content by the instruction in `prompt` instead: a
 //         round, one category or one question, returned in the same shape.
 
@@ -22,6 +23,8 @@ const MAX_CATEGORIES = 8;
 const MAX_QUESTIONS = 8;
 const MAX_AVOID = 40;
 const MAX_TEXT = 2000;
+const MAX_AVOID_ANSWERS = 150;
+const MAX_ANSWER_HINT = 80;
 const SITE_URL = 'https://vadem-quiz.vercel.app';
 const WIKIPEDIA_API = 'https://en.wikipedia.org/w/api.php';
 /** Wikimedia serves thumbnails from more than one host, all with open CORS. */
@@ -46,6 +49,8 @@ interface RoundRequest {
   categories: number;
   questions: number;
   avoid: string[];
+  /** Answers already in the quiz: no question may lead to them again. */
+  avoidAnswers: string[];
   provider: Choice;
   images: boolean;
   /** Content to edit, shaped like the reply: `categories` items of `questions` questions. */
@@ -133,6 +138,7 @@ function parseRequest(body: unknown): RoundRequest {
   const b = (body ?? {}) as Record<string, unknown>;
   const prompt = typeof b['prompt'] === 'string' ? b['prompt'].trim() : '';
   const avoid = Array.isArray(b['avoid']) ? b['avoid'] : [];
+  const avoidAnswers = Array.isArray(b['avoidAnswers']) ? b['avoidAnswers'] : [];
   const provider = b['provider'] ?? 'auto';
   if (
     typeof b['quizId'] !== 'string' ||
@@ -145,6 +151,8 @@ function parseRequest(body: unknown): RoundRequest {
     !isCount(b['questions'], MAX_QUESTIONS) ||
     avoid.length > MAX_AVOID ||
     !avoid.every((item) => typeof item === 'string') ||
+    avoidAnswers.length > MAX_AVOID_ANSWERS ||
+    !avoidAnswers.every((item) => typeof item === 'string') ||
     !['auto', 'gemini', 'groq', 'openrouter'].includes(provider as string) ||
     (b['images'] !== undefined && typeof b['images'] !== 'boolean')
   ) {
@@ -159,6 +167,9 @@ function parseRequest(body: unknown): RoundRequest {
     categories: b['categories'],
     questions: b['questions'],
     avoid: avoid as string[],
+    avoidAnswers: (avoidAnswers as string[])
+      .map((answer) => answer.trim().slice(0, MAX_ANSWER_HINT))
+      .filter(Boolean),
     provider: provider as Choice,
     images: b['images'] === true,
     current: parseCurrent(b['current'], b['categories'], b['questions']),
@@ -189,6 +200,22 @@ async function consumeCall(request: RoundRequest): Promise<void> {
 const SHAPE =
   '{"categories":[{"title":"...","questions":[{"text":"...","answer":"...","explanation":"","image":""}]}]}';
 
+/**
+ * Where this round sits on one scale for the whole quiz, so difficulty climbs across rounds as
+ * well as within each category. Three rounds: 1 to 4, 4 to 7, 7 to 10.
+ */
+function difficulty(request: RoundRequest): string {
+  const { round, roundCount } = request;
+  const from = roundCount === 1 ? 2 : 1 + Math.round(((round - 1) * 6) / (roundCount - 1));
+  const to = roundCount === 1 ? 8 : from + 3;
+  return (
+    'Difficulty uses a scale from 1 to 10: 1 means any schoolchild knows it, 4 most adults, ' +
+    '7 a well-read adult, 10 only enthusiasts of the subject. ' +
+    `In this round (round ${round} of ${roundCount}), the first question of each category is ` +
+    `at about ${from} and the last at about ${to}, rising evenly with the points.`
+  );
+}
+
 function instructions(request: RoundRequest): string {
   const editing = request.current !== null;
   return [
@@ -202,13 +229,20 @@ function instructions(request: RoundRequest): string {
     'Write everything in Ukrainian, unless the topic or the instruction asks for another language.',
     `Write exactly ${request.categories} categories with exactly ${request.questions} questions each` +
       (editing ? ', in the same order as the content.' : '.'),
-    'In each category, order the questions from the easiest to the hardest.',
-    editing ? '' : `This is round ${request.round} of ${request.roundCount}: later rounds are harder.`,
+    editing
+      ? 'Keep each question as hard as it was, unless the instruction asks otherwise.'
+      : difficulty(request),
     'Use only well-established facts that you are sure of. Skip anything disputed or recent.',
     'Each question has one clear, short answer. Questions read aloud well and stay under 200 characters.',
     'Answers never appear in the question. Category titles are one to three words.',
+    'Every question has its own answer and asks about its own fact: no two questions in the reply ' +
+      'may share an answer or ask the same thing in other words.',
     request.avoid.length > 0
       ? `Do not reuse these category titles from other rounds: ${request.avoid.join(', ')}.`
+      : '',
+    request.avoidAnswers.length > 0
+      ? 'These answers are already used elsewhere in the quiz. Do not write a question whose ' +
+        `answer is one of them, or that asks about the same fact: ${request.avoidAnswers.join('; ')}.`
       : '',
     editing
       ? 'An explanation says in one or two sentences why the answer is right. Keep an existing ' +
@@ -217,14 +251,13 @@ function instructions(request: RoundRequest): string {
       : 'Leave "explanation" empty.',
     request.images || editing
       ? (editing
-          ? 'Only if the instruction asks for pictures, give one to each question it means ' +
+          ? 'Only if the instruction asks for photos, give one to each answer it means ' +
             '(when it just asks for some, about one in three). '
-          : 'Give about one question in three of each category a picture. ') +
-        'For those, set "image" to the exact title of the English Wikipedia article whose ' +
-        'main photo shows the subject: a landmark, painting, animal, person, flag or the like. ' +
-        'The question text must still make sense and be answerable without the picture, and ' +
-        'must not name what the picture shows. ' +
-        'Leave "image" empty for every other question.'
+          : 'Give about one answer in three of each category a photo. ') +
+        'For those, set "image" to the exact title of the English Wikipedia article about the ' +
+        'answer itself, whose main photo shows it: a landmark, painting, animal, person, flag or ' +
+        'the like. The photo is shown only after the answer is revealed, so the question must ' +
+        'not rely on it. Leave "image" empty for every other question.'
       : 'Leave "image" empty for every question.',
     `Reply with JSON only, in this shape: ${SHAPE}`,
     `Before replying, count: the "categories" array has ${request.categories} items, and every ` +
@@ -333,7 +366,34 @@ function checkRound(value: unknown, request: RoundRequest): GeneratedRound {
       `Wanted ${request.categories}x${request.questions}, got [${counts.join(',')}]`,
     );
   }
+  const repeat = repeated({ categories }, request);
+  if (repeat) throw new Error(`Repeats ${repeat}`);
   return { categories };
+}
+
+const normalize = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[«»"'’.,!?]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+/**
+ * Models do not always heed "do not repeat". A reply that asks again for an answer the quiz
+ * already has, or reuses a category, is sent back like any other unusable one.
+ */
+function repeated(round: GeneratedRound, request: RoundRequest): string | null {
+  const answers = new Set(request.avoidAnswers.map(normalize));
+  const titles = new Set(request.avoid.map(normalize));
+  for (const category of round.categories) {
+    if (request.current === null && titles.has(normalize(category.title))) return category.title;
+    for (const question of category.questions) {
+      const answer = normalize(question.answer);
+      if (answers.has(answer)) return question.answer;
+      answers.add(answer);
+    }
+  }
+  return null;
 }
 
 /** Sends a request and sorts its failures: busy or broken means try again or elsewhere. */

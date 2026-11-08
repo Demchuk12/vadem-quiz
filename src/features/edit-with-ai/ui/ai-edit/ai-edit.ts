@@ -12,6 +12,7 @@ import {
   AiProviderIcon,
   AiWriter,
   SavedQuizzes,
+  answersOutside,
   applyEdit,
   editSource,
   pointsOf,
@@ -52,7 +53,7 @@ const KINDS: Record<
       { label: 'Складніше', text: 'Зроби питання складнішим.' },
       { label: 'Інше питання', text: 'Заміни на інше питання тієї ж складності.' },
       { label: 'Пояснення', text: 'Додай коротке пояснення відповіді.' },
-      { label: 'З фото', text: 'Перепиши питання так, щоб до нього було фото.' },
+      { label: 'Фото до відповіді', text: 'Додай фото до відповіді.' },
     ],
   },
   category: {
@@ -76,7 +77,7 @@ const KINDS: Record<
       { label: 'Складніше', text: 'Зроби питання раунду складнішими.' },
       { label: 'Нові питання', text: 'Напиши нові питання для всього раунду.' },
       { label: 'Пояснення', text: 'Додай коротке пояснення до кожної відповіді.' },
-      { label: 'Більше фото', text: 'Додай фото до частини питань.' },
+      { label: 'Фото до відповідей', text: 'Додай фото до відповідей частини питань.' },
     ],
   },
 };
@@ -177,6 +178,7 @@ export class AiEdit {
           categories: source.length,
           questions: source[0]!.questions.length,
           avoid: titlesOutside(before, target),
+          avoidAnswers: answersOutside(before, target),
           images: false,
           current: source,
         });

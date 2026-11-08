@@ -100,6 +100,18 @@ describe('generated rounds', () => {
     expect(roundShape(empty, 0)).toEqual({ categories: 5, questions: 5 });
   });
 
+  it('puts a generated photo with the answer', () => {
+    const next = applyGeneratedRound(emptyQuiz('T'), 0, {
+      categories: [
+        { title: 'C', questions: [{ text: 'Q', answer: 'A', answerImagePath: 'id/a.webp' }] },
+      ],
+    });
+    expect(next.rounds[0]!.categories[0]!.questions[0]).toMatchObject({
+      imagePath: null,
+      answerImagePath: 'id/a.webp',
+    });
+  });
+
   it('keeps the point values and other rounds, and clears old pictures', () => {
     const doc = updateQuestion(
       emptyQuiz('T'),

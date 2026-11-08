@@ -126,8 +126,8 @@ export interface GeneratedQuestion {
   text: string;
   answer: string;
   explanation?: string;
-  /** A picture already stored with the quiz. */
-  imagePath?: string | null;
+  /** A photo of the answer, already stored with the quiz: it shows once the answer is revealed. */
+  answerImagePath?: string | null;
 }
 
 export interface GeneratedRound {
@@ -162,9 +162,9 @@ export function applyGeneratedRound(
           DEFAULT_BASE_POINTS[q] ??
           DEFAULT_BASE_POINTS[DEFAULT_BASE_POINTS.length - 1]!,
         text: question.text,
-        imagePath: question.imagePath ?? null,
+        imagePath: null,
         answerText: question.answer,
-        answerImagePath: null,
+        answerImagePath: question.answerImagePath ?? null,
         explanation: question.explanation ?? '',
       })),
     })),
