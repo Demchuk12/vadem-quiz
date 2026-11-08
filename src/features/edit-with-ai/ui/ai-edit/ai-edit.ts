@@ -23,6 +23,7 @@ import {
 } from '@entities/quiz';
 import { apiAction } from '@shared/api';
 import { VdButton } from '@vadem/ui/button';
+import { VdCharacterCount } from '@vadem/ui/character-count';
 import { VdField } from '@vadem/ui/field';
 import { VdIcon } from '@vadem/ui/icon';
 import { VdInput } from '@vadem/ui/input';
@@ -32,7 +33,7 @@ import { VdToaster } from '@vadem/ui/toast';
 export type AiEditKind = 'round' | 'category' | 'question';
 
 const MIN_LENGTH = 3;
-const MAX_LENGTH = 500;
+const MAX_LENGTH = 1500;
 
 interface Chip {
   label: string;
@@ -90,7 +91,7 @@ let nextId = 0;
  */
 @Component({
   selector: 'vq-ai-edit',
-  imports: [AiProviderIcon, VdButton, VdField, VdIcon, VdInput, VD_POPOVER],
+  imports: [AiProviderIcon, VdButton, VdCharacterCount, VdField, VdIcon, VdInput, VD_POPOVER],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './ai-edit.scss',
   templateUrl: './ai-edit.html',
@@ -116,7 +117,10 @@ export class AiEdit {
   protected readonly maxLength = MAX_LENGTH;
   protected readonly instruction = signal('');
   protected readonly texts = computed(() => KINDS[this.kind()]);
-  protected readonly ready = computed(() => this.instruction().trim().length >= MIN_LENGTH);
+  protected readonly ready = computed(() => {
+    const length = this.instruction().trim().length;
+    return length >= MIN_LENGTH && length <= MAX_LENGTH;
+  });
 
   protected readonly title = computed(() => {
     const { round } = this.target();
@@ -153,7 +157,7 @@ export class AiEdit {
     event.preventDefault();
     const instruction = this.instruction().trim();
     const token = this.saved.find(this.quizId())?.token;
-    if (instruction.length < MIN_LENGTH || this.busy() || !token) return;
+    if (!this.ready() || this.busy() || !token) return;
 
     const before = this.quiz();
     const target = this.target();

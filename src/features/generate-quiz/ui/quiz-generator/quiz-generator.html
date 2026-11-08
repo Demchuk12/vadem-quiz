@@ -3,15 +3,22 @@
     <vd-field
       label="Тема квізу"
       hint="AI напише чернетку, а ви її перевірите: він буває впевнено неправий у фактах."
-      error="Опишіть тему: від 3 до 500 символів."
+      error="Опишіть тему: від 3 до 1500 символів."
+      [descriptionIds]="promptCount.descriptionId()"
     >
       <textarea
         vdInput
-        rows="2"
+        id="quiz-topic"
+        rows="3"
         formControlName="prompt"
         placeholder="Наприклад: кіно 90-х, середня складність"
-        [attr.maxlength]="maxLength"
       ></textarea>
+      <vd-character-count
+        #promptCount
+        controlId="quiz-topic"
+        [value]="prompt()"
+        [maxLength]="maxLength"
+      />
     </vd-field>
     <label class="vd-choice">
       <input type="checkbox" vdCheckbox formControlName="images" />

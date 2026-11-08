@@ -195,6 +195,11 @@ test('AI fills the editor as a draft, one round at a time', async ({ browser }) 
   const options = host.getByRole('option');
   await expect(options).toHaveText(['Авто', 'Gemini', 'Groq']);
   await options.filter({ hasText: 'Groq' }).click();
+  // A brief over 1500 characters is counted, explained and not sent.
+  await host.getByLabel('Тема квізу').fill('к'.repeat(1501));
+  await host.getByRole('button', { name: 'Згенерувати' }).click();
+  await expect(host.getByText('Перевищення на 1')).toBeVisible();
+  expect(requests).toHaveLength(0);
   await host.getByLabel('Тема квізу').fill('Кіно 90-х');
   await host.getByRole('checkbox', { name: 'Додати фото до відповідей' }).check();
   await host.getByRole('button', { name: 'Згенерувати' }).click();

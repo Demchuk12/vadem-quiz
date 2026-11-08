@@ -46,15 +46,21 @@
       }
     </div>
 
-    <vd-field label="Що змінити">
+    <vd-field label="Що змінити" [descriptionIds]="instructionCount.descriptionId()">
       <textarea
         vdInput
         rows="3"
-        [attr.maxlength]="maxLength"
+        [id]="headingId + '-text'"
         [placeholder]="texts().placeholder"
         [value]="instruction()"
         (input)="instruction.set(valueOf($event))"
       ></textarea>
+      <vd-character-count
+        #instructionCount
+        [controlId]="headingId + '-text'"
+        [value]="instruction()"
+        [maxLength]="maxLength"
+      />
     </vd-field>
 
     <footer>

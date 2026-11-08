@@ -22,7 +22,7 @@ const TIME_BUDGET_MS = 130_000;
 const ATTEMPT_TIMEOUT_MS = 90_000;
 const MIN_ATTEMPT_MS = 15_000;
 const RETRY_DELAY_MS = 2_000;
-const MAX_PROMPT_LENGTH = 500;
+const MAX_PROMPT_LENGTH = 1500;
 const MAX_CATEGORIES = 8;
 const MAX_QUESTIONS = 8;
 const MAX_AVOID = 40;
@@ -455,6 +455,27 @@ async function detail(response: Response, name: string, length: number): Promise
   return isOwn(name) ? '' : (await response.text()).slice(0, length);
 }
 
+/**
+ * Why a provider turned a request down, from its error body, safe to log: keys are blanked out in
+ * case a provider quotes one.
+ */
+async function providerReason(response: Response): Promise<string> {
+  const text = await response.text().catch(() => '');
+  let reason = text;
+  try {
+    const error = JSON.parse(text)?.error;
+    reason = [error?.type ?? error?.status ?? error?.code, error?.message]
+      .filter(Boolean)
+      .join(': ');
+  } catch {
+    // Not JSON: keep the text.
+  }
+  return reason
+    .replace(/sk-[\w-]{6,}/g, 'sk-***')
+    .replace(/AIza[\w-]{10,}/g, 'AIza***')
+    .slice(0, 300);
+}
+
 /** Most providers say 401 or 403 to a bad key; Google says 400 and names the reason. */
 async function refusesKey(response: Response): Promise<boolean> {
   if (response.status === 401 || response.status === 403) return true;
@@ -476,6 +497,18 @@ async function post(url: string, init: RequestInit, timeoutMs: number, name: str
   if (isOwn(name) && (await refusesKey(response))) {
     console.error(name, 'refused the key', response.status);
     throw new Failure(400, 'ai_key_invalid');
+  }
+  if (isOwn(name) && !response.ok) {
+    const reason = await providerReason(response);
+    console.error(name, 'failed', response.status, reason);
+    // An empty balance will not fill up on the next try.
+    if (/credit|billing|quota|payment|insufficient/i.test(reason)) {
+      throw new Failure(402, 'ai_no_credit');
+    }
+    if (response.status === 429 || response.status >= 500) {
+      throw new Retryable('ai_busy', response.status === 429);
+    }
+    throw new Retryable('ai_failed');
   }
   if (response.status === 429 || response.status >= 500) {
     console.error(name, 'busy', response.status, await detail(response, name, 300));
@@ -836,7 +869,7 @@ async function generate(request: RoundRequest): Promise<GeneratedRound & { provi
         // Under "auto", a key the provider refuses only skips that AI; chosen alone, it is news.
         if (
           error instanceof Failure &&
-          error.code === 'ai_key_invalid' &&
+          (error.code === 'ai_key_invalid' || error.code === 'ai_no_credit') &&
           request.provider === 'auto'
         ) {
           break;

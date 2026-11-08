@@ -23,6 +23,7 @@ import { QuestionLoader } from '@shared/ui';
 import { VdAlertDialog } from '@vadem/ui/alert-dialog';
 import { VdButton } from '@vadem/ui/button';
 import { VD_CARD } from '@vadem/ui/card';
+import { VdCharacterCount } from '@vadem/ui/character-count';
 import { VdCheckbox } from '@vadem/ui/checkbox';
 import { VdField } from '@vadem/ui/field';
 import { VdIcon } from '@vadem/ui/icon';
@@ -31,7 +32,8 @@ import { VdOption, VdSelect } from '@vadem/ui/select';
 import { VdToaster } from '@vadem/ui/toast';
 import { OwnAiSettings } from '../own-ai-settings/own-ai-settings';
 
-const MAX_PROMPT_LENGTH = 500;
+/** Room for a detailed brief, still small next to any model's limits. */
+const MAX_PROMPT_LENGTH = 1500;
 
 /** Where an interrupted generation stopped: the next round to write, and what it must not repeat. */
 interface Progress {
@@ -51,6 +53,7 @@ interface Progress {
     VdAlertDialog,
     VdButton,
     VD_CARD,
+    VdCharacterCount,
     VdCheckbox,
     VdField,
     VdIcon,
@@ -95,7 +98,9 @@ export class QuizGenerator {
     explain: false,
   });
 
-  private readonly prompt = toSignal(this.form.controls.prompt.valueChanges, { initialValue: '' });
+  protected readonly prompt = toSignal(this.form.controls.prompt.valueChanges, {
+    initialValue: '',
+  });
   private readonly interrupted = signal<Progress | null>(null);
   /** A failed run continues where it stopped, as long as the topic stays the same. */
   private readonly resumable = computed(() => {
