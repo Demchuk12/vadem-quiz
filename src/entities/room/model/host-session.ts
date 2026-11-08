@@ -1,7 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { apiAction } from '@shared/api';
-import { RoomApi, type HostKey } from '../api/room-api';
+import { RoomApi } from '../api/room-api';
 import { RoomSessions } from './room-sessions';
+import type { HostKey } from '../api/room-api.types';
 
 /**
  * This page acting as a room's host. Provide it on the host page; everything below that page acts

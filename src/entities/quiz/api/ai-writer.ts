@@ -1,49 +1,15 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Media } from '@shared/api';
 import { readJson, writeJson } from '@shared/lib';
-import type { GeneratedRound } from '../model/quiz-document';
-import {
-  QuizApi,
-  type AiProvider,
-  type AiVendor,
-  type GenerateRoundRequest,
-  type OwnAiCredentials,
-} from './quiz-api';
+import { QuizApi } from './quiz-api';
+import type { AiOption, AiRequest, AiResult, OwnAi } from './ai-writer.types';
+import type { AiProvider } from './quiz-api.types';
+import { VENDOR_LABELS } from '../config/ai-vendors';
+import type { GeneratedRound } from '../model/quiz-document.types';
 
 const CHOICE_KEY = 'vq.ai-provider';
 const OWN_KEY = 'vq.own-ai';
 const OWN_PREFIX = 'own:';
-
-export type AiRequest = Omit<GenerateRoundRequest, 'provider' | 'own'>;
-
-export interface AiResult {
-  round: GeneratedRound;
-  /** The name of the AI that wrote it, as the host knows it. */
-  writer: string;
-}
-
-/** A host's own AI, kept in this browser only. */
-export interface OwnAi extends OwnAiCredentials {
-  id: string;
-  modelLabel: string;
-}
-
-/** One line of the "who writes" choice. */
-export interface AiOption {
-  id: string;
-  label: string;
-  /** Which mark to show: a vendor, a free provider, or "auto". */
-  icon: string;
-}
-
-export const VENDOR_LABELS: Record<AiVendor, string> = {
-  openai: 'ChatGPT',
-  anthropic: 'Claude',
-  gemini: 'Gemini',
-  groq: 'Groq',
-  mistral: 'Mistral',
-  openrouter: 'OpenRouter',
-};
 
 /**
  * Everything that asks the AI goes through here: one choice of AI for the whole editor,

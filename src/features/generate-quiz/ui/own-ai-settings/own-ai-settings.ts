@@ -15,30 +15,7 @@ import { VdIcon } from '@vadem/ui/icon';
 import { VD_PASSWORD_INPUT } from '@vadem/ui/password-input';
 import { VdCombobox, VdOption, VdSelect } from '@vadem/ui/select';
 import { VdToaster } from '@vadem/ui/toast';
-
-interface Vendor {
-  id: AiVendor;
-  label: string;
-  /** Where the host makes a key. */
-  keysUrl: string;
-}
-
-const VENDORS: Vendor[] = [
-  {
-    id: 'gemini',
-    label: 'Gemini (Google), безкоштовно',
-    keysUrl: 'https://aistudio.google.com/apikey',
-  },
-  { id: 'groq', label: 'Groq, безкоштовно', keysUrl: 'https://console.groq.com/keys' },
-  { id: 'openai', label: 'ChatGPT (OpenAI)', keysUrl: 'https://platform.openai.com/api-keys' },
-  {
-    id: 'anthropic',
-    label: 'Claude (Anthropic)',
-    keysUrl: 'https://console.anthropic.com/settings/keys',
-  },
-  { id: 'mistral', label: 'Mistral', keysUrl: 'https://console.mistral.ai/api-keys' },
-  { id: 'openrouter', label: 'OpenRouter', keysUrl: 'https://openrouter.ai/keys' },
-];
+import { VENDORS } from '../../config/vendors';
 
 /**
  * Connects the host's own AIs by key: pick the company, paste the key, check it, pick a model.

@@ -59,3 +59,33 @@ export interface RoomCell {
   points: number;
   played: boolean;
 }
+
+export interface BoardColumn {
+  title: string;
+  cells: RoomCell[];
+}
+
+export interface RankedPlayer {
+  player: Player;
+  rank: number;
+}
+
+export type PlayerBuzzerView = 'locked' | 'ready' | 'won' | 'spent';
+
+export interface LateEntry {
+  playerId: string;
+  nickname: string;
+  ms: number;
+}
+
+export type RoomLoadStatus = 'loading' | 'ready' | 'not_found' | 'error';
+
+/** The host's call on an answer, as the screens celebrate or mourn it. */
+export interface Verdict {
+  /** New for every verdict, so the same call twice still plays twice. */
+  id: number;
+  correct: boolean;
+  playerId: string;
+  nickname: string;
+  points: number;
+}

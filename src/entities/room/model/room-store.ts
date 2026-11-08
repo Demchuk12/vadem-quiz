@@ -18,10 +18,8 @@ import {
   rankPlayers,
   upsertById,
 } from '../lib/game-logic';
-import { VerdictTracker, type Verdict } from '../lib/verdicts';
-import type { Player, Room, RoomCell } from './room';
-
-export type RoomLoadStatus = 'loading' | 'ready' | 'not_found' | 'error';
+import { VerdictTracker } from '../lib/verdicts';
+import type { Player, Room, RoomCell, RoomLoadStatus, Verdict } from './room';
 
 /** How long the screens show a verdict; the animations in ui/verdict fit inside it. */
 const VERDICT_MS = 2200;

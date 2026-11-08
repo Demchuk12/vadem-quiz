@@ -1,14 +1,5 @@
 import type { Player, Room } from '../model/room';
-
-/** The host's call on an answer, as the screens celebrate or mourn it. */
-export interface Verdict {
-  /** New for every verdict, so the same call twice still plays twice. */
-  id: number;
-  correct: boolean;
-  playerId: string;
-  nickname: string;
-  points: number;
-}
+import type { Verdict } from '../model/room';
 
 interface Answering {
   playerId: string;

@@ -1,5 +1,6 @@
 import { answersOutside, applyEdit, editSource, restoreEdit, titlesOutside } from './ai-edit';
-import { emptyQuiz, updateCategory, updateQuestion, type QuizDocument } from './quiz-document';
+import { emptyQuiz, updateCategory, updateQuestion } from './quiz-document';
+import type { QuizDocument } from './quiz-document.types';
 
 function quiz(): QuizDocument {
   let doc = emptyQuiz('T');

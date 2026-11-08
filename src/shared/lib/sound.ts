@@ -1,12 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-
-export type GameSound = 'buzz' | 'correct' | 'wrong';
-
-const TONES: Record<GameSound, readonly number[]> = {
-  buzz: [660],
-  correct: [523, 784],
-  wrong: [196, 147],
-};
+import { TONES, type GameSound } from './sound-tones';
 
 const NOTE_SECONDS = 0.14;
 const PEAK_GAIN = 0.15;

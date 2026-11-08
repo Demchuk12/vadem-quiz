@@ -1,26 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Rpc } from '@shared/api';
-
-export interface NewRoom {
-  room_id: string;
-  room_code: string;
-  host_token: string;
-}
-export interface JoinedRoom {
-  room_id: string;
-  player_id: string;
-  player_token: string;
-}
-export interface HostAnswer {
-  answer_text: string;
-  answer_image_path: string | null;
-  explanation: string;
-}
-/** What proves a call comes from the host of a room. */
-export interface HostKey {
-  roomId: string;
-  token: string;
-}
+import type { HostAnswer, HostKey, JoinedRoom, NewRoom } from './room-api.types';
 
 /** The game's database functions (see supabase/migrations). */
 @Injectable({ providedIn: 'root' })

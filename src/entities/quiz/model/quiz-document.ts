@@ -1,32 +1,15 @@
-/** The quiz as edited, exported and imported. Mirrors `get_quiz` / `save_quiz`. */
-export interface QuizQuestion {
-  basePoints: number;
-  text: string;
-  imagePath: string | null;
-  answerText: string;
-  answerImagePath: string | null;
-  /** Optional: why the answer is right. Revealed together with it. */
-  explanation: string;
-}
-
-export interface QuizCategory {
-  title: string;
-  questions: QuizQuestion[];
-}
-
-export interface QuizRound {
-  categories: QuizCategory[];
-}
-
-export interface QuizDocument {
-  title: string;
-  roundMultipliers: number[];
-  rounds: QuizRound[];
-}
-
-const DEFAULT_BASE_POINTS: readonly number[] = [200, 400, 600, 800, 1000];
-const DEFAULT_MULTIPLIERS: readonly number[] = [1, 2, 3];
-const DEFAULT_CATEGORIES_PER_ROUND = 5;
+import {
+  DEFAULT_BASE_POINTS,
+  DEFAULT_CATEGORIES_PER_ROUND,
+  DEFAULT_MULTIPLIERS,
+} from '../config/quiz-defaults';
+import type {
+  GeneratedRound,
+  QuizCategory,
+  QuizDocument,
+  QuizProgress,
+  QuizQuestion,
+} from './quiz-document.types';
 
 const emptyQuestion = (basePoints: number): QuizQuestion => ({
   basePoints,
@@ -59,12 +42,6 @@ export function isQuestionComplete(question: QuizQuestion): boolean {
   const hasQuestion = question.text.trim() !== '' || question.imagePath !== null;
   const hasAnswer = question.answerText.trim() !== '' || question.answerImagePath !== null;
   return hasQuestion && hasAnswer;
-}
-
-export interface QuizProgress {
-  complete: number;
-  total: number;
-  missingTitles: number;
 }
 
 export function quizProgress(doc: QuizDocument): QuizProgress {
@@ -119,19 +96,6 @@ export function addCategory(doc: QuizDocument, round: number): QuizDocument {
 
 export function removeCategory(doc: QuizDocument, round: number, category: number): QuizDocument {
   return updateRound(doc, round, (categories) => categories.filter((_, i) => i !== category));
-}
-
-/** One round as the AI writes it: text only, the values come from the quiz. */
-export interface GeneratedQuestion {
-  text: string;
-  answer: string;
-  explanation?: string;
-  /** A photo of the answer, already stored with the quiz: it shows once the answer is revealed. */
-  answerImagePath?: string | null;
-}
-
-export interface GeneratedRound {
-  categories: { title: string; questions: GeneratedQuestion[] }[];
 }
 
 /** What the AI has to write so that a round keeps the shape the host set up. */

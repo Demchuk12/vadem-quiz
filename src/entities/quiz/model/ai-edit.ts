@@ -1,4 +1,9 @@
-import type { GeneratedRound, QuizCategory, QuizDocument, QuizQuestion } from './quiz-document';
+import type {
+  GeneratedRound,
+  QuizCategory,
+  QuizDocument,
+  QuizQuestion,
+} from './quiz-document.types';
 
 /** What an AI edit changes: a whole round, one category of it, or one question. */
 export interface EditTarget {

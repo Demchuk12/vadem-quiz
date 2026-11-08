@@ -33,8 +33,10 @@ supabase/       migrations (the only way to change game state), pgTAP tests, the
 e2e/            Playwright: multi-browser game, press race, axe
 ```
 
-A slice is `api/`, `model/`, `lib/`, `ui/<component>/` as needed, plus `index.ts`. Components that
-need the live room inject `RoomStore`, which the page provides.
+A slice is `api/`, `model/`, `lib/`, `config/`, `ui/<component>/` as needed, plus `index.ts`.
+Exported types go into `<name>.types.ts` beside their code, constant tables into `config/`; a
+tuning number used once stays where it is used. Components that need the live room inject
+`RoomStore`, which the page provides.
 
 ## Commands
 

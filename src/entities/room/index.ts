@@ -1,12 +1,6 @@
-export {
-  RoomApi,
-  type HostAnswer,
-  type HostKey,
-  type JoinedRoom,
-  type NewRoom,
-} from './api/room-api';
+export { RoomApi } from './api/room-api';
+export type { HostAnswer, HostKey, JoinedRoom, NewRoom } from './api/room-api.types';
 export { playGameSounds } from './lib/game-sounds';
-export type { Verdict } from './lib/verdicts';
 export {
   buzzerStateFor,
   everyoneSpent,
@@ -16,9 +10,17 @@ export {
 } from './lib/game-logic';
 export { RoomLinks } from './lib/room-links';
 export { HostSession } from './model/host-session';
-export type { LatePress, Player, Room, RoomCell, RoomState } from './model/room';
+export type {
+  LatePress,
+  Player,
+  Room,
+  RoomCell,
+  RoomLoadStatus,
+  RoomState,
+  Verdict,
+} from './model/room';
 export { RoomSessions, type PlayerSession } from './model/room-sessions';
-export { RoomStore, type RoomLoadStatus } from './model/room-store';
+export { RoomStore } from './model/room-store';
 export { LateLadder } from './ui/late-ladder/late-ladder';
 export { GameBoard } from './ui/game-board/game-board';
 export { QuestionView } from './ui/question-view/question-view';
