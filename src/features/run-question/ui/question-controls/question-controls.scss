@@ -9,3 +9,7 @@
 .winner {
   @include layout.headline;
 }
+/* Who came next, should the answer be wrong: on its own line under the buttons. */
+.ladder {
+  flex-basis: 100%;
+}

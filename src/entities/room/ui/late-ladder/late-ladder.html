@@ -1,0 +1,10 @@
+@if (ladder().length > 0) {
+  <ol aria-label="Хто натиснув пізніше">
+    @for (entry of ladder(); track entry.playerId; let order = $index) {
+      <li [style.--order]="order">
+        <span class="name">{{ entry.nickname }}</span>
+        <span class="delay">{{ format(entry.ms) }}</span>
+      </li>
+    }
+  </ol>
+}

@@ -16,6 +16,8 @@ const room = (patch: Partial<Room>): Room => ({
   answer_image_path: null,
   answer_explanation: null,
   buzz_winner_player_id: null,
+  buzzed_at: null,
+  late_presses: [],
   spent_player_ids: [],
   version: 1,
   ...patch,

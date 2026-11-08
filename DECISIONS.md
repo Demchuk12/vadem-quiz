@@ -170,6 +170,15 @@ without a release. Own calls are counted apart (200 a quiz a day) and leave the 
 alone. Under "auto" the host's own AIs go first, and one whose key is refused is skipped. Tying keys
 to a user account is left for when accounts exist.
 
+## D23 — How late a press was, by the database's clock
+
+The winning press notes its moment and every later press, while the winner answers, is kept with
+its distance from it in milliseconds, up to ten, in the room row. The database's clock decides, as
+it decides the winner, so a phone can neither fake the number nor disagree with who won. The
+delay includes each player's network, like the race itself; subtracting a measured ping would let
+a player tamper with it. Phones read their own entry from the room, so the press call keeps its
+boolean result and nothing else changes.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

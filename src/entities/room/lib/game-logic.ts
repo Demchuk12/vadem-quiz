@@ -82,3 +82,32 @@ export function upsertById<T extends { id: string }>(items: readonly T[], item: 
   copy[index] = item;
   return copy;
 }
+
+export interface LateEntry {
+  playerId: string;
+  nickname: string;
+  ms: number;
+}
+
+/** Who pressed after the winner, nearest first, while the winner answers. */
+export function lateLadder(room: Room, players: readonly Player[]): LateEntry[] {
+  if (room.state !== 'buzzed') return [];
+  return (room.late_presses ?? [])
+    .map((press) => ({
+      playerId: press.player_id,
+      nickname: players.find((player) => player.id === press.player_id)?.nickname ?? '',
+      ms: press.ms,
+    }))
+    .filter((entry) => entry.nickname !== '')
+    .sort((a, b) => a.ms - b.ms);
+}
+
+const DELAY_FORMAT = new Intl.NumberFormat('uk-UA', {
+  minimumFractionDigits: 3,
+  maximumFractionDigits: 3,
+});
+
+/** "+0,183 с": to the millisecond, since close races are decided by a few of them. */
+export function formatDelay(ms: number): string {
+  return `+${DELAY_FORMAT.format(ms / 1000)} с`;
+}

@@ -65,6 +65,20 @@ test('simultaneous presses: exactly one winner, and it is the winner the room re
     .eq('id', room!.room_id)
     .single();
   expect(state).toEqual({ state: 'buzzed', buzz_winner_player_id: winner.player_id });
+
+  // The next ten are kept with how late they were, in the order they arrived.
+  const { data: late } = await client
+    .from('rooms')
+    .select('late_presses')
+    .eq('id', room!.room_id)
+    .single();
+  const presses = late!.late_presses as { player_id: string; ms: number }[];
+  expect(presses).toHaveLength(10);
+  expect(presses.map((press) => press.player_id)).not.toContain(winner.player_id);
+  expect(new Set(presses.map((press) => press.player_id)).size).toBe(10);
+  const delays = presses.map((press) => press.ms);
+  expect(delays).toEqual([...delays].sort((a, b) => a - b));
+  expect(Math.min(...delays)).toBeGreaterThanOrEqual(1);
 });
 
 test('the anon key cannot reach private data or change the game directly', async () => {

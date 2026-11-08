@@ -3,7 +3,9 @@ import {
   boardRows,
   buzzerStateFor,
   everyoneSpent,
+  formatDelay,
   formatScore,
+  lateLadder,
   newerRoom,
   normalizeRoomCode,
   rankPlayers,
@@ -26,6 +28,8 @@ const room = (patch: Partial<Room> = {}): Room => ({
   answer_image_path: null,
   answer_explanation: null,
   buzz_winner_player_id: null,
+  buzzed_at: null,
+  late_presses: [],
   spent_player_ids: [],
   version: 1,
   ...patch,
@@ -151,5 +155,34 @@ describe('upsertById', () => {
     expect(upsertById(items, { id: 'a', n: 2 })).toEqual([{ id: 'a', n: 2 }]);
     expect(upsertById(items, { id: 'b', n: 3 })).toHaveLength(2);
     expect(items[0]!.n).toBe(1);
+  });
+});
+
+describe('lateLadder', () => {
+  const players = [player('a', 0), player('b', 0), player('c', 0)];
+  const late = [
+    { player_id: 'c', ms: 420 },
+    { player_id: 'b', ms: 183 },
+    { player_id: 'gone', ms: 50 },
+  ];
+
+  it('lists who pressed after the winner, nearest first, while the winner answers', () => {
+    const ladder = lateLadder(room({ state: 'buzzed', late_presses: late }), players);
+    expect(ladder.map((entry) => [entry.playerId, entry.ms])).toEqual([
+      ['b', 183],
+      ['c', 420],
+    ]);
+  });
+
+  it('is empty once the answer is judged', () => {
+    expect(lateLadder(room({ state: 'buzzing_open', late_presses: late }), players)).toEqual([]);
+  });
+});
+
+describe('formatDelay', () => {
+  it('shows seconds with a comma, to the millisecond', () => {
+    expect(formatDelay(3)).toBe('+0,003 с');
+    expect(formatDelay(183)).toBe('+0,183 с');
+    expect(formatDelay(1250)).toBe('+1,250 с');
   });
 });

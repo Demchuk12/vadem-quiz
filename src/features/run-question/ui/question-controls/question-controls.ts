@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { HostSession, RoomStore, everyoneSpent } from '@entities/room';
+import { HostSession, LateLadder, RoomStore, everyoneSpent } from '@entities/room';
 import { VdBadge } from '@vadem/ui/badge';
 import { VdButton } from '@vadem/ui/button';
 import { VdIcon } from '@vadem/ui/icon';
@@ -7,7 +7,7 @@ import { VdIcon } from '@vadem/ui/icon';
 /** The host's actions on the open question: open presses, judge, skip, back to the board. */
 @Component({
   selector: 'vq-question-controls',
-  imports: [VdBadge, VdButton, VdIcon],
+  imports: [VdBadge, VdButton, VdIcon, LateLadder],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './question-controls.scss',
   templateUrl: './question-controls.html',

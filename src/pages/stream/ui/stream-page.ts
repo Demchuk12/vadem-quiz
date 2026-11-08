@@ -8,6 +8,7 @@ import {
   WinnerBanner,
   playGameSounds,
   VerdictScene,
+  LateLadder,
 } from '@entities/room';
 import { Sound } from '@shared/lib';
 import { SidebarLayout } from '@shared/ui';
@@ -18,6 +19,7 @@ import { RoomJoinInfo } from '@widgets/room-join-info';
 @Component({
   selector: 'vq-stream-page',
   imports: [
+    LateLadder,
     VerdictScene,
     GameBoard,
     QuestionView,

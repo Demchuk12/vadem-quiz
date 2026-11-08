@@ -3,6 +3,7 @@
 :host {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  gap: var(--vd-space-4);
   justify-items: center;
   padding-block: var(--vd-space-2);
   /* The pulse may reach past a narrow screen, but must not make the page scroll sideways. */

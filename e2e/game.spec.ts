@@ -119,6 +119,43 @@ test('a full game: lobby, buzzer, judging, rounds, final standings', async ({ br
   await expect(stream.getByText('Перемагає Анна')).toBeVisible();
 });
 
+test('a press that comes too late shows by how much', async ({ browser }) => {
+  const { host, code } = await hostGame(browser);
+  const ann = await joinGame(browser, code, 'Анна');
+  const bob = await joinGame(browser, code, 'Богдан');
+  const stream = await (await browser.newContext()).newPage();
+  await stream.goto(`/stream/${code}`);
+
+  await host.getByRole('button', { name: 'Почати гру' }).click();
+  await host.getByRole('group', { name: 'Географія' }).getByRole('button', { name: '200' }).click();
+  await host.getByRole('button', { name: 'Відкрити відповіді' }).click();
+  await expect(buzzer(ann)).toHaveAttribute('data-state', 'ready');
+  await expect(buzzer(bob)).toHaveAttribute('data-state', 'ready');
+
+  // Both press at once, before either phone hears who won.
+  await Promise.all([pressBuzzer(ann), pressBuzzer(bob)]);
+  const stateOf = (page: Page) => buzzer(page).getAttribute('data-state');
+  await expect
+    .poll(async () => [await stateOf(ann), await stateOf(bob)].includes('won'))
+    .toBe(true);
+  const winnerIsAnn = (await stateOf(ann)) === 'won';
+  const [late, lateName] = winnerIsAnn ? [bob, 'Богдан'] : [ann, 'Анна'];
+
+  await expect(late.getByText('Ви запізнились на').first()).toBeAttached();
+  await expect(
+    late.getByRole('status').filter({ hasText: /Ви запізнились на \+\d,\d{3} с/ }),
+  ).toBeAttached();
+  const ladder = stream.getByRole('list', { name: 'Хто натиснув пізніше' });
+  await expect(ladder).toContainText(lateName);
+  await expect(ladder).toContainText(/\+\d,\d{3} с/);
+  await expect(host.getByRole('list', { name: 'Хто натиснув пізніше' })).toContainText(lateName);
+
+  // Judged, the stopwatch and the ladder go.
+  await host.getByRole('button', { name: 'Правильно', exact: true }).click();
+  await expect(ladder).toBeHidden();
+  await expect(late.getByText('Ви запізнились на')).toHaveCount(0);
+});
+
 test('a nickname cannot be taken twice and a bad code is explained', async ({ browser }) => {
   const { code } = await hostGame(browser);
   await joinGame(browser, code, 'Анна');

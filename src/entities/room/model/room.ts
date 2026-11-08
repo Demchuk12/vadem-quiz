@@ -25,8 +25,18 @@ export interface Room {
   /** Set only once the answer is revealed, and only when the quiz has one. */
   answer_explanation: string | null;
   buzz_winner_player_id: string | null;
+  /** When the winning press arrived, by the database's clock. */
+  buzzed_at: string | null;
+  /** The presses that came after it while the winner answers, with how late each was. */
+  late_presses: LatePress[];
   spent_player_ids: string[];
   version: number;
+}
+
+export interface LatePress {
+  player_id: string;
+  /** Milliseconds after the winning press. */
+  ms: number;
 }
 
 /** Row of `public.players`. */

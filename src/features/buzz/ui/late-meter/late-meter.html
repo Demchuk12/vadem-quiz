@@ -1,0 +1,12 @@
+<p class="live" role="status">Ви запізнились на {{ final() }}</p>
+<div class="meter" aria-hidden="true">
+  <svg class="ring" viewBox="0 0 40 40">
+    <circle class="track" cx="20" cy="20" r="17" />
+    <circle class="hand" cx="20" cy="20" r="17" pathLength="1" [style.--fill]="fill()" />
+  </svg>
+  <span class="caption">Ви запізнились на</span>
+  <strong class="value">{{ text() }}</strong>
+  @if (close()) {
+    <span class="close">Ледь-ледь!</span>
+  }
+</div>
