@@ -11,9 +11,9 @@
 //         answer, so it shows only once the answer is revealed.
 //         With `current`, the AI edits that content by the instruction in `prompt` instead: a
 //         round, one category or one question, returned in the same shape.
-//         With `own`, the host's own AIs (ChatGPT, Claude, Gemini, OpenRouter) write it: chosen
-//         as provider "own", or tried first under "auto". Their keys live in the host's browser
-//         and pass through here per request: never stored, never logged, nor any reply of theirs.
+//         With `own`, the host's own AIs (ChatGPT, Claude, Gemini, Groq, Mistral, OpenRouter)
+//         write it: chosen as provider "own", or tried first under "auto". Their keys live in the
+//         host's browser and pass through here per request, never stored and never logged.
 // POST { action: "models", vendor, key } -> { models: [{ id, label }] }: what a key can use.
 
 /** Stays under the platform's request limit, however many attempts it takes. */
@@ -43,9 +43,9 @@ const HEADERS = {
 
 type ProviderId = 'gemini' | 'groq' | 'openrouter';
 type Choice = ProviderId | 'auto' | 'own';
-type Vendor = 'openai' | 'anthropic' | 'gemini' | 'openrouter';
+type Vendor = 'openai' | 'anthropic' | 'gemini' | 'groq' | 'mistral' | 'openrouter';
 
-const VENDORS: Vendor[] = ['openai', 'anthropic', 'gemini', 'openrouter'];
+const VENDORS: Vendor[] = ['openai', 'anthropic', 'gemini', 'groq', 'mistral', 'openrouter'];
 const MAX_OWN = 4;
 
 /** One of the host's own AIs: their key and the model they picked. */
@@ -666,6 +666,8 @@ const VENDOR_LABELS: Record<Vendor, string> = {
   openai: 'ChatGPT',
   anthropic: 'Claude',
   gemini: 'Gemini',
+  groq: 'Groq',
+  mistral: 'Mistral',
   openrouter: 'OpenRouter',
 };
 
@@ -692,6 +694,39 @@ function ownProvider(own: OwnAi, index: number): Provider {
         return anthropic(own.model, own.key, label);
       case 'gemini':
         return gemini(own.model, own.key, label);
+      case 'groq':
+        // Groq holds only its gpt-oss models to a strict schema; the rest take JSON mode.
+        return own.model.includes('gpt-oss')
+          ? openAiCompatible(
+              'https://api.groq.com/openai/v1/chat/completions',
+              own.key,
+              own.model,
+              strict,
+              {},
+              (request) => ({
+                reasoning_effort: request.categories * request.questions <= 8 ? 'medium' : 'low',
+              }),
+              label,
+            )
+          : openAiCompatible(
+              'https://api.groq.com/openai/v1/chat/completions',
+              own.key,
+              own.model,
+              { type: 'json_object' },
+              {},
+              () => ({}),
+              label,
+            );
+      case 'mistral':
+        return openAiCompatible(
+          'https://api.mistral.ai/v1/chat/completions',
+          own.key,
+          own.model,
+          { type: 'json_object' },
+          {},
+          () => ({}),
+          label,
+        );
       case 'openrouter':
         return openAiCompatible(
           'https://openrouter.ai/api/v1/chat/completions',
@@ -933,6 +968,33 @@ async function listModels(body: Record<string, unknown>): Promise<{ id: string; 
           id: m.name.replace(/^models\//, ''),
           label: m.displayName ?? m.name,
         }));
+    }
+    case 'groq': {
+      const data = await get('https://api.groq.com/openai/v1/models', {
+        Authorization: `Bearer ${key}`,
+      });
+      const skip = /whisper|tts|guard|playai|orpheus|distil|compound/i;
+      return (data?.data ?? [])
+        .filter((m: { id: string; active?: boolean }) => m.active !== false && !skip.test(m.id))
+        .sort((a: { created: number }, b: { created: number }) => b.created - a.created)
+        .map((m: { id: string }) => ({ id: m.id, label: m.id }));
+    }
+    case 'mistral': {
+      const data = await get('https://api.mistral.ai/v1/models', {
+        Authorization: `Bearer ${key}`,
+      });
+      // Each model is listed under its dated name and its aliases; the "-latest" ones are enough.
+      const chat = (data?.data ?? []).filter(
+        (m: { id: string; capabilities?: { completion_chat?: boolean }; deprecation?: string }) =>
+          m.capabilities?.completion_chat === true &&
+          !m.deprecation &&
+          !/embed|ocr|moderation|codestral/i.test(m.id),
+      );
+      const latest = chat.filter((m: { id: string }) => m.id.endsWith('-latest'));
+      return (latest.length > 0 ? latest : chat).map((m: { id: string; name?: string }) => ({
+        id: m.id,
+        label: m.id,
+      }));
     }
     case 'openrouter': {
       // The model list is public; asking about the key proves it works.

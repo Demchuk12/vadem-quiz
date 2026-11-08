@@ -352,6 +352,10 @@ test('a host connects their own AI by key and it writes the quiz', async ({ brow
 
   await host.getByRole('button', { name: 'Свої нейронки' }).click();
   const dialog = host.getByRole('dialog', { name: 'Свої нейронки' });
+  // Free on the host's own key, Gemini is offered first; this host brings ChatGPT.
+  await expect(dialog.getByRole('combobox', { name: 'Компанія' })).toHaveText(/Gemini/);
+  await dialog.getByRole('combobox', { name: 'Компанія' }).click();
+  await host.getByRole('option', { name: 'ChatGPT (OpenAI)' }).click();
   const key = dialog.getByLabel('API-ключ');
   await key.fill('sk-wrong-key');
   await dialog.getByRole('button', { name: 'Перевірити ключ' }).click();

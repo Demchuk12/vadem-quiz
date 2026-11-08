@@ -15,7 +15,7 @@ export interface AiProvider {
 }
 
 /** Companies whose AI a host can connect with their own key. */
-export type AiVendor = 'openai' | 'anthropic' | 'gemini' | 'openrouter';
+export type AiVendor = 'openai' | 'anthropic' | 'gemini' | 'groq' | 'mistral' | 'openrouter';
 
 /** A host's own AI as the function needs it for one request. */
 export interface OwnAiCredentials {

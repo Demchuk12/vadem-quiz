@@ -40,6 +40,8 @@ export const VENDOR_LABELS: Record<AiVendor, string> = {
   openai: 'ChatGPT',
   anthropic: 'Claude',
   gemini: 'Gemini',
+  groq: 'Groq',
+  mistral: 'Mistral',
   openrouter: 'OpenRouter',
 };
 

@@ -24,13 +24,19 @@ interface Vendor {
 }
 
 const VENDORS: Vendor[] = [
+  {
+    id: 'gemini',
+    label: 'Gemini (Google), безкоштовно',
+    keysUrl: 'https://aistudio.google.com/apikey',
+  },
+  { id: 'groq', label: 'Groq, безкоштовно', keysUrl: 'https://console.groq.com/keys' },
   { id: 'openai', label: 'ChatGPT (OpenAI)', keysUrl: 'https://platform.openai.com/api-keys' },
   {
     id: 'anthropic',
     label: 'Claude (Anthropic)',
     keysUrl: 'https://console.anthropic.com/settings/keys',
   },
-  { id: 'gemini', label: 'Gemini (Google)', keysUrl: 'https://aistudio.google.com/apikey' },
+  { id: 'mistral', label: 'Mistral', keysUrl: 'https://console.mistral.ai/api-keys' },
   { id: 'openrouter', label: 'OpenRouter', keysUrl: 'https://openrouter.ai/keys' },
 ];
 
@@ -64,7 +70,8 @@ export class OwnAiSettings {
   protected readonly vendors = VENDORS;
   protected readonly vendorLabels = VENDOR_LABELS;
   protected readonly open = signal(false);
-  protected readonly vendor = signal<AiVendor>('openai');
+  /** Gemini first: free on the host's own key, and the strongest in our tests. */
+  protected readonly vendor = signal<AiVendor>('gemini');
   protected readonly key = signal('');
   protected readonly models = signal<AiModel[] | null>(null);
   protected readonly model = signal<string | null>(null);
