@@ -179,6 +179,15 @@ delay includes each player's network, like the race itself; subtracting a measur
 a player tamper with it. Phones read their own entry from the room, so the press call keeps its
 boolean result and nothing else changes.
 
+## D24 — Questions that give their answer away are rewritten
+
+Models often write the answer into the question in another script or form ("named after the
+Super Bowl" for "Super Bowl"), which no plain substring check catches. The function spells both
+scripts one way and looks for the answer's most telling word, by the start of its stem, in the
+question. Those questions alone go back to the same AI to be reworded around the same answer, and
+are checked again; a round that still gives answers away is unusable like any other. On 100 real
+questions the check caught 3, all genuine, and none remained after the rewrite.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

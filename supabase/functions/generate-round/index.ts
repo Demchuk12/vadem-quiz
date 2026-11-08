@@ -16,6 +16,8 @@
 //         host's browser and pass through here per request, never stored and never logged.
 // POST { action: "models", vendor, key } -> { models: [{ id, label }] }: what a key can use.
 
+import { leaksAnswer } from './leaks.ts';
+
 /** Stays under the platform's request limit, however many attempts it takes. */
 const TIME_BUDGET_MS = 130_000;
 /** Free models can be slow: one attempt may take most of the budget. */
@@ -282,7 +284,9 @@ function instructions(request: RoundRequest): string {
       : difficulty(request),
     'Use only well-established facts that you are sure of. Skip anything disputed or recent.',
     'Each question has one clear, short answer. Questions read aloud well and stay under 200 characters.',
-    'Answers never appear in the question. Category titles are one to three words.',
+    'A question never contains its answer in any form: not as is, not translated or ' +
+      'transliterated, not as a word sharing its root (asking which game is named after the ' +
+      '"Супер-бол" gives away "Super Bowl"). Category titles are one to three words.',
     'Every question has its own answer and asks about its own fact: no two questions in the reply ' +
       'may share an answer or ask the same thing in other words.',
     request.avoid.length > 0
@@ -874,6 +878,70 @@ async function attachImages(round: GeneratedRound, wanted: boolean): Promise<Gen
   };
 }
 
+const REWRITE_LEAKS =
+  'Перепиши ці питання так, щоб текст питання не містив відповіді в жодній формі: ні прямо, ' +
+  'ні перекладом чи транслітерацією, ні спорідненим словом. Відповідь, складність і тему лиши ' +
+  'тими самими.';
+
+/**
+ * Questions that give their answer away go back to the same AI once, alone, to be rewritten
+ * around the same answer; if they still give it away, the round is unusable like any other.
+ */
+async function withoutLeaks(
+  round: GeneratedRound,
+  request: RoundRequest,
+  attempt: Attempt,
+  remainingMs: number,
+): Promise<GeneratedRound> {
+  const leaks = round.categories.flatMap((category, c) =>
+    category.questions
+      .map((question, q) => ({ c, q, question }))
+      .filter(({ question }) => leaksAnswer(question.text, question.answer)),
+  );
+  if (leaks.length === 0) return round;
+  console.error(attempt.label, 'gave away', leaks.length, 'answers');
+  if (remainingMs < MIN_ATTEMPT_MS) throw new Retryable('ai_failed');
+
+  const fixed = await attempt.run(
+    {
+      ...request,
+      prompt: REWRITE_LEAKS,
+      categories: 1,
+      questions: leaks.length,
+      avoid: [],
+      avoidAnswers: [],
+      images: false,
+      current: [
+        {
+          title: round.categories[leaks[0]!.c]!.title,
+          questions: leaks.map(({ question }) => ({
+            text: question.text,
+            answer: question.answer,
+            explanation: question.explanation ?? '',
+          })),
+        },
+      ],
+    },
+    Math.min(remainingMs, ATTEMPT_TIMEOUT_MS),
+  );
+  const rewritten = fixed.categories[0]!.questions;
+  const categories = round.categories.map((category) => ({
+    ...category,
+    questions: [...category.questions],
+  }));
+  leaks.forEach(({ c, q, question }, index) => {
+    const text = rewritten[index]!.text;
+    if (leaksAnswer(text, question.answer)) throw new Retryable('ai_failed');
+    // The answer, its photo and its place stay: only the wording changes.
+    categories[c]!.questions[q] = {
+      ...question,
+      text,
+      explanation: rewritten[index]!.explanation || question.explanation,
+    };
+  });
+  return { categories };
+}
+
 async function generate(request: RoundRequest): Promise<GeneratedRound & { provider: string }> {
   const own = request.own.map(ownProvider);
   // The host's own AIs come first under "auto": they chose and pay for them.
@@ -899,7 +967,8 @@ async function generate(request: RoundRequest): Promise<GeneratedRound & { provi
       if (remaining < MIN_ATTEMPT_MS) throw new Failure(503, lastCode);
       try {
         const round = await attempt.run(request, Math.min(remaining, ATTEMPT_TIMEOUT_MS));
-        return { ...round, provider: provider.id };
+        const left = TIME_BUDGET_MS - (Date.now() - startedAt);
+        return { ...(await withoutLeaks(round, request, attempt, left)), provider: provider.id };
       } catch (error) {
         // Under "auto", a key the provider refuses only skips that AI; chosen alone, it is news.
         if (
