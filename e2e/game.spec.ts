@@ -306,6 +306,81 @@ test('AI edits one question or a category, and the toast takes it back', async (
   await expect(host.getByRole('button', { name: 'Зберегти' })).toBeEnabled();
 });
 
+test('a host connects their own AI by key and it writes the quiz', async ({ browser }) => {
+  const { host } = await hostGame(browser);
+  const requests: Record<string, unknown>[] = [];
+  await host.route('**/functions/v1/generate-round', async (route) => {
+    const headers = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' };
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 200, headers });
+    if (route.request().method() === 'GET') {
+      return route.fulfill({ status: 200, headers, json: { providers: PROVIDERS } });
+    }
+    const body = route.request().postDataJSON();
+    if (body.action === 'models') {
+      return body.key === 'sk-good-key-123'
+        ? route.fulfill({
+            status: 200,
+            headers,
+            json: { models: [{ id: 'gpt-test', label: 'GPT Test' }] },
+          })
+        : route.fulfill({ status: 400, headers, json: { code: 'ai_key_invalid' } });
+    }
+    requests.push(body);
+    return route.fulfill({
+      status: 200,
+      headers,
+      json: {
+        provider: 'own:0',
+        categories: Array.from({ length: body.categories }, (_, c) => ({
+          title: `Свій AI ${body.round}.${c + 1}`,
+          questions: Array.from({ length: body.questions }, (_, q) => ({
+            text: `Питання ${q + 1}`,
+            answer: `Відповідь ${body.round}.${c + 1}.${q + 1}`,
+            explanation: body.explain ? 'Цікавинка.' : '',
+          })),
+        })),
+      },
+    });
+  });
+  await host.goto('/quizzes');
+  await host.getByRole('link', { name: 'Редагувати' }).first().click();
+
+  await host.getByRole('button', { name: 'Свої нейронки' }).click();
+  const dialog = host.getByRole('dialog', { name: 'Свої нейронки' });
+  const key = dialog.getByLabel('API-ключ');
+  await key.fill('sk-wrong-key');
+  await dialog.getByRole('button', { name: 'Перевірити ключ' }).click();
+  await expect(dialog.getByText('Провайдер не прийняв ключ')).toBeVisible();
+
+  await key.fill('sk-good-key-123');
+  await dialog.getByRole('button', { name: 'Перевірити ключ' }).click();
+  await expect(dialog.getByRole('combobox', { name: 'Модель' })).toHaveValue('GPT Test');
+  await dialog.getByRole('button', { name: 'Додати' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(host.getByRole('combobox', { name: 'Хто пише питання' })).toHaveText(
+    /ChatGPT · GPT Test/,
+  );
+
+  await host.getByLabel('Тема квізу').fill('Історія науки');
+  await host.getByRole('checkbox', { name: 'Писати пояснення до відповідей' }).check();
+  await host.getByRole('button', { name: 'Згенерувати' }).click();
+  await host.getByRole('alertdialog').getByRole('button', { name: 'Замінити' }).click();
+  await expect(host.getByText('Писав ChatGPT · GPT Test.', { exact: false })).toBeVisible();
+  // The key goes with the request for the chosen AI only, and is kept nowhere but this browser.
+  expect(requests[0]).toMatchObject({
+    provider: 'own',
+    explain: true,
+    own: [{ vendor: 'openai', key: 'sk-good-key-123', model: 'gpt-test' }],
+  });
+
+  // Removing it brings the free AIs back.
+  await host.getByRole('button', { name: 'Свої нейронки' }).click();
+  await dialog.getByRole('button', { name: 'Прибрати ChatGPT GPT Test' }).click();
+  await expect(dialog.getByRole('list', { name: 'Підключені нейронки' })).toBeHidden();
+  await host.keyboard.press('Escape');
+  await expect(host.getByRole('combobox', { name: 'Хто пише питання' })).toHaveText(/Авто/);
+});
+
 test('an interrupted generation continues from the failed round', async ({ browser }) => {
   const { host } = await hostGame(browser);
   await host.goto('/quizzes');

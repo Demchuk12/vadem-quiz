@@ -1,6 +1,9 @@
 export {
   QuizApi,
+  type AiModel,
   type AiProvider,
+  type AiVendor,
+  type OwnAiCredentials,
   type GenerateRoundRequest,
   type GeneratedRoundResult,
   type NewQuiz,
@@ -24,7 +27,14 @@ export {
   type QuizQuestion,
 } from './model/quiz-document';
 export { SavedQuizzes, type SavedQuiz } from './model/saved-quizzes';
-export { AiWriter, type AiRequest, type AiResult } from './api/ai-writer';
+export {
+  AiWriter,
+  VENDOR_LABELS,
+  type AiOption,
+  type AiRequest,
+  type AiResult,
+  type OwnAi,
+} from './api/ai-writer';
 export {
   answersOutside,
   applyEdit,

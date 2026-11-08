@@ -21,27 +21,29 @@
       Близько третини відповідей отримають фото з Вікіпедії. Його побачать, коли відповідь
       відкриють.
     </p>
-    @if (ai.providers().length > 1) {
+    <label class="vd-choice">
+      <input type="checkbox" vdCheckbox formControlName="explain" />
+      Писати пояснення до відповідей
+    </label>
+    <p class="hint">Ведучий зможе розповісти цікавинку, коли відповідь відкриють.</p>
+    <div class="writer">
       <vd-field
         class="provider-field"
         label="Хто пише питання"
         hint="«Авто» бере першу вільну модель: якщо в однієї вичерпано ліміт, раунд напише інша."
       >
         <vd-select [value]="ai.provider()" (valueChange)="ai.choose($any($event))">
-          <vq-ai-provider-icon slot="start" [provider]="ai.provider()" />
-          <vd-option value="auto" label="Авто">
-            <vq-ai-provider-icon provider="auto" />
-            Авто
-          </vd-option>
-          @for (option of ai.providers(); track option.id) {
+          <vq-ai-provider-icon slot="start" [provider]="ai.iconOf(ai.provider())" />
+          @for (option of ai.options(); track option.id) {
             <vd-option [value]="option.id" [label]="option.label">
-              <vq-ai-provider-icon [provider]="option.id" />
+              <vq-ai-provider-icon [provider]="option.icon" />
               {{ option.label }}
             </vd-option>
           }
         </vd-select>
       </vd-field>
-    }
+      <vq-own-ai-settings />
+    </div>
     <div class="actions">
       <button vdButton type="submit" [loading]="busy()">
         <vd-icon slot="start" name="star" />

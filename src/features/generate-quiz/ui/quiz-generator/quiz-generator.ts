@@ -29,6 +29,7 @@ import { VdIcon } from '@vadem/ui/icon';
 import { VdInput } from '@vadem/ui/input';
 import { VdOption, VdSelect } from '@vadem/ui/select';
 import { VdToaster } from '@vadem/ui/toast';
+import { OwnAiSettings } from '../own-ai-settings/own-ai-settings';
 
 const MAX_PROMPT_LENGTH = 500;
 
@@ -56,6 +57,7 @@ interface Progress {
     VdInput,
     VdOption,
     VdSelect,
+    OwnAiSettings,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './quiz-generator.scss',
@@ -90,6 +92,7 @@ export class QuizGenerator {
       ],
     ],
     images: false,
+    explain: false,
   });
 
   private readonly prompt = toSignal(this.form.controls.prompt.valueChanges, { initialValue: '' });
@@ -152,6 +155,7 @@ export class QuizGenerator {
             avoid,
             avoidAnswers,
             images: this.form.controls.images.value,
+            explain: this.form.controls.explain.value,
           });
           writers.add(result.writer);
           quiz = applyGeneratedRound(quiz, round, result.round);

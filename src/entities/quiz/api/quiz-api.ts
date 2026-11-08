@@ -14,6 +14,21 @@ export interface AiProvider {
   label: string;
 }
 
+/** Companies whose AI a host can connect with their own key. */
+export type AiVendor = 'openai' | 'anthropic' | 'gemini' | 'openrouter';
+
+/** A host's own AI as the function needs it for one request. */
+export interface OwnAiCredentials {
+  vendor: AiVendor;
+  key: string;
+  model: string;
+}
+
+export interface AiModel {
+  id: string;
+  label: string;
+}
+
 export interface GenerateRoundRequest {
   quizId: string;
   token: string;
@@ -27,8 +42,12 @@ export interface GenerateRoundRequest {
   avoid: string[];
   /** Answers already in the quiz, which the AI must not ask about again. */
   avoidAnswers: string[];
-  /** A provider id, or "auto" for the first one that answers. */
+  /** A free provider's id, "own" for the one AI in `own`, or "auto" for the first that answers. */
   provider: string;
+  /** The host's own AIs: the one chosen, or all of them for "auto", which tries them first. */
+  own?: OwnAiCredentials[];
+  /** Ask for an explanation of every answer. */
+  explain?: boolean;
   /** Ask for some questions with a photo from Wikipedia. */
   images: boolean;
   /** Content to edit by the instruction in `prompt`, instead of writing from a topic. */
@@ -65,6 +84,13 @@ export class QuizApi {
     return this.rpc
       .invoke<{ providers: AiProvider[] }>('generate-round')
       .then((result) => result.providers);
+  }
+
+  /** The chat models a key can use. The key only passes through the function. */
+  aiModels(vendor: AiVendor, key: string): Promise<AiModel[]> {
+    return this.rpc
+      .invoke<{ models: AiModel[] }>('generate-round', { action: 'models', vendor, key })
+      .then((result) => result.models);
   }
 
   generateRound(request: GenerateRoundRequest): Promise<GeneratedRoundResult> {

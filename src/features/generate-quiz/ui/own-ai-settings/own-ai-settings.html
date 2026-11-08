@@ -1,0 +1,107 @@
+<button vdButton type="button" variant="ghost" size="sm" (click)="open.set(true)">
+  <vd-icon slot="start" name="key" />
+  Свої нейронки
+</button>
+
+<dialog vdDialog size="md" [open]="open()" (openChange)="open.set($event)">
+  <header vdDialogHeader>
+    <h2 vdDialogTitle>Свої нейронки</h2>
+    <p vdDialogDescription>
+      Підключіть ChatGPT, Claude чи інший AI своїм ключем: вони пишуть точніше за безкоштовні. Ключ
+      зберігається лише в цьому браузері, а генерації оплачуються з вашого рахунку в провайдера.
+    </p>
+  </header>
+
+  <div vdDialogBody class="body">
+    @if (ai.ownAis().length > 0) {
+      <ul class="connected" aria-label="Підключені нейронки">
+        @for (own of ai.ownAis(); track own.id) {
+          <li>
+            <vq-ai-provider-icon [provider]="own.vendor" />
+            <span class="name">
+              <strong>{{ vendorLabels[own.vendor] }}</strong>
+              <span class="model">{{ own.modelLabel }}</span>
+            </span>
+            <button
+              vdButton
+              type="button"
+              variant="ghost"
+              size="sm"
+              iconOnly
+              [attr.aria-label]="'Прибрати ' + vendorLabels[own.vendor] + ' ' + own.modelLabel"
+              (click)="ai.removeOwn(own.id)"
+            >
+              <vd-icon name="trash" />
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    <form class="add" (submit)="$event.preventDefault(); models() ? add() : check()">
+      <h3>Підключити</h3>
+      <vd-field label="Компанія">
+        <vd-select [value]="vendor()" (valueChange)="setVendor($any($event))">
+          <vq-ai-provider-icon slot="start" [provider]="vendor()" />
+          @for (option of vendors; track option.id) {
+            <vd-option [value]="option.id" [label]="option.label">
+              <vq-ai-provider-icon [provider]="option.id" />
+              {{ option.label }}
+            </vd-option>
+          }
+        </vd-select>
+      </vd-field>
+
+      <vd-field label="API-ключ" [error]="keyError()">
+        <vd-password-input revealLabel="Показати ключ">
+          <input
+            vdPasswordInput
+            type="password"
+            autocomplete="off"
+            spellcheck="false"
+            [invalid]="keyError() !== ''"
+            [touched]="true"
+            [value]="key()"
+            (input)="setKey(valueOf($event))"
+          />
+        </vd-password-input>
+      </vd-field>
+      <p class="hint">
+        Ключ створюється в
+        <a [href]="keysUrl()" target="_blank" rel="noopener noreferrer">кабінеті провайдера</a>.
+      </p>
+
+      @if (models(); as list) {
+        @if (list.length === 0) {
+          <p class="hint">Ключ працює, але не відкриває жодної моделі для тексту.</p>
+        } @else {
+          <vd-field label="Модель">
+            <vd-combobox
+              placeholder="Знайти модель"
+              emptyText="Такої моделі немає"
+              [value]="model()"
+              (valueChange)="model.set($any($event))"
+            >
+              @for (option of list; track option.id) {
+                <vd-option [value]="option.id" [label]="option.label">{{ option.label }}</vd-option>
+              }
+            </vd-combobox>
+          </vd-field>
+        }
+      }
+
+      <div class="actions">
+        @if (models()) {
+          <button vdButton type="submit" variant="primary" [disabled]="!model()">
+            <vd-icon slot="start" name="plus" />
+            Додати
+          </button>
+        } @else {
+          <button vdButton type="submit" variant="primary" [loading]="busy()">
+            Перевірити ключ
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+</dialog>

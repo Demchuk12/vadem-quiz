@@ -15,6 +15,18 @@ form {
   font-size: var(--vd-text-sm);
 }
 
+.writer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2) var(--vd-space-3);
+  align-items: start;
+
+  // Lines the button up with the select, under the field's label.
+  > vq-own-ai-settings {
+    margin-block-start: calc(1lh + var(--vd-space-2));
+  }
+}
 .provider-field {
-  max-inline-size: 18rem;
+  flex: 0 1 22rem;
+  min-inline-size: 0;
 }

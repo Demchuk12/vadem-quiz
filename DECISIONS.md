@@ -160,6 +160,16 @@ the quiz and a place on one 1-to-10 scale (three rounds: 1-4, 4-7, 7-10), and th
 back a reply that repeats an answer or a category, like any other unusable reply. A generated
 photo shows the answer, so it belongs to the answer and appears only once that is revealed.
 
+## D22 — Own AI keys stay in the browser
+
+A host can connect ChatGPT, Claude, Gemini or OpenRouter with their own key. With no accounts yet,
+the key is kept in that browser's storage only and sent with each request to the function, which
+uses it once and never stores it or logs it, nor any reply from that provider. Picking a model
+starts from the key: the function asks the provider which models it opens, so new models appear
+without a release. Own calls are counted apart (200 a quiz a day) and leave the shared free quota
+alone. Under "auto" the host's own AIs go first, and one whose key is refused is skipped. Tying keys
+to a user account is left for when accounts exist.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path
