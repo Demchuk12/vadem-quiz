@@ -14,7 +14,8 @@ export {
   updateQuestion,
 } from './model/quiz-document';
 export { SavedQuizzes, type SavedQuiz } from './model/saved-quizzes';
-export { AiWriter } from './api/ai-writer';
+export { QuizWriter } from './api/quiz-writer';
+export { provideAiWriting } from './api/provide-ai-writing';
 export {
   answersOutside,
   applyEdit,

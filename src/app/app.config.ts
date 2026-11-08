@@ -7,12 +7,14 @@ import { provideRouter, withComponentInputBinding, withViewTransitions } from '@
 import { provideVdLocale, vdLocaleUk } from '@vadem/ui/locale';
 import { routes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
+import { provideAiWriting } from '@entities/quiz';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding(), withViewTransitions()),
     provideVdLocale(vdLocaleUk),
+    provideAiWriting(),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:5000',

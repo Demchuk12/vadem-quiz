@@ -11,7 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   AiProviderIcon,
-  AiWriter,
+  QuizWriter,
   SavedQuizzes,
   applyGeneratedRound,
   quizProgress,
@@ -71,7 +71,7 @@ export class QuizGenerator {
   readonly quiz = input.required<QuizDocument>();
   readonly generated = output<QuizDocument>();
 
-  protected readonly ai = inject(AiWriter);
+  protected readonly ai = inject(QuizWriter);
   private readonly saved = inject(SavedQuizzes);
   private readonly toaster = inject(VdToaster);
   private readonly action = apiAction();

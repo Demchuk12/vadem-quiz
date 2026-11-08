@@ -1,30 +1,29 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Media } from '@shared/api';
-import { readJson, writeJson } from '@shared/lib';
+import { AiSettings } from './ai-settings';
 import { QuizApi } from './quiz-api';
+import { QuizWriter } from './quiz-writer';
 import type { AiOption, AiRequest, AiResult, OwnAi } from './ai-writer.types';
 import type { AiProvider } from './quiz-api.types';
 import { VENDOR_LABELS } from '../config/ai-vendors';
 import type { GeneratedRound } from '../model/quiz-document.types';
 
-const CHOICE_KEY = 'vq.ai-provider';
-const OWN_KEY = 'vq.own-ai';
 const OWN_PREFIX = 'own:';
 
 /**
- * Everything that asks the AI goes through here: one choice of AI for the whole editor,
- * remembered on this device, and photos stored with the quiz the same way every time.
- * The host's own AIs, keys included, live in this browser's storage and nowhere else.
+ * Writes through the generate-round function: one choice of AI for the whole editor, kept by
+ * `AiSettings`, and photos stored with the quiz the same way every time.
  */
-@Injectable({ providedIn: 'root' })
-export class AiWriter {
+@Injectable()
+export class AiWriter implements QuizWriter {
   private readonly api = inject(QuizApi);
   private readonly media = inject(Media);
+  private readonly settings = inject(AiSettings);
 
   /** Only the free AIs this deployment has keys for. */
-  readonly providers = signal<AiProvider[]>([]);
-  readonly ownAis = signal<OwnAi[]>(readJson<OwnAi[]>(OWN_KEY) ?? []);
-  readonly provider = signal<string>(readJson<string>(CHOICE_KEY) ?? 'auto');
+  private readonly providers = signal<AiProvider[]>([]);
+  readonly ownAis = this.settings.ownAis;
+  readonly provider = this.settings.choice;
 
   readonly options = computed<AiOption[]>(() => [
     { id: 'auto', label: 'Авто', icon: 'auto' },
@@ -50,18 +49,17 @@ export class AiWriter {
   }
 
   choose(provider: string): void {
-    this.provider.set(provider);
-    writeJson(CHOICE_KEY, provider);
+    this.settings.saveChoice(provider);
   }
 
   addOwn(own: Omit<OwnAi, 'id'>): void {
     const added = { ...own, id: crypto.randomUUID() };
-    this.saveOwn([...this.ownAis(), added]);
+    this.settings.saveOwn([...this.ownAis(), added]);
     this.choose(OWN_PREFIX + added.id);
   }
 
   removeOwn(id: string): void {
-    this.saveOwn(this.ownAis().filter((own) => own.id !== id));
+    this.settings.saveOwn(this.ownAis().filter((own) => own.id !== id));
     if (this.provider() === OWN_PREFIX + id) this.choose('auto');
   }
 
@@ -93,11 +91,6 @@ export class AiWriter {
       ? this.labelOf(OWN_PREFIX + own[ownIndex].id)
       : this.labelOf(result.provider);
     return { round: await this.storeImages(request.quizId, result), writer };
-  }
-
-  private saveOwn(ais: OwnAi[]): void {
-    this.ownAis.set(ais);
-    writeJson(OWN_KEY, ais);
   }
 
   /** A photo that fails to arrive only costs itself: the answer reads well without it. */

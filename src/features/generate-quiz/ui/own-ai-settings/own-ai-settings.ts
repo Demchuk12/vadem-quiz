@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import {
   AiProviderIcon,
-  AiWriter,
+  QuizWriter,
   QuizApi,
   VENDOR_LABELS,
   type AiModel,
@@ -39,7 +39,7 @@ import { VENDORS } from '../../config/vendors';
   templateUrl: './own-ai-settings.html',
 })
 export class OwnAiSettings {
-  protected readonly ai = inject(AiWriter);
+  protected readonly ai = inject(QuizWriter);
   private readonly api = inject(QuizApi);
   private readonly toaster = inject(VdToaster);
   private readonly checking = apiAction();

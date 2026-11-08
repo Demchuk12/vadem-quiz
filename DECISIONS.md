@@ -205,6 +205,15 @@ sound tones, edit chips) go into the slice's `config/`. Tuning numbers used in o
 beside that code, where their meaning is clear. The Edge Function follows the same split: one
 module per concern, `config.ts` for limits and `types.ts` for shapes.
 
+## D27 — The editor depends on a question writer, not on how it is reached
+
+Features ask `QuizWriter` for the AI choice and the writing; `AiWriter` implements it through the
+generate-round function, and keeps the choice and the host's own AIs in `AiSettings`, today
+`BrowserAiSettings` on localStorage. `provideAiWriting()` in the app config picks the
+implementations. Tying own AIs to an account later means a new `AiSettings`, wired there, with
+no change to the features or the writer. The function already works this way: its core only
+knows `Provider` and `Attempt`, and each vendor is one adapter.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

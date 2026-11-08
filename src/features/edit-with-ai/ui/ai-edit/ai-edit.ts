@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {
   AiProviderIcon,
-  AiWriter,
+  QuizWriter,
   SavedQuizzes,
   answersOutside,
   applyEdit,
@@ -58,7 +58,7 @@ export class AiEdit {
   /** While the AI is writing, so the editor can show which part is changing. */
   readonly working = output<boolean>();
 
-  protected readonly ai = inject(AiWriter);
+  protected readonly ai = inject(QuizWriter);
   private readonly saved = inject(SavedQuizzes);
   private readonly toaster = inject(VdToaster);
   private readonly action = apiAction();
