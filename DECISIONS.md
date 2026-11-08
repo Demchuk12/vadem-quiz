@@ -188,6 +188,23 @@ question. Those questions alone go back to the same AI to be reworded around the
 are checked again; a round that still gives answers away is unusable like any other. On 100 real
 questions the check caught 3, all genuine, and none remained after the rewrite.
 
+## D25 — Flawed questions are replaced, not whole rounds
+
+A round with a repeated answer or a giveaway used to be thrown away and written again. On a narrow
+topic the model repeats itself every time, so the round never passed and the host got a 502. Now
+only the flawed questions go back to the same AI (up to three passes), with every answer the quiz
+already has listed as off limits; a per-minute limit hit by that follow-up call is waited out once.
+Repeated category titles are only discouraged: on a narrow topic they cannot always be avoided,
+and rejecting them broke more rounds than it improved.
+
+## D26 — Types and constant tables live in their own files
+
+A file that mixed logic with its interfaces and lookup tables grew hard to read. Types a slice
+exports sit next to their code as `<name>.types.ts`; constant tables (defaults, vendor labels,
+sound tones, edit chips) go into the slice's `config/`. Tuning numbers used in one place stay
+beside that code, where their meaning is clear. The Edge Function follows the same split: one
+module per concern, `config.ts` for limits and `types.ts` for shapes.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

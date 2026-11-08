@@ -3,10 +3,43 @@
 // the start of their stems, after both scripts are spelled one way.
 
 const CYRILLIC: Record<string, string> = {
-  а: 'a', б: 'b', в: 'v', г: 'g', ґ: 'g', д: 'd', е: 'e', є: 'e', ё: 'e', э: 'e', ж: 'zh',
-  з: 'z', и: 'i', і: 'i', ї: 'i', й: 'i', ы: 'i', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o',
-  п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'g', ц: 'ts', ч: 'ch', ш: 'sh',
-  щ: 'shch', ь: '', ъ: '', ю: 'iu', я: 'ia',
+  а: 'a',
+  б: 'b',
+  в: 'v',
+  г: 'g',
+  ґ: 'g',
+  д: 'd',
+  е: 'e',
+  є: 'e',
+  ё: 'e',
+  э: 'e',
+  ж: 'zh',
+  з: 'z',
+  и: 'i',
+  і: 'i',
+  ї: 'i',
+  й: 'i',
+  ы: 'i',
+  к: 'k',
+  л: 'l',
+  м: 'm',
+  н: 'n',
+  о: 'o',
+  п: 'p',
+  р: 'r',
+  с: 's',
+  т: 't',
+  у: 'u',
+  ф: 'f',
+  х: 'g',
+  ц: 'ts',
+  ч: 'ch',
+  ш: 'sh',
+  щ: 'shch',
+  ь: '',
+  ъ: '',
+  ю: 'iu',
+  я: 'ia',
 };
 
 /** One spelling for both scripts, close enough to match a name across them. */
@@ -37,7 +70,10 @@ export function leaksAnswer(question: string, answer: string): boolean {
   const key = words(answer)
     .map(spell)
     .filter((word) => word.length >= 4)
-    .reduce<string | undefined>((best, word) => (!best || word.length >= best.length ? word : best), undefined);
+    .reduce<string | undefined>(
+      (best, word) => (!best || word.length >= best.length ? word : best),
+      undefined,
+    );
   if (!key) return false;
   const stem = key.slice(0, STEM);
   return words(question)
