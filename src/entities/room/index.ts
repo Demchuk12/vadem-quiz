@@ -7,7 +7,7 @@ export type {
   JoinedRoom,
   NewRoom,
 } from './api/room-api.types';
-export { bluffKey, bluffResult, secondsLeft, votableOptions } from './lib/bluff';
+export { bluffKey, bluffResult, revealOrder, secondsLeft, votableOptions } from './lib/bluff';
 export { playGameSounds } from './lib/game-sounds';
 export {
   buzzerStateFor,
@@ -32,6 +32,8 @@ export type {
 export { RoomSessions, type PlayerSession } from './model/room-sessions';
 export { RoomStore } from './model/room-store';
 export { BluffFact } from './ui/bluff-fact/bluff-fact';
+export { BluffProgress } from './ui/bluff-progress/bluff-progress';
+export { BluffReveal } from './ui/bluff-reveal/bluff-reveal';
 export { BluffResult } from './ui/bluff-result/bluff-result';
 export { LateLadder } from './ui/late-ladder/late-ladder';
 export { PhaseTimer } from './ui/phase-timer/phase-timer';

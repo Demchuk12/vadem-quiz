@@ -29,6 +29,7 @@ import { VD_ALERT } from '@vadem/ui/alert';
 import { VdButton } from '@vadem/ui/button';
 import { VD_CARD } from '@vadem/ui/card';
 import { VdIcon } from '@vadem/ui/icon';
+import { HostBluffPanel } from '@widgets/host-bluff-panel';
 import { HostQuestionPanel } from '@widgets/host-question-panel';
 import { RoomHeader } from '@widgets/room-header';
 import { RoomJoinInfo } from '@widgets/room-join-info';
@@ -44,6 +45,7 @@ import { RoomJoinInfo } from '@widgets/room-join-info';
     AdjustScoreDialog,
     FinishGameButton,
     GameBoard,
+    HostBluffPanel,
     HostQuestionPanel,
     RoomHeader,
     RoomJoinInfo,
@@ -68,6 +70,8 @@ export class HostPage implements OnInit {
   protected readonly adjusting = signal<Player | null>(null);
   private readonly code = computed(() => normalizeRoomCode(this.room()));
   protected readonly streamUrl = computed(() => this.links.stream(this.code()));
+  /** "Варіанти" needs the truth, the decoy and three lies to be worth guessing. */
+  protected readonly minPlayers = computed(() => (this.store.room()?.mode === 'bluff' ? 3 : 1));
 
   constructor() {
     playGameSounds(this.store, inject(Sound));

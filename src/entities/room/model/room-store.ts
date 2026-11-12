@@ -18,6 +18,7 @@ import {
   rankPlayers,
   upsertById,
 } from '../lib/game-logic';
+import { PhaseClock } from '../lib/bluff';
 import { VerdictTracker } from '../lib/verdicts';
 import type { Player, Room, RoomCell, RoomLoadStatus, Verdict } from './room';
 
@@ -55,6 +56,8 @@ export class RoomStore {
   });
   /** The host's latest call on an answer, while the screens show it; null in between. */
   readonly verdict = signal<Verdict | null>(null);
+  /** When the current "Варіанти" phase ends, in this device's milliseconds; null without a clock. */
+  readonly phaseEndsAt = signal<number | null>(null);
   readonly currentCell = computed(() => {
     const cellId = this.room()?.current_cell_id;
     return cellId ? (this.cells().find((c) => c.id === cellId) ?? null) : null;
@@ -65,6 +68,12 @@ export class RoomStore {
   private eventCount = 0;
 
   constructor() {
+    const phases = new PhaseClock();
+    effect(() => {
+      const endsAt = phases.observe(this.room(), Date.now());
+      untracked(() => this.phaseEndsAt.set(endsAt));
+    });
+
     const tracker = new VerdictTracker();
     let verdictTimer: ReturnType<typeof setTimeout> | undefined;
     effect(() => {

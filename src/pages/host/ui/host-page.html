@@ -34,12 +34,15 @@
               variant="primary"
               size="lg"
               [loading]="host.busy()"
-              [disabled]="store.players().length === 0"
+              [disabled]="store.players().length < minPlayers()"
               (click)="act('startGame')"
             >
               <vd-icon slot="start" name="rocket" />
               Почати гру
             </button>
+            @if (room.mode === 'bluff' && store.players().length < minPlayers()) {
+              <p class="hint">Для гри «Варіанти» потрібно щонайменше {{ minPlayers() }} гравці.</p>
+            }
           </vq-room-join-info>
         </section>
       }
@@ -69,6 +72,15 @@
       }
       @case ('finished') {
         <section vdCard><vq-winner-banner /></section>
+      }
+      @case ('bluff_writing') {
+        <section vdCard><vq-host-bluff-panel /></section>
+      }
+      @case ('bluff_voting') {
+        <section vdCard><vq-host-bluff-panel /></section>
+      }
+      @case ('bluff_reveal') {
+        <section vdCard><vq-host-bluff-panel /></section>
       }
       @default {
         <section vdCard>

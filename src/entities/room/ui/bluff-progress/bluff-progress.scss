@@ -1,0 +1,28 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-2);
+}
+.count {
+  margin: 0;
+  color: var(--vd-color-text-muted);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.chip {
+  padding: var(--vd-space-1) var(--vd-space-3);
+  border: var(--vd-border-width) solid var(--vd-color-border);
+  border-radius: var(--vd-radius-full);
+  color: var(--vd-color-text-muted);
+  transition: background-color var(--vd-duration-fast) var(--vd-ease-out);
+}
+.chip.done {
+  border-color: var(--vd-color-action);
+  background-color: var(--vd-color-action-subtle);
+  color: var(--vd-color-action-text);
+}

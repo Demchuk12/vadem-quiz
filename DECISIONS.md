@@ -230,9 +230,10 @@ three states of its own (writing, voting, reveal).
   so the truth cannot stand out by its neatness.
 - Options reach the room only when voting opens, shuffled, with random ids and no authors; votes
   and authors only at the reveal. Secrets stay in `private` until then, as for the board.
-- A phase ends when everyone is done, or when the host ends it. `phase_ends_at` (30 s to write,
-  20 s to vote) is the clock the screens show; with no server of our own, the host's page ends
-  the phase when it runs out.
+- A phase ends when everyone is done, or when the host ends it: 30 s to write, 20 s to vote. With
+  no server of our own, the host's page ends the phase when its clock runs out. A device's clock
+  may be seconds off the database's, so a page that sees a phase begin times it from that moment;
+  only a page opened mid-phase uses `phase_ends_at`.
 - At least 3 players, so the truth, the decoy and three lies make a guess hard; 5 to 20 facts.
 - The AI writes all facts in one call, with three decoys each. The first becomes the decoy; the
   others stay in the editor as one-click swaps and are not saved.

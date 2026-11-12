@@ -1,0 +1,58 @@
+@use 'shared/ui/styles/motion';
+
+:host {
+  display: block;
+}
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--vd-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.option {
+  display: grid;
+  gap: var(--vd-space-1);
+  align-content: start;
+  padding: var(--vd-space-3) var(--vd-space-4);
+  border: var(--vd-border-width) solid var(--vd-color-border);
+  border-radius: var(--vd-radius-lg);
+  background-color: var(--vd-color-surface);
+}
+/* One after another, the truth last: the room reads each before the next appears. */
+.revealed .option {
+  @include motion.enter(vq-rise, calc(var(--order, 0) * 900ms));
+}
+.text {
+  font-size: var(--vd-text-lg);
+  font-weight: var(--vd-weight-semibold);
+  overflow-wrap: anywhere;
+}
+.label {
+  font-size: var(--vd-text-sm);
+  font-weight: var(--vd-weight-semibold);
+  color: var(--vd-color-text-muted);
+}
+.voters {
+  font-size: var(--vd-text-sm);
+  color: var(--vd-color-text-muted);
+}
+.option[data-kind='truth'] {
+  border-color: var(--vd-color-success-border);
+  background-color: var(--vd-color-success-subtle);
+
+  .label {
+    color: var(--vd-color-success-text);
+  }
+}
+.option[data-kind='decoy'] .label {
+  color: var(--vd-color-danger-text);
+}
+:host([data-large]) .text {
+  font-size: var(--vd-text-2xl);
+}
+:host([data-large]) .label,
+:host([data-large]) .voters {
+  font-size: var(--vd-text-base);
+}

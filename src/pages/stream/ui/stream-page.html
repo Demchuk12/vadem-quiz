@@ -17,6 +17,32 @@
       @case ('finished') {
         <vq-winner-banner />
       }
+      @case ('bluff_writing') {
+        <div class="bluff">
+          <div class="bluff-head">
+            <vq-bluff-fact large />
+            <vq-phase-timer />
+          </div>
+          <p class="big">Вигадайте своє закінчення</p>
+          <vq-bluff-progress />
+        </div>
+      }
+      @case ('bluff_voting') {
+        <div class="bluff">
+          <div class="bluff-head">
+            <vq-bluff-fact large />
+            <vq-phase-timer />
+          </div>
+          <vq-bluff-reveal large />
+          <vq-bluff-progress />
+        </div>
+      }
+      @case ('bluff_reveal') {
+        <div class="bluff">
+          <vq-bluff-fact large />
+          <vq-bluff-reveal large />
+        </div>
+      }
       @default {
         <vq-question-view large />
         @switch (room.state) {

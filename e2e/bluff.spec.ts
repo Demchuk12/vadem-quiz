@@ -33,7 +33,7 @@ test('a "Варіанти" quiz is made of facts with a truth and a decoy', asyn
   await page.goto('/quizzes');
   const card = page.getByRole('listitem').filter({ hasText: 'Дивні факти' });
   await expect(card.getByText('Варіанти')).toBeVisible();
-  await expect(card.getByRole('button', { name: 'Нова гра' })).toHaveCount(0);
+  await expect(card.getByRole('button', { name: 'Нова гра' })).toBeVisible();
 });
 
 test('AI writes the facts with decoys, and the host swaps in another', async ({ page }) => {
@@ -142,8 +142,11 @@ test('players write lies, vote, and see what the round brought them', async ({ b
     await page.getByRole('button', { name: 'Надіслати' }).click();
     await expect(page.getByText(`Надіслано: «${text}»`)).toBeVisible();
   };
+  // Another player's lie arriving must not wipe what Bob is typing.
+  await bob.getByLabel('Ваш варіант').fill('пивних бочок');
   await write(ann, 'старих трамваїв');
   await expect(bob.getByText('Написали 1 з 3')).toBeVisible();
+  await expect(bob.getByLabel('Ваш варіант')).toHaveValue('пивних бочок');
   await write(bob, 'пивних бочок');
   // Cat writes the truth: it stands beside it, and Cat may vote for neither.
   await write(cat, 'Льоду');
@@ -166,4 +169,74 @@ test('players write lies, vote, and see what the round brought them', async ({ b
   await expect(bob.getByText('На ваш варіант повелися: Ann (+1)')).toBeVisible();
   await expect(cat.getByText('Ви повелися на пастку ведучого: −1')).toBeVisible();
   await expect(cat.getByText('льоду', { exact: true })).toBeVisible();
+});
+
+test('the host runs the round and the stream shows it without giving the truth away', async ({
+  browser,
+}) => {
+  const { roomId, code, hostToken } = await bluffRoom();
+  const hostContext = await browser.newContext();
+  await hostContext.addInitScript(
+    ([key, token]) => localStorage.setItem(key!, JSON.stringify(token)),
+    [`vq.host.${code}`, hostToken],
+  );
+  const host = await hostContext.newPage();
+  await host.clock.install();
+  await host.goto(`/host/${code}`);
+  const stream = await (await browser.newContext()).newPage();
+  await stream.goto(`/stream/${code}`);
+
+  const start = host.getByRole('button', { name: 'Почати гру' });
+  const ann = await joinGame(browser, code, 'Ann');
+  const bob = await joinGame(browser, code, 'Bob');
+  await expect(start).toBeDisabled();
+  await expect(host.getByText('потрібно щонайменше 3 гравці')).toBeVisible();
+  const cat = await joinGame(browser, code, 'Cat');
+  await start.click();
+
+  // Only the host sees the truth and the decoy.
+  await expect(host.getByText('Правда (бачите лише ви)')).toBeVisible();
+  await expect(host.getByText('льоду', { exact: true })).toBeVisible();
+  await expect(stream.getByText('У Швеції є готель, збудований з')).toBeVisible();
+  await expect(stream.getByText('Написали 0 з 3')).toBeVisible();
+  await expect(stream.getByText('льоду')).toHaveCount(0);
+  expect((await new AxeBuilder({ page: stream }).analyze()).violations).toEqual([]);
+
+  // The clock runs out with two lies in: voting opens without the third.
+  for (const [page, text] of [
+    [ann, 'старих трамваїв'],
+    [bob, 'пивних бочок'],
+  ] as const) {
+    await page.getByLabel('Ваш варіант').fill(text);
+    await page.getByRole('button', { name: 'Надіслати' }).click();
+    await expect(page.getByText('Надіслано')).toBeVisible();
+  }
+  await expect(stream.getByText('Написали 2 з 3')).toBeVisible();
+  await host.clock.fastForward('00:31');
+  await expect(host.getByRole('button', { name: 'Розкрити варіанти' })).toBeVisible();
+  await expect(stream.getByText('старих трамваїв')).toBeVisible();
+  await expect(stream.getByText('Правда')).toHaveCount(0);
+
+  const options = (page: Page) => page.getByRole('group', { name: 'Варіанти' }).getByRole('button');
+  await options(cat).filter({ hasText: 'старих трамваїв' }).click();
+  await options(bob).filter({ hasText: 'льоду' }).click();
+  await expect(stream.getByText('Проголосували 2 з 3')).toBeVisible();
+
+  // The host may reveal before everyone has voted.
+  await host.getByRole('button', { name: 'Розкрити варіанти' }).click();
+  const truth = stream.getByRole('listitem').filter({ hasText: 'Правда' });
+  await expect(truth).toContainText('льоду');
+  await expect(truth).toContainText('Повелися: Bob');
+  await expect(
+    stream.getByRole('listitem').filter({ hasText: 'Варіант гравця Ann' }),
+  ).toContainText('Повелися: Cat');
+  await expect(stream.getByRole('listitem').filter({ hasText: 'Пастка ведучого' })).toContainText(
+    'Ніхто не обрав',
+  );
+  expect((await new AxeBuilder({ page: stream }).analyze()).violations).toEqual([]);
+
+  await host.getByRole('button', { name: 'Наступний факт' }).click();
+  await expect(stream.locator('vq-bluff-fact')).toContainText('Факт 2');
+  await expect(host.getByText('правда 2', { exact: true })).toBeVisible();
+  void roomId;
 });

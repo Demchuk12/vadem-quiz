@@ -1,4 +1,4 @@
-import { bluffKey, bluffResult, factStem, secondsLeft, votableOptions } from './bluff';
+import { PhaseClock, bluffKey, bluffResult, factStem, secondsLeft, votableOptions } from './bluff';
 import type { Player, Room } from '../model/room';
 
 describe('bluff', () => {
@@ -18,10 +18,21 @@ describe('bluff', () => {
   });
 
   it('counts the seconds left', () => {
-    const now = Date.parse('2026-11-12T12:00:00Z');
-    expect(secondsLeft({ phase_ends_at: '2026-11-12T12:00:10.2Z' }, now)).toBe(11);
-    expect(secondsLeft({ phase_ends_at: '2026-11-12T11:59:00Z' }, now)).toBe(0);
-    expect(secondsLeft({ phase_ends_at: null }, now)).toBe(0);
+    expect(secondsLeft(10_200, 0)).toBe(11);
+    expect(secondsLeft(0, 5_000)).toBe(0);
+    expect(secondsLeft(null, 0)).toBe(0);
+  });
+
+  it('runs a phase seen to begin for its full length, whatever the database clock says', () => {
+    const clock = new PhaseClock();
+    const room = (state: Room['state'], endsAt: string | null) =>
+      ({ round: 1, state, phase_ends_at: endsAt, writing_seconds: 30, voting_seconds: 20 }) as Room;
+    // Opened mid-phase: only the database's end time is known.
+    expect(clock.observe(room('bluff_writing', '1970-01-01T00:00:05Z'), 1_000)).toBe(5_000);
+    expect(clock.observe(room('bluff_writing', '1970-01-01T00:00:05Z'), 2_000)).toBe(5_000);
+    // Seen to begin: twenty seconds from now, though the database clock is a minute behind.
+    expect(clock.observe(room('bluff_voting', '1969-12-31T23:59:30Z'), 3_000)).toBe(23_000);
+    expect(clock.observe(room('bluff_reveal', null), 4_000)).toBeNull();
   });
 
   it('cuts the closing ellipsis off a fact', () => {

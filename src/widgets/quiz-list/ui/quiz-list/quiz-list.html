@@ -18,10 +18,7 @@
             @if (quiz.lastRoomCode; as code) {
               <a vdButton size="sm" [routerLink]="['/host', code]">Гра {{ code }}</a>
             }
-            <!-- A "Варіанти" game needs its host and player screens before it can start. -->
-            @if (quiz.mode !== 'bluff') {
-              <vq-start-room-button [quiz]="quiz" />
-            }
+            <vq-start-room-button [quiz]="quiz" />
             <a vdButton size="sm" [routerLink]="['/quizzes', quiz.id]">
               <vd-icon slot="start" name="pencil" />
               Редагувати

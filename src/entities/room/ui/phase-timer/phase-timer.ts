@@ -20,11 +20,8 @@ export class PhaseTimer {
   private readonly store = inject(RoomStore);
   private readonly now = signal(Date.now());
 
-  protected readonly left = computed(() => {
-    const room = this.store.room();
-    return room ? secondsLeft(room, this.now()) : 0;
-  });
-  protected readonly running = computed(() => !!this.store.room()?.phase_ends_at);
+  protected readonly left = computed(() => secondsLeft(this.store.phaseEndsAt(), this.now()));
+  protected readonly running = computed(() => this.store.phaseEndsAt() !== null);
 
   constructor() {
     const timer = setInterval(() => this.now.set(Date.now()), 250);

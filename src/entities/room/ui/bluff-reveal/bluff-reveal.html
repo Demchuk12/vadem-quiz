@@ -1,0 +1,21 @@
+<ol class="options" [class.revealed]="revealed()">
+  @for (entry of options(); track entry.option.id; let i = $index) {
+    <li
+      class="option"
+      [attr.data-kind]="entry.option.kind ?? null"
+      [style.--order]="revealed() ? i : 0"
+    >
+      <span class="text">{{ entry.option.text }}</span>
+      @if (revealed()) {
+        <span class="label">{{ entry.label }}</span>
+        <span class="voters">
+          @if (entry.voters.length > 0) {
+            Повелися: {{ entry.voters.join(', ') }}
+          } @else {
+            Ніхто не обрав
+          }
+        </span>
+      }
+    </li>
+  }
+</ol>

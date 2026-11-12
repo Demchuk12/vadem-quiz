@@ -1,0 +1,42 @@
+@if (store.room(); as room) {
+  <div class="head">
+    <vq-bluff-fact />
+    <vq-phase-timer />
+  </div>
+
+  @if (room.state !== 'bluff_reveal' && fact(); as hostFact) {
+    <dl class="secret">
+      <div>
+        <dt>Правда (бачите лише ви)</dt>
+        <dd>{{ hostFact.truth }}</dd>
+      </div>
+      <div>
+        <dt>Ваша пастка</dt>
+        <dd>{{ hostFact.decoy }}</dd>
+      </div>
+    </dl>
+  }
+
+  @if (room.state === 'bluff_reveal' || room.state === 'bluff_voting') {
+    <vq-bluff-reveal />
+  }
+  @if (room.state !== 'bluff_reveal') {
+    <vq-bluff-progress />
+  }
+
+  <div class="actions">
+    <button vdButton variant="primary" size="lg" [loading]="host.busy()" (click)="next()">
+      @switch (room.state) {
+        @case ('bluff_writing') {
+          Відкрити голосування
+        }
+        @case ('bluff_voting') {
+          Розкрити варіанти
+        }
+        @default {
+          {{ last() ? 'Підбити підсумки' : 'Наступний факт' }}
+        }
+      }
+    </button>
+  </div>
+}

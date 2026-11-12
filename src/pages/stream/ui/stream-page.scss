@@ -10,3 +10,18 @@
 .big {
   @include layout.headline(var(--vd-text-3xl), var(--vd-weight-extrabold));
 }
+.bluff {
+  display: grid;
+  gap: var(--vd-space-6);
+}
+.bluff-head {
+  display: flex;
+  gap: var(--vd-space-4);
+  align-items: start;
+  justify-content: space-between;
+
+  vq-bluff-fact {
+    flex: 1;
+    min-inline-size: 0;
+  }
+}

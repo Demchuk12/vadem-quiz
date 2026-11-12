@@ -30,6 +30,8 @@ export class BluffWriter {
   readonly session = input.required<PlayerSession>();
 
   private readonly store = inject(RoomStore);
+  /** Only a new fact resets the round's state, not every update of the room. */
+  private readonly round = computed(() => this.store.room()?.round);
   private readonly api = inject(RoomApi);
   private readonly action = apiAction();
 
@@ -46,7 +48,7 @@ export class BluffWriter {
   constructor() {
     // A new fact starts empty; a reloaded phone gets its lie back.
     effect(() => {
-      const round = this.store.room()?.round;
+      const round = this.round();
       const session = this.session();
       if (round === undefined) return;
       untracked(() => {

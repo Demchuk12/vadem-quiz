@@ -24,6 +24,8 @@ export class BluffVoter {
   readonly session = input.required<PlayerSession>();
 
   private readonly store = inject(RoomStore);
+  /** Only a new fact resets the round's state, not every update of the room. */
+  private readonly round = computed(() => this.store.room()?.round);
   private readonly api = inject(RoomApi);
   private readonly action = apiAction();
 
@@ -39,7 +41,7 @@ export class BluffVoter {
   constructor() {
     // The own lie decides which options to hide; a reloaded phone also gets its vote back.
     effect(() => {
-      const round = this.store.room()?.round;
+      const round = this.round();
       const session = this.session();
       if (round === undefined) return;
       untracked(() => {

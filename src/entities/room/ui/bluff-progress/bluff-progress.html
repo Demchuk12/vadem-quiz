@@ -1,0 +1,11 @@
+<p class="count" aria-live="polite">{{ verb() }} {{ count() }} з {{ players().length }}</p>
+<ul class="chips">
+  @for (entry of players(); track entry.player.id) {
+    <li class="chip" [class.done]="entry.done">
+      {{ entry.player.nickname }}
+      @if (entry.done) {
+        <span class="vd-visually-hidden">: готово</span>
+      }
+    </li>
+  }
+</ul>

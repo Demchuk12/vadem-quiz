@@ -9,6 +9,12 @@
   line-height: var(--vd-leading-snug);
   overflow-wrap: anywhere;
 }
+:host([data-large]) .fact {
+  font-size: var(--vd-text-4xl);
+}
+:host([data-large]) .explanation {
+  font-size: var(--vd-text-xl);
+}
 .blank {
   display: inline-block;
   min-inline-size: 4em;

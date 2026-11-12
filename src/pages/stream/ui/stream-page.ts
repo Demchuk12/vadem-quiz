@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
 import {
+  BluffFact,
+  BluffProgress,
+  BluffReveal,
   GameBoard,
+  PhaseTimer,
   QuestionView,
   RoomStatus,
   RoomStore,
@@ -19,6 +23,10 @@ import { RoomJoinInfo } from '@widgets/room-join-info';
 @Component({
   selector: 'vq-stream-page',
   imports: [
+    BluffFact,
+    BluffProgress,
+    BluffReveal,
+    PhaseTimer,
     LateLadder,
     VerdictScene,
     GameBoard,

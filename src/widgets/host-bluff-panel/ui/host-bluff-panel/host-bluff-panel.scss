@@ -1,0 +1,38 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-4);
+}
+.head {
+  display: flex;
+  gap: var(--vd-space-3);
+  align-items: start;
+  justify-content: space-between;
+
+  vq-bluff-fact {
+    flex: 1;
+    min-inline-size: 0;
+  }
+}
+.secret {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--vd-space-3);
+  margin: 0;
+  padding: var(--vd-space-3) var(--vd-space-4);
+  border: var(--vd-border-width) dashed var(--vd-color-border-strong);
+  border-radius: var(--vd-radius-lg);
+
+  dt {
+    font-size: var(--vd-text-sm);
+    color: var(--vd-color-text-muted);
+  }
+  dd {
+    margin: 0;
+    font-weight: var(--vd-weight-semibold);
+  }
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-3);
+}
