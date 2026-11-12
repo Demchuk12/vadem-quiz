@@ -238,6 +238,16 @@ three states of its own (writing, voting, reveal).
 - The AI writes all facts in one call, with three decoys each. The first becomes the decoy; the
   others stay in the editor as one-click swaps and are not saved.
 
+## D29 — Round clocks are optional and set per quiz
+
+Either game can be played against the clock or by the host's hand alone, chosen in the editor. In
+"Своя гра" the clock limits the press window: nobody pressed in time, and the question closes
+without points; after a wrong answer the others get the whole clock again. In "Варіанти" writing
+and voting each have their own clock. A new board has none; a new "Варіанти" quiz has 30 and 20
+seconds. The host's buttons work either way. A room copies the quiz's clocks when it is created,
+and a document or file without a clock's key leaves that clock as it was, so an older page or
+export never switches one off.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

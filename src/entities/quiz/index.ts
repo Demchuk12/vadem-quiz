@@ -30,7 +30,8 @@ export {
   type BluffDocument,
   type BluffFact,
 } from './model/bluff-document.types';
-export { BLUFF_FACTS, BLUFF_LENGTHS } from './config/bluff-limits';
+export { BLUFF_FACTS, BLUFF_LENGTHS, BLUFF_SECONDS } from './config/bluff-limits';
+export { DEFAULT_BUZZ_SECONDS } from './config/quiz-defaults';
 export { QuizWriter } from './api/quiz-writer';
 export { provideAiWriting } from './api/provide-ai-writing';
 export {

@@ -1,0 +1,21 @@
+<label class="vd-choice">
+  <input type="checkbox" vdSwitch [checked]="value() !== null" (change)="toggle($event)" />
+  {{ label() }}
+</label>
+@if (value(); as seconds) {
+  <vd-field class="seconds" [label]="secondsLabel()" [hint]="'Від ' + min + ' до ' + max">
+    <vd-number-input decreaseLabel="Менше" increaseLabel="Більше">
+      <input
+        vdNumberInput
+        type="number"
+        step="5"
+        [min]="min"
+        [max]="max"
+        [value]="seconds"
+        (change)="set($event)"
+      />
+    </vd-number-input>
+  </vd-field>
+} @else {
+  <p class="manual">Без таймера: далі гру веде ведучий кнопками.</p>
+}

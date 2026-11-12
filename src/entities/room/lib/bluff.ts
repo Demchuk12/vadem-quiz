@@ -26,6 +26,20 @@ export function secondsLeft(endsAt: number | null, now: number): number {
   return Math.max(0, Math.ceil((endsAt - now) / 1000));
 }
 
+/** The clock of the room's current state: presses in "Своя гра", writing and voting in "Варіанти". */
+export function phaseSeconds(room: Room): number | null {
+  switch (room.state) {
+    case 'buzzing_open':
+      return room.buzz_seconds;
+    case 'bluff_writing':
+      return room.writing_seconds;
+    case 'bluff_voting':
+      return room.voting_seconds;
+    default:
+      return null;
+  }
+}
+
 /**
  * When the current phase ends, on this device's clock. A device's clock may be seconds off the
  * database's, so a phase seen to begin runs its full length from that moment; only a page opened
@@ -41,12 +55,13 @@ export class PhaseClock {
     if (phase !== this.phase) {
       const seenStarting = this.phase !== null;
       this.phase = phase;
-      const seconds = room.state === 'bluff_voting' ? room.voting_seconds : room.writing_seconds;
-      this.endsAt = !room.phase_ends_at
-        ? null
-        : seenStarting
-          ? now + seconds * 1000
-          : Date.parse(room.phase_ends_at);
+      const seconds = phaseSeconds(room);
+      this.endsAt =
+        seconds === null || !room.phase_ends_at
+          ? null
+          : seenStarting
+            ? now + seconds * 1000
+            : Date.parse(room.phase_ends_at);
     }
     return this.endsAt;
   }

@@ -18,6 +18,9 @@ export interface BluffDocument {
   title: string;
   mode: 'bluff';
   facts: BluffFact[];
+  /** Seconds to write a lie and to vote; null means the host moves on by hand. */
+  writingSeconds?: number | null;
+  votingSeconds?: number | null;
 }
 
 /** Either kind of quiz, as `get_quiz` returns it. */

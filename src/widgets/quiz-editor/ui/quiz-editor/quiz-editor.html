@@ -2,6 +2,14 @@
   <input vdInput maxlength="120" [value]="quiz().title" (input)="setTitle($event)" />
 </vd-field>
 
+<vq-clock-setting
+  label="Обмежити час на натискання"
+  secondsLabel="Секунд на натискання"
+  [value]="quiz().buzzSeconds ?? null"
+  [defaultSeconds]="defaultBuzzSeconds"
+  (valueChange)="setBuzzSeconds($event)"
+/>
+
 <vd-tabs [value]="activeRound()" (valueChange)="activeRound.set($any($event))">
   <div vdTabList aria-label="Раунди">
     @for (round of quiz().rounds; track $index) {

@@ -53,3 +53,8 @@
   font-size: var(--vd-text-sm);
   color: var(--vd-color-text-muted);
 }
+.clocks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--vd-space-4);
+}

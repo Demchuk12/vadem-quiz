@@ -154,6 +154,19 @@ function asPositiveInt(value: unknown, where: string): number {
   throw new QuizImportError(`${where}: очікується додатне ціле число`);
 }
 
+/**
+ * A clock from a file: null is no clock, a number whole seconds in range. An older file has no
+ * such key, and the quiz keeps the clock it has.
+ */
+function asSeconds(value: unknown, where: string): number | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (typeof value === 'number' && Number.isInteger(value) && value >= 5 && value <= 300) {
+    return value;
+  }
+  throw new QuizImportError(`${where}: очікується від 5 до 300 секунд`);
+}
+
 function asArray(value: unknown, where: string): unknown[] {
   if (Array.isArray(value)) return value;
   throw new QuizImportError(`${where}: очікується список`);
@@ -203,6 +216,7 @@ export function parseQuizDocument(
 
   const document: QuizDocument = {
     title: asString(root['title'], 'title'),
+    buzzSeconds: asSeconds(root['buzzSeconds'], 'buzzSeconds'),
     roundMultipliers,
     rounds: rounds.map((r, ri) => ({
       categories: asArray(asRecord(r, `Раунд ${ri + 1}`)['categories'], `Раунд ${ri + 1}`).map(
@@ -235,6 +249,8 @@ function parseBluff(root: Record<string, unknown>): BluffDocument {
   return {
     title: asString(root['title'], 'title'),
     mode: 'bluff',
+    writingSeconds: asSeconds(root['writingSeconds'], 'writingSeconds'),
+    votingSeconds: asSeconds(root['votingSeconds'], 'votingSeconds'),
     facts: asArray(root['facts'], 'facts').map((f, i) => {
       const at = `Факт ${i + 1}`;
       const fact = asRecord(f, at);

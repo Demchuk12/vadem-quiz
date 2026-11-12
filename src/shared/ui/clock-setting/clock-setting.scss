@@ -1,0 +1,13 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-2);
+  align-content: start;
+}
+.seconds {
+  max-inline-size: 14rem;
+}
+.manual {
+  margin: 0;
+  font-size: var(--vd-text-sm);
+  color: var(--vd-color-text-muted);
+}

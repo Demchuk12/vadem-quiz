@@ -71,6 +71,9 @@
     }
     @default {
       <vq-question-view />
+      @if (room.state === 'buzzing_open') {
+        <div class="press-clock"><vq-phase-timer /></div>
+      }
       @if (session(); as playerSession) {
         <vq-buzz-button [session]="playerSession" />
       }

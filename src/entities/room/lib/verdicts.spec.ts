@@ -21,6 +21,7 @@ const room = (patch: Partial<Room>): Room => ({
   late_presses: [],
   spent_player_ids: [],
   phase_ends_at: null,
+  buzz_seconds: null,
   writing_seconds: 30,
   voting_seconds: 20,
   bluff_done: [],

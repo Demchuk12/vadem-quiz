@@ -37,10 +37,12 @@ export interface Room {
   /** The presses that came after it while the winner answers, with how late each was. */
   late_presses: LatePress[];
   spent_player_ids: string[];
-  /** "Варіанти": when the current phase runs out, by the database's clock. */
+  /** When the current phase's clock runs out, by the database's clock; read only in a phase with one. */
   phase_ends_at: string | null;
-  writing_seconds: number;
-  voting_seconds: number;
+  /** The quiz's clocks, in seconds; null where the host moves on by hand. */
+  buzz_seconds: number | null;
+  writing_seconds: number | null;
+  voting_seconds: number | null;
   /** Who has written, or while voting, who has voted. */
   bluff_done: string[];
   /** The shuffled options while voting; at the reveal with their kind, author and voters. */

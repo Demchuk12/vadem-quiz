@@ -6,17 +6,29 @@ import {
   effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
-import { HostSession, QuestionView, RoomApi, RoomStore, type HostAnswer } from '@entities/room';
+import {
+  HostSession,
+  PhaseTimer,
+  QuestionView,
+  RoomApi,
+  RoomStore,
+  secondsLeft,
+  type HostAnswer,
+} from '@entities/room';
 import { QuestionControls } from '@features/run-question';
 import { Media } from '@shared/api';
 
 const TICK_MS = 1000;
 
-/** The open question as the host sees it: with the answer, the controls and a stopwatch. */
+/**
+ * The open question as the host sees it: with the answer, the controls and a stopwatch. With a
+ * press clock, this page closes the question when nobody pressed in time.
+ */
 @Component({
   selector: 'vq-host-question-panel',
-  imports: [QuestionView, QuestionControls],
+  imports: [PhaseTimer, QuestionView, QuestionControls],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './host-question-panel.scss',
   templateUrl: './host-question-panel.html',
@@ -45,6 +57,18 @@ export class HostQuestionPanel {
 
     const tick = setInterval(() => this.seconds.update((s) => s + 1), TICK_MS);
     inject(DestroyRef).onDestroy(() => clearInterval(tick));
+
+    // Each press window is closed once. A press a moment earlier wins: then there is nothing to do.
+    let closed: unknown = null;
+    effect(() => {
+      this.seconds();
+      const room = this.store.room();
+      const endsAt = this.store.phaseEndsAt();
+      if (room?.state !== 'buzzing_open' || endsAt === null || endsAt === closed) return;
+      if (secondsLeft(endsAt, Date.now()) > 0) return;
+      closed = endsAt;
+      untracked(() => void this.api.skipQuestion(this.host.key).catch(() => undefined));
+    });
   }
 
   private async loadAnswer(): Promise<void> {

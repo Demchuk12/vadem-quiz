@@ -47,7 +47,10 @@
         <vq-question-view large />
         @switch (room.state) {
           @case ('buzzing_open') {
-            <p class="big">Хто перший?</p>
+            <div class="press">
+              <p class="big">Хто перший?</p>
+              <vq-phase-timer />
+            </div>
           }
           @case ('buzzed') {
             <p class="big">{{ store.winner()?.nickname }} відповідає</p>

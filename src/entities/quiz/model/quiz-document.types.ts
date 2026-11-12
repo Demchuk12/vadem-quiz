@@ -22,6 +22,8 @@ export interface QuizDocument {
   title: string;
   roundMultipliers: number[];
   rounds: QuizRound[];
+  /** Seconds the players have to press once the presses open; null means no clock. */
+  buzzSeconds?: number | null;
 }
 
 export interface QuizProgress {

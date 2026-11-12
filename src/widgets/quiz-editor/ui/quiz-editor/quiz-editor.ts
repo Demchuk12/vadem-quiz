@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import {
+  DEFAULT_BUZZ_SECONDS,
   addCategory,
   isQuestionComplete,
   pointsOf,
@@ -19,6 +20,7 @@ import {
 } from '@entities/quiz';
 import { AiEdit } from '@features/edit-with-ai';
 import { QuestionImage } from '@features/upload-image';
+import { ClockSetting } from '@shared/ui';
 import { VD_ACCORDION } from '@vadem/ui/accordion';
 import { VdButton } from '@vadem/ui/button';
 import { VD_CARD } from '@vadem/ui/card';
@@ -32,6 +34,7 @@ import { VD_TABS } from '@vadem/ui/tabs';
 @Component({
   selector: 'vq-quiz-editor',
   imports: [
+    ClockSetting,
     VD_ACCORDION,
     VdButton,
     VD_CARD,
@@ -91,8 +94,14 @@ export class QuizEditor {
     return pointsOf(question.basePoints, round, this.quiz());
   }
 
+  protected readonly defaultBuzzSeconds = DEFAULT_BUZZ_SECONDS;
+
   protected setTitle(event: Event): void {
     this.quiz.update((quiz) => ({ ...quiz, title: this.valueOf(event) }));
+  }
+
+  protected setBuzzSeconds(buzzSeconds: number | null): void {
+    this.quiz.update((quiz) => ({ ...quiz, buzzSeconds }));
   }
 
   protected setMultiplier(round: number, event: Event): void {

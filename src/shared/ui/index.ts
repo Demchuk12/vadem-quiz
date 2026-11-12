@@ -1,3 +1,4 @@
+export { ClockSetting } from './clock-setting/clock-setting';
 export { Confetti } from './confetti/confetti';
 export { JoinQr } from './join-qr/join-qr';
 export { QuestionLoader } from './question-loader/question-loader';

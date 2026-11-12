@@ -1,11 +1,17 @@
-import { BLUFF_FACTS } from '../config/bluff-limits';
+import { BLUFF_FACTS, BLUFF_SECONDS } from '../config/bluff-limits';
 import type { AnyQuizDocument, BluffDocument, BluffFact } from './bluff-document.types';
 import type { GeneratedRound, QuizProgress } from './quiz-document.types';
 
 const emptyFact = (): BluffFact => ({ text: '', truth: '', decoy: '', explanation: '' });
 
 export function emptyBluffQuiz(title: string): BluffDocument {
-  return { title, mode: 'bluff', facts: Array.from({ length: BLUFF_FACTS.default }, emptyFact) };
+  return {
+    title,
+    mode: 'bluff',
+    facts: Array.from({ length: BLUFF_FACTS.default }, emptyFact),
+    writingSeconds: BLUFF_SECONDS.writing,
+    votingSeconds: BLUFF_SECONDS.voting,
+  };
 }
 
 export const isBluff = (doc: AnyQuizDocument): doc is BluffDocument =>

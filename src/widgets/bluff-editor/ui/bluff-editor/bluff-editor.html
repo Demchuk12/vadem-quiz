@@ -2,6 +2,23 @@
   <input vdInput maxlength="120" [value]="quiz().title" (input)="setTitle($event)" />
 </vd-field>
 
+<div class="clocks">
+  <vq-clock-setting
+    label="Обмежити час на вигадування"
+    secondsLabel="Секунд на вигадування"
+    [value]="quiz().writingSeconds ?? null"
+    [defaultSeconds]="seconds.writing"
+    (valueChange)="setClock({ writingSeconds: $event })"
+  />
+  <vq-clock-setting
+    label="Обмежити час на голосування"
+    secondsLabel="Секунд на голосування"
+    [value]="quiz().votingSeconds ?? null"
+    [defaultSeconds]="seconds.voting"
+    (valueChange)="setClock({ votingSeconds: $event })"
+  />
+</div>
+
 <p class="hint">
   Кожен факт — це раунд. Гравці вигадують своє закінчення, щоб заплутати інших, а ви додаєте власну
   пастку. Найкраще працюють дивні, але правдиві факти: такі, де правда звучить як брехня.

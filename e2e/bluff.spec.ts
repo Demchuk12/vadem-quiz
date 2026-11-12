@@ -24,10 +24,19 @@ test('a "Варіанти" quiz is made of facts with a truth and a decoy', asyn
   const axe = new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']);
   expect((await axe.analyze()).violations).toEqual([]);
 
+  // Voting without a clock: the host ends it by hand.
+  await expect(page.getByLabel('Секунд на голосування')).toHaveValue('20');
+  await page.getByRole('switch', { name: 'Обмежити час на голосування' }).uncheck();
+  await expect(page.getByLabel('Секунд на голосування')).toHaveCount(0);
+  await page.getByLabel('Секунд на вигадування').fill('45');
+  await page.getByLabel('Секунд на вигадування').blur();
+
   await page.getByRole('button', { name: 'Зберегти' }).click();
   await expect(page.getByText('Квіз збережено')).toBeVisible();
   await page.reload();
   await expect(page.getByLabel('Правдиве закінчення').first()).toHaveValue('льоду');
+  await expect(page.getByRole('switch', { name: 'Обмежити час на голосування' })).not.toBeChecked();
+  await expect(page.getByLabel('Секунд на вигадування')).toHaveValue('45');
   await expect(page.getByLabel('Факт без закінчення')).toHaveCount(11);
 
   await page.goto('/quizzes');

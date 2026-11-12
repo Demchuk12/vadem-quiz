@@ -119,6 +119,22 @@ test('a full game: lobby, buzzer, judging, rounds, final standings', async ({ br
   await expect(stream.getByText('Перемагає Анна')).toBeVisible();
 });
 
+test('with a press clock, a question nobody answers closes by itself', async ({ browser }) => {
+  const quiz = { ...JSON.parse(QUIZ_JSON), buzzSeconds: 10 };
+  const { host, code } = await hostGame(browser, JSON.stringify(quiz));
+  const ann = await joinGame(browser, code, 'Анна');
+  await host.clock.install();
+  await host.getByRole('button', { name: 'Почати гру' }).click();
+  await host.getByRole('group', { name: 'Географія' }).getByRole('button', { name: '200' }).click();
+  await host.getByRole('button', { name: 'Відкрити відповіді' }).click();
+
+  await expect(buzzer(ann)).toHaveAttribute('data-state', 'ready');
+  await expect(ann.getByRole('timer')).toBeVisible();
+  await host.clock.fastForward('00:11');
+  await expect(ann.getByText('ТАЄМНА-ВІДПОВІДЬ-КИЇВ')).toBeVisible();
+  await expect(score(ann)).toHaveText('0');
+});
+
 test('a press that comes too late shows by how much', async ({ browser }) => {
   const { host, code } = await hostGame(browser);
   const ann = await joinGame(browser, code, 'Анна');

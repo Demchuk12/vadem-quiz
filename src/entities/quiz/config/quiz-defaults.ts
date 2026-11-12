@@ -5,3 +5,6 @@ export const DEFAULT_BASE_POINTS: readonly number[] = [200, 400, 600, 800, 1000]
 export const DEFAULT_MULTIPLIERS: readonly number[] = [1, 2, 3];
 
 export const DEFAULT_CATEGORIES_PER_ROUND = 5;
+
+/** The press clock a board gets when the host switches it on; a new board has none. */
+export const DEFAULT_BUZZ_SECONDS = 15;

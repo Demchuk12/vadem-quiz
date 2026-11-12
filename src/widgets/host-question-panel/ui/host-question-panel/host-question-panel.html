@@ -18,6 +18,7 @@
 
   <div class="footer" aria-live="polite">
     <vq-question-controls />
+    <vq-phase-timer />
     @if (room.state !== 'answer_shown') {
       <span class="timer" role="timer" aria-label="Час на питанні">{{ timer() }}</span>
     }

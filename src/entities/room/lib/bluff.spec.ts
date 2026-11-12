@@ -35,6 +35,21 @@ describe('bluff', () => {
     expect(clock.observe(room('bluff_reveal', null), 4_000)).toBeNull();
   });
 
+  it('times the presses of a board with a clock, and nothing without one', () => {
+    const clock = new PhaseClock();
+    const board = (state: Room['state'], buzzSeconds: number | null) =>
+      ({
+        round: 1,
+        state,
+        phase_ends_at: '1970-01-01T00:00:01Z',
+        buzz_seconds: buzzSeconds,
+      }) as Room;
+    expect(clock.observe(board('question_shown', 10), 0)).toBeNull();
+    expect(clock.observe(board('buzzing_open', 10), 1_000)).toBe(11_000);
+    expect(clock.observe(board('buzzed', 10), 2_000)).toBeNull();
+    expect(new PhaseClock().observe(board('buzzing_open', null), 0)).toBeNull();
+  });
+
   it('cuts the closing ellipsis off a fact', () => {
     expect(factStem('Готель збудований з… ')).toBe('Готель збудований з');
   });
