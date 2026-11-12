@@ -48,7 +48,8 @@ export class BluffVoter {
           .bluffMyRound(session.roomId, session.playerId, session.token)
           .then(({ answer, option_id }) => {
             this.ownAnswer.set(answer);
-            this.chosen.set(option_id);
+            // A vote given meanwhile is newer than this reply.
+            if (this.chosen() === null) this.chosen.set(option_id);
           })
           .catch(() => undefined);
       });

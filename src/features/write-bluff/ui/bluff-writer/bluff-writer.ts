@@ -55,8 +55,10 @@ export class BluffWriter {
         void this.api
           .bluffMyRound(session.roomId, session.playerId, session.token)
           .then(({ answer }) => {
+            // A lie sent or typed meanwhile is newer than this reply.
+            if (!answer || this.sent() !== null || this.form.dirty) return;
             this.sent.set(answer);
-            if (answer) this.form.setValue({ text: answer });
+            this.form.setValue({ text: answer });
           })
           .catch(() => undefined);
       });
