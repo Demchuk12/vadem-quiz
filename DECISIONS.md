@@ -214,6 +214,27 @@ implementations. Tying own AIs to an account later means a new `AiSettings`, wir
 no change to the features or the writer. The function already works this way: its core only
 knows `Provider` and `Attempt`, and each vendor is one adapter.
 
+## D28 — "Варіанти": a second mode with its rules in the database
+
+A friend's bluffing game, agreed in review: facts with a missing ending, players write lies, the
+host has a decoy, everyone votes. +2 for the truth, +1 to an author per vote their lie drew, −1 for
+the decoy. It reuses rooms, players and scores; a quiz and a room carry `mode`, and the round has
+three states of its own (writing, voting, reveal).
+
+- A lie that matches the truth or another lie is not refused: each author gets their own option,
+  so identical words stand side by side and luck decides which one a voter picks. Picking a
+  player's copy of the truth gives the voter nothing and its author +1.
+- A player may not vote for any option with the same words as their own. This also keeps the
+  author of a copy of the truth from taking a sure +2.
+- Every option is shown in one look (single spaces, no closing full stop, a small first letter),
+  so the truth cannot stand out by its neatness.
+- Options reach the room only when voting opens, shuffled, with random ids and no authors; votes
+  and authors only at the reveal. Secrets stay in `private` until then, as for the board.
+- A phase ends when everyone is done, or when the host ends it. `phase_ends_at` (30 s to write,
+  20 s to vote) is the clock the screens show; with no server of our own, the host's page ends
+  the phase when it runs out.
+- At least 3 players, so the truth, the decoy and three lies make a guess hard; 5 to 20 facts.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path
