@@ -17,7 +17,7 @@ import {
   type AnyQuizDocument,
   type SavedQuiz,
 } from '@entities/quiz';
-import { QuizGenerator } from '@features/generate-quiz';
+import { FactGenerator, QuizGenerator } from '@features/generate-quiz';
 import { QuizTransfer } from '@features/transfer-quiz';
 import { apiAction } from '@shared/api';
 import { QuestionLoader } from '@shared/ui';
@@ -41,6 +41,7 @@ type LoadState = 'loading' | 'ready' | 'forbidden' | 'error';
     VdSkeleton,
     BluffEditor,
     QuizEditor,
+    FactGenerator,
     QuizGenerator,
     QuizTransfer,
   ],

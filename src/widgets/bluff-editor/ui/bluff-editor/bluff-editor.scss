@@ -43,3 +43,13 @@
   gap: var(--vd-space-3);
   align-items: center;
 }
+.ideas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-1) var(--vd-space-2);
+  align-items: center;
+}
+.ideas-label {
+  font-size: var(--vd-text-sm);
+  color: var(--vd-color-text-muted);
+}

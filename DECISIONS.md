@@ -234,6 +234,8 @@ three states of its own (writing, voting, reveal).
   20 s to vote) is the clock the screens show; with no server of our own, the host's page ends
   the phase when it runs out.
 - At least 3 players, so the truth, the decoy and three lies make a guess hard; 5 to 20 facts.
+- The AI writes all facts in one call, with three decoys each. The first becomes the decoy; the
+  others stay in the editor as one-click swaps and are not saved.
 
 ## Known limits
 

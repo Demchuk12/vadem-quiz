@@ -5,7 +5,7 @@ import { SITE_URL, VENDOR_LABELS } from './config.ts';
 import { Failure } from './errors.ts';
 import { post } from './http.ts';
 import { instructions } from './prompt.ts';
-import { GEMINI_SCHEMA, STRICT_SCHEMA } from './schemas.ts';
+import { geminiSchema, strictFormat, strictSchema } from './schemas.ts';
 import type { Attempt, OwnAi, Provider, ProviderId, RoundRequest } from './types.ts';
 
 export function gemini(
@@ -27,7 +27,9 @@ export function gemini(
             systemInstruction: { parts: [{ text: instructions(request) }] },
             contents: [{ role: 'user', parts: [{ text: request.prompt }] }],
             generationConfig: {
-              responseFormat: { text: { mimeType: 'APPLICATION_JSON', schema: GEMINI_SCHEMA } },
+              responseFormat: {
+                text: { mimeType: 'APPLICATION_JSON', schema: geminiSchema(request) },
+              },
             },
           }),
         },
@@ -44,6 +46,7 @@ export function openAiCompatible(
   url: string,
   key: string,
   model: string,
+  /** Fixed, or chosen by the request, as the strict schema of each mode is. */
   responseFormat: unknown,
   extraHeaders: Record<string, string> = {},
   extraBody: (request: RoundRequest) => Record<string, unknown> = () => ({}),
@@ -66,7 +69,8 @@ export function openAiCompatible(
               { role: 'system', content: instructions(request) },
               { role: 'user', content: request.prompt },
             ],
-            response_format: responseFormat,
+            response_format:
+              typeof responseFormat === 'function' ? responseFormat(request) : responseFormat,
             ...extraBody(request),
           }),
         },
@@ -100,7 +104,7 @@ export function anthropic(model: string, key: string, label: string): Attempt {
               {
                 name: 'write_round',
                 description: 'Hands over the written round.',
-                input_schema: STRICT_SCHEMA,
+                input_schema: strictSchema(request),
               },
             ],
             tool_choice: { type: 'tool', name: 'write_round' },
@@ -120,10 +124,7 @@ export function anthropic(model: string, key: string, label: string): Attempt {
 /** One of the host's own AIs, on their key: any model they chose, paid ones included. */
 export function ownProvider(own: OwnAi, index: number): Provider {
   const label = `own:${index}`;
-  const strict = {
-    type: 'json_schema',
-    json_schema: { name: 'round', strict: true, schema: STRICT_SCHEMA },
-  };
+  const strict = strictFormat;
   const attempt = (): Attempt => {
     switch (own.vendor) {
       case 'openai':
@@ -211,10 +212,7 @@ export const PROVIDERS: Provider[] = [
           'https://api.groq.com/openai/v1/chat/completions',
           Deno.env.get('GROQ_API_KEY') ?? '',
           model,
-          {
-            type: 'json_schema',
-            json_schema: { name: 'round', strict: true, schema: STRICT_SCHEMA },
-          },
+          strictFormat,
           {},
           (request) => ({
             reasoning_effort: request.categories * request.questions <= 8 ? 'medium' : 'low',
@@ -234,13 +232,7 @@ export const PROVIDERS: Provider[] = [
       // which picks whichever free model is available, stands by. Gemma takes only JSON mode.
       const models: [string, unknown][] = [
         [Deno.env.get('OPENROUTER_MODEL') ?? 'google/gemma-4-31b-it:free', { type: 'json_object' }],
-        [
-          Deno.env.get('OPENROUTER_FALLBACK_MODEL') ?? 'openrouter/free',
-          {
-            type: 'json_schema',
-            json_schema: { name: 'round', strict: true, schema: STRICT_SCHEMA },
-          },
-        ],
+        [Deno.env.get('OPENROUTER_FALLBACK_MODEL') ?? 'openrouter/free', strictFormat],
       ];
       // Only free models: a paid one would spend the account's credits.
       const free = (model: string) => model.endsWith(':free') || model === 'openrouter/free';

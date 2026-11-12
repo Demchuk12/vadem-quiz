@@ -10,6 +10,8 @@ export interface BluffFact {
   decoy: string;
   /** Optional: told once the truth is revealed. */
   explanation: string;
+  /** Other decoys the AI offered, to swap in. Kept in the editor only, never saved. */
+  decoyIdeas?: string[];
 }
 
 export interface BluffDocument {

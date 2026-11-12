@@ -35,6 +35,8 @@ export interface GeneratedQuestion {
   text: string;
   answer: string;
   explanation?: string;
+  /** "Варіанти" only: false endings for the host's decoy. */
+  decoys?: string[];
   /** A photo of the answer, already stored with the quiz: it shows once the answer is revealed. */
   answerImagePath?: string | null;
 }

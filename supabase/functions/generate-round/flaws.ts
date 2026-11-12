@@ -103,6 +103,7 @@ export async function withoutFlaws(
         answer: fresh.answer,
         explanation: fresh.explanation || (sameAnswer ? old.explanation : ''),
         image: sameAnswer ? old.image : '',
+        ...(fresh.decoys ? { decoys: fresh.decoys } : {}),
       };
     });
     current = { categories };

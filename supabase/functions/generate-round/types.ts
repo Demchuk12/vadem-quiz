@@ -4,6 +4,9 @@ export type ProviderId = 'gemini' | 'groq' | 'openrouter';
 
 export type Choice = ProviderId | 'auto' | 'own';
 
+/** A board of categories, or the facts of "Варіанти". */
+export type Mode = 'board' | 'bluff';
+
 export type Vendor = 'openai' | 'anthropic' | 'gemini' | 'groq' | 'mistral' | 'openrouter';
 
 /** One of the host's own AIs: their key and the model they picked. */
@@ -14,6 +17,7 @@ export interface OwnAi {
 }
 
 export interface RoundRequest {
+  mode: Mode;
   quizId: string;
   token: string;
   prompt: string;
@@ -42,6 +46,8 @@ export interface GeneratedQuestion {
   text: string;
   answer: string;
   explanation?: string;
+  /** "Варіанти" only: false endings the host may use as their decoy. */
+  decoys?: string[];
   /** From the AI: a Wikipedia article title, or empty. Replaced by `imageUrl` before replying. */
   image?: string;
   imageUrl?: string;

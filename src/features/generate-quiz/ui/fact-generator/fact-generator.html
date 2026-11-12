@@ -1,0 +1,57 @@
+<section vdCard>
+  <form [formGroup]="form" (ngSubmit)="start()">
+    <vd-field
+      label="Тема фактів"
+      hint="AI добере дивні, але правдиві факти і запропонує до кожного три пастки. Перевірте їх: він буває впевнено неправий."
+      error="Опишіть тему: від 3 до 1500 символів."
+      [descriptionIds]="promptCount.descriptionId()"
+    >
+      <textarea
+        vdInput
+        id="facts-topic"
+        rows="3"
+        formControlName="prompt"
+        placeholder="Наприклад: тварини, історія, дивні закони різних країн"
+      ></textarea>
+      <vd-character-count
+        #promptCount
+        controlId="facts-topic"
+        [value]="prompt()"
+        [maxLength]="maxLength"
+      />
+    </vd-field>
+    <div class="writer">
+      <vd-field class="provider-field" label="Хто пише факти">
+        <vd-select [value]="ai.provider()" (valueChange)="ai.choose($any($event))">
+          <vq-ai-provider-icon slot="start" [provider]="ai.iconOf(ai.provider())" />
+          @for (option of ai.options(); track option.id) {
+            <vd-option [value]="option.id" [label]="option.label">
+              <vq-ai-provider-icon [provider]="option.icon" />
+              {{ option.label }}
+            </vd-option>
+          }
+        </vd-select>
+      </vd-field>
+      <vq-own-ai-settings />
+    </div>
+    <div class="actions">
+      <button vdButton type="submit" [loading]="busy()">
+        <vd-icon slot="start" name="star" />
+        Згенерувати {{ count() }} фактів
+      </button>
+      @if (busy()) {
+        <vq-question-loader size="sm" label="Шукаємо дивні факти…" />
+      }
+    </div>
+  </form>
+</section>
+
+<vd-alert-dialog
+  title="Замінити факти?"
+  description="AI перепише всі факти цього квізу. Поки ви не збережете, збережена версія лишається цілою."
+  confirmLabel="Замінити"
+  cancelLabel="Скасувати"
+  [open]="confirming()"
+  [action]="replace"
+  (openChange)="confirming.set($event)"
+/>

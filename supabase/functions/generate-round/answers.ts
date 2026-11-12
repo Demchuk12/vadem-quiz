@@ -1,5 +1,6 @@
 // Reads an AI's reply into a round of the right shape.
 
+import { DECOYS } from './config.ts';
 import { Retryable } from './errors.ts';
 import { isOwn } from './http.ts';
 import type { GeneratedQuestion, GeneratedRound, RoundRequest } from './types.ts';
@@ -29,6 +30,11 @@ export function checkRound(value: unknown, request: RoundRequest): GeneratedRoun
       title: category.title,
       questions: category.questions.filter(isQuestion).slice(0, request.questions),
     }))
+    .map((category) =>
+      request.mode === 'bluff'
+        ? { ...category, questions: category.questions.flatMap((q) => withDecoys(q)) }
+        : category,
+    )
     .filter((category) => category.questions.length === request.questions)
     .slice(0, request.categories);
   if (categories.length < request.categories) {
@@ -38,6 +44,23 @@ export function checkRound(value: unknown, request: RoundRequest): GeneratedRoun
     throw new Error(`Wanted ${request.categories}x${request.questions}, got [${counts.join(',')}]`);
   }
   return { categories };
+}
+
+/**
+ * A fact keeps up to three false endings, none of them its true one. One without any is of no use
+ * to the host, and goes like any other broken item.
+ */
+function withDecoys(question: GeneratedQuestion): GeneratedQuestion[] {
+  const truth = normalize(question.answer);
+  const decoys = [
+    ...new Set(
+      (Array.isArray(question.decoys) ? question.decoys : [])
+        .filter((decoy): decoy is string => typeof decoy === 'string')
+        .map((decoy) => decoy.trim())
+        .filter((decoy) => decoy !== '' && normalize(decoy) !== truth),
+    ),
+  ].slice(0, DECOYS);
+  return decoys.length > 0 ? [{ ...question, decoys }] : [];
 }
 
 export const normalize = (text: string) =>

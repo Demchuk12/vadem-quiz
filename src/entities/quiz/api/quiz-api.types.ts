@@ -27,6 +27,8 @@ export interface AiModel {
 }
 
 export interface GenerateRoundRequest {
+  /** "bluff" writes the facts of a "Варіанти" quiz: one category of `questions` facts. */
+  mode?: 'board' | 'bluff';
   quizId: string;
   token: string;
   prompt: string;
@@ -56,6 +58,13 @@ export interface GeneratedRoundResult {
   provider: string;
   categories: {
     title: string;
-    questions: { text: string; answer: string; explanation?: string; imageUrl?: string }[];
+    questions: {
+      text: string;
+      answer: string;
+      explanation?: string;
+      imageUrl?: string;
+      /** "Варіанти" only: false endings for the host's decoy. */
+      decoys?: string[];
+    }[];
   }[];
 }

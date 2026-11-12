@@ -16,11 +16,13 @@ export {
 export { SavedQuizzes, type SavedQuiz } from './model/saved-quizzes';
 export {
   addFact,
+  applyGeneratedFacts,
   bluffProgress,
   emptyBluffQuiz,
   isBluff,
   isFactComplete,
   removeFact,
+  swapDecoy,
   updateFact,
 } from './model/bluff-document';
 export {

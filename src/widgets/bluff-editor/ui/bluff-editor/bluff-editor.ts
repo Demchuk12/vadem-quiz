@@ -5,6 +5,7 @@ import {
   addFact,
   isFactComplete,
   removeFact,
+  swapDecoy,
   updateFact,
   type BluffDocument,
   type BluffFact,
@@ -41,6 +42,10 @@ export class BluffEditor {
 
   protected add(): void {
     this.quizChange.emit(addFact(this.quiz()));
+  }
+
+  protected useDecoy(index: number, idea: string): void {
+    this.quizChange.emit(swapDecoy(this.quiz(), index, idea));
   }
 
   protected remove(index: number): void {

@@ -18,6 +18,12 @@ export const MAX_CATEGORIES = 8;
 
 export const MAX_QUESTIONS = 8;
 
+/** A "Варіанти" quiz is written whole: one list of facts, a round each. */
+export const MAX_FACTS = 20;
+
+/** False endings offered for each fact. */
+export const DECOYS = 3;
+
 export const MAX_AVOID = 40;
 
 export const MAX_TEXT = 2000;

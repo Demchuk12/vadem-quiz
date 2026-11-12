@@ -56,6 +56,16 @@
           />
         </vd-field>
       </div>
+      @if (fact.decoyIdeas?.length) {
+        <div class="ideas" role="group" [attr.aria-label]="'Інші пастки для факту ' + (i + 1)">
+          <span class="ideas-label">Інші пастки від AI:</span>
+          @for (idea of fact.decoyIdeas; track idea) {
+            <button vdButton type="button" size="sm" variant="ghost" (click)="useDecoy(i, idea)">
+              {{ idea }}
+            </button>
+          }
+        </div>
+      }
       <vd-field
         label="Пояснення"
         [hint]="i === 0 ? 'Необовʼязково. Гравці побачать його, коли відкриється правда.' : ''"

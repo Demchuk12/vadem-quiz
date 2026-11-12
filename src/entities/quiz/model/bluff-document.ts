@@ -1,6 +1,6 @@
 import { BLUFF_FACTS } from '../config/bluff-limits';
 import type { AnyQuizDocument, BluffDocument, BluffFact } from './bluff-document.types';
-import type { QuizProgress } from './quiz-document.types';
+import type { GeneratedRound, QuizProgress } from './quiz-document.types';
 
 const emptyFact = (): BluffFact => ({ text: '', truth: '', decoy: '', explanation: '' });
 
@@ -40,4 +40,30 @@ export function addFact(doc: BluffDocument): BluffDocument {
 
 export function removeFact(doc: BluffDocument, index: number): BluffDocument {
   return { ...doc, facts: doc.facts.filter((_, i) => i !== index) };
+}
+
+/** The AI's facts replace the quiz's: the first decoy goes in, the others wait as ideas. */
+export function applyGeneratedFacts(doc: BluffDocument, round: GeneratedRound): BluffDocument {
+  const facts = round.categories[0]?.questions ?? [];
+  return {
+    ...doc,
+    facts: facts.map((fact) => ({
+      text: fact.text,
+      truth: fact.answer,
+      decoy: fact.decoys?.[0] ?? '',
+      decoyIdeas: fact.decoys?.slice(1) ?? [],
+      explanation: fact.explanation ?? '',
+    })),
+  };
+}
+
+/** Puts an offered decoy in, and the one it replaces back among the ideas. */
+export function swapDecoy(doc: BluffDocument, index: number, idea: string): BluffDocument {
+  const fact = doc.facts[index];
+  if (!fact) return doc;
+  const others = (fact.decoyIdeas ?? []).filter((other) => other !== idea);
+  return updateFact(doc, index, {
+    decoy: idea,
+    decoyIdeas: fact.decoy.trim() ? [fact.decoy, ...others] : others,
+  });
 }

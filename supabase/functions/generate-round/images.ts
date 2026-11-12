@@ -57,9 +57,14 @@ export async function attachImages(
   return {
     categories: round.categories.map((category) => ({
       title: category.title,
-      questions: category.questions.map(({ text, answer, explanation, image }) => {
+      questions: category.questions.map(({ text, answer, explanation, image, decoys }) => {
         const imageUrl = urls.get(image?.trim() ?? '');
-        const written = { text, answer, explanation: explanation?.trim() ?? '' };
+        const written = {
+          text,
+          answer,
+          explanation: explanation?.trim() ?? '',
+          ...(decoys ? { decoys } : {}),
+        };
         return imageUrl ? { ...written, imageUrl } : written;
       }),
     })),

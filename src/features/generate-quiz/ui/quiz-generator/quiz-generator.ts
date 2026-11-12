@@ -30,10 +30,8 @@ import { VdIcon } from '@vadem/ui/icon';
 import { VdInput } from '@vadem/ui/input';
 import { VdOption, VdSelect } from '@vadem/ui/select';
 import { VdToaster } from '@vadem/ui/toast';
+import { MAX_PROMPT_LENGTH } from '../../config/prompt';
 import { OwnAiSettings } from '../own-ai-settings/own-ai-settings';
-
-/** Room for a detailed brief, still small next to any model's limits. */
-const MAX_PROMPT_LENGTH = 1500;
 
 /** Where an interrupted generation stopped: the next round to write, and what it must not repeat. */
 interface Progress {

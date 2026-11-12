@@ -34,3 +34,58 @@ test('a "Варіанти" quiz is made of facts with a truth and a decoy', asyn
   await expect(card.getByText('Варіанти')).toBeVisible();
   await expect(card.getByRole('button', { name: 'Нова гра' })).toHaveCount(0);
 });
+
+test('AI writes the facts with decoys, and the host swaps in another', async ({ page }) => {
+  const requests: Record<string, unknown>[] = [];
+  await page.route('**/functions/v1/generate-round', async (route) => {
+    const headers = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' };
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 200, headers });
+    if (route.request().method() === 'GET') {
+      return route.fulfill({
+        status: 200,
+        headers,
+        json: { providers: [{ id: 'gemini', label: 'Gemini' }] },
+      });
+    }
+    const body = route.request().postDataJSON();
+    requests.push(body);
+    return route.fulfill({
+      status: 200,
+      headers,
+      json: {
+        provider: 'gemini',
+        categories: [
+          {
+            title: 'Факти',
+            questions: Array.from({ length: body.questions }, (_, i) => ({
+              text: `Факт ${i + 1}…`,
+              answer: `правда ${i + 1}`,
+              decoys: [`пастка ${i + 1}`, `друга ${i + 1}`, `третя ${i + 1}`],
+              explanation: `Пояснення ${i + 1}`,
+            })),
+          },
+        ],
+      },
+    });
+  });
+
+  await page.goto('/quizzes');
+  await page.getByRole('button', { name: /^Варіанти/ }).click();
+  await page.getByRole('dialog').getByLabel('Назва квізу').fill('AI факти');
+  await page.getByRole('button', { name: 'Створити' }).click();
+
+  await page.getByLabel('Тема фактів').fill('тварини');
+  await page.getByRole('button', { name: 'Згенерувати 10 фактів' }).click();
+  await expect(page.getByText('Заповнено 10 з 10')).toBeVisible();
+  expect(requests[0]).toMatchObject({ mode: 'bluff', categories: 1, questions: 10 });
+
+  await expect(page.getByLabel('Пастка ведучого').first()).toHaveValue('пастка 1');
+  const ideas = page.getByRole('group', { name: 'Інші пастки для факту 1', exact: true });
+  await ideas.getByRole('button', { name: 'третя 1' }).click();
+  await expect(page.getByLabel('Пастка ведучого').first()).toHaveValue('третя 1');
+  await expect(ideas.getByRole('button', { name: 'пастка 1' })).toBeVisible();
+
+  // Writing again over filled facts asks first.
+  await page.getByRole('button', { name: 'Згенерувати 10 фактів' }).click();
+  await expect(page.getByRole('alertdialog', { name: 'Замінити факти?' })).toBeVisible();
+});
