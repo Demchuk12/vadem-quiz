@@ -2,5 +2,7 @@
   @if (!store.connected()) {
     <span vdBadge variant="warning" role="status">Немає звʼязку</span>
   }
-  <span vdBadge>Раунд {{ room.round }}/{{ room.round_count }}</span>
+  <span vdBadge>
+    {{ room.mode === 'bluff' ? 'Факт' : 'Раунд' }} {{ room.round }}/{{ room.round_count }}
+  </span>
 }

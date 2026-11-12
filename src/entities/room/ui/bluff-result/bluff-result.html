@@ -1,0 +1,31 @@
+@if (result(); as result) {
+  <p class="delta" [class.gain]="result.delta > 0" [class.loss]="result.delta < 0">
+    <span class="vd-visually-hidden">Бали за раунд:</span>
+    {{ delta() }}
+  </p>
+  <ul class="lines">
+    <li>
+      @switch (result.picked?.kind) {
+        @case ('truth') {
+          Ви вгадали правду: +2
+        }
+        @case ('decoy') {
+          Ви повелися на пастку ведучого: −1
+        }
+        @case ('player') {
+          Ви повелися на варіант гравця {{ result.pickedAuthor }}
+        }
+        @default {
+          Ви не проголосували
+        }
+      }
+    </li>
+    <li>
+      @if (result.fooled.length > 0) {
+        На ваш варіант повелися: {{ result.fooled.join(', ') }} (+{{ result.fooled.length }})
+      } @else {
+        На ваш варіант ніхто не повівся
+      }
+    </li>
+  </ul>
+}

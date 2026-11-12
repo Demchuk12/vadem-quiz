@@ -16,6 +16,19 @@ export interface HostAnswer {
   explanation: string;
 }
 
+/** The truth and the decoy of the current fact, for the host alone. */
+export interface BluffHostFact {
+  truth: string;
+  decoy: string;
+  explanation: string;
+}
+
+/** A player's own part of the round: their lie and their vote, if any. */
+export interface BluffMyRound {
+  answer: string | null;
+  option_id: string | null;
+}
+
 /** What proves a call comes from the host of a room. */
 export interface HostKey {
   roomId: string;

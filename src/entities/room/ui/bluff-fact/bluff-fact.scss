@@ -1,0 +1,27 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-2);
+}
+.fact {
+  margin: 0;
+  font-size: var(--vd-text-xl);
+  font-weight: var(--vd-weight-semibold);
+  line-height: var(--vd-leading-snug);
+  overflow-wrap: anywhere;
+}
+.blank {
+  display: inline-block;
+  min-inline-size: 4em;
+  border-block-end: 0.15em solid var(--vd-color-action);
+  color: transparent;
+}
+.truth {
+  padding-inline: 0.2em;
+  border-radius: var(--vd-radius-sm);
+  background-color: var(--vd-color-action-subtle);
+  color: var(--vd-color-action-text);
+}
+.explanation {
+  margin: 0;
+  color: var(--vd-color-text-muted);
+}

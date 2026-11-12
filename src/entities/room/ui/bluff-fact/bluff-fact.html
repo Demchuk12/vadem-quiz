@@ -1,0 +1,14 @@
+@if (room(); as room) {
+  <p class="fact">
+    {{ stem() }}
+    @if (room.answer_text) {
+      <mark class="truth">{{ room.answer_text }}</mark>
+    } @else {
+      <span class="blank" aria-hidden="true">…</span>
+      <span class="vd-visually-hidden">пропуск</span>
+    }
+  </p>
+  @if (room.answer_explanation) {
+    <p class="explanation">{{ room.answer_explanation }}</p>
+  }
+}

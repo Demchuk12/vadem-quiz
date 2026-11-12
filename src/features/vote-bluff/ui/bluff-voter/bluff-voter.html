@@ -1,0 +1,22 @@
+<p class="prompt">Яке закінчення правдиве?</p>
+<div class="options" role="group" aria-label="Варіанти">
+  @for (option of options(); track option.id) {
+    <button
+      vdButton
+      type="button"
+      class="option"
+      [variant]="chosen() === option.id ? 'primary' : 'secondary'"
+      [attr.aria-pressed]="chosen() === option.id"
+      [disabled]="busy()"
+      (click)="vote(option.id)"
+    >
+      {{ option.text }}
+    </button>
+  }
+</div>
+<p class="status" aria-live="polite">
+  @if (chosen()) {
+    Голос враховано. Можна передумати, поки йде час.
+  }
+  <span class="count">Проголосували {{ done() }} з {{ total() }}</span>
+</p>

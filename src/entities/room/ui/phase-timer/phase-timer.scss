@@ -1,0 +1,20 @@
+:host {
+  display: contents;
+}
+.timer {
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 2.75rem;
+  block-size: 2.75rem;
+  padding-inline: var(--vd-space-2);
+  border: var(--vd-border-width) solid var(--vd-color-border);
+  border-radius: var(--vd-radius-full);
+  background-color: var(--vd-color-surface);
+  font-size: var(--vd-text-lg);
+  font-weight: var(--vd-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+.urgent {
+  border-color: var(--vd-color-danger-border);
+  color: var(--vd-color-danger-text);
+}

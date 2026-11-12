@@ -11,7 +11,10 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
+  BluffFact,
+  BluffResult,
   GameBoard,
+  PhaseTimer,
   QuestionView,
   RoomApi,
   RoomSessions,
@@ -26,6 +29,8 @@ import {
   VerdictScene,
 } from '@entities/room';
 import { BuzzButton } from '@features/buzz';
+import { BluffVoter } from '@features/vote-bluff';
+import { BluffWriter } from '@features/write-bluff';
 import { VademLogo } from '@shared/ui';
 import { VdButton } from '@vadem/ui/button';
 import { VD_CARD } from '@vadem/ui/card';
@@ -39,8 +44,13 @@ import { VdIcon } from '@vadem/ui/icon';
     VdButton,
     VdIcon,
     VD_CARD,
+    BluffFact,
+    BluffResult,
+    BluffVoter,
+    BluffWriter,
     BuzzButton,
     GameBoard,
+    PhaseTimer,
     QuestionView,
     RoomBadges,
     RoomStatus,

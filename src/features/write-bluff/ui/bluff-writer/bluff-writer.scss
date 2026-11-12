@@ -1,0 +1,17 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-3);
+}
+form {
+  display: grid;
+  gap: var(--vd-space-3);
+}
+.status {
+  display: grid;
+  gap: var(--vd-space-1);
+  margin: 0;
+  color: var(--vd-color-text-muted);
+}
+.count {
+  font-size: var(--vd-text-sm);
+}

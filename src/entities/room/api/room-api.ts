@@ -1,6 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { Rpc } from '@shared/api';
-import type { HostAnswer, HostKey, JoinedRoom, NewRoom } from './room-api.types';
+import type {
+  BluffHostFact,
+  BluffMyRound,
+  HostAnswer,
+  HostKey,
+  JoinedRoom,
+  NewRoom,
+} from './room-api.types';
 
 /** The game's database functions (see supabase/migrations). */
 @Injectable({ providedIn: 'root' })
@@ -58,5 +65,44 @@ export class RoomApi {
   }
   adjustScore(key: HostKey, playerId: string, delta: number): Promise<void> {
     return this.hostCall('adjust_score', key, { p_player_id: playerId, p_delta: delta });
+  }
+
+  // "Варіанти"
+  bluffSubmit(roomId: string, playerId: string, token: string, text: string): Promise<void> {
+    return this.rpc.call('bluff_submit', {
+      p_room_id: roomId,
+      p_player_id: playerId,
+      p_token: token,
+      p_text: text,
+    });
+  }
+  bluffVote(roomId: string, playerId: string, token: string, optionId: string): Promise<void> {
+    return this.rpc.call('bluff_vote', {
+      p_room_id: roomId,
+      p_player_id: playerId,
+      p_token: token,
+      p_option_id: optionId,
+    });
+  }
+  async bluffMyRound(roomId: string, playerId: string, token: string): Promise<BluffMyRound> {
+    const rows = await this.rpc.call<BluffMyRound[]>('bluff_my_round', {
+      p_room_id: roomId,
+      p_player_id: playerId,
+      p_token: token,
+    });
+    return rows[0] ?? { answer: null, option_id: null };
+  }
+  bluffOpenVoting(key: HostKey): Promise<void> {
+    return this.hostCall('bluff_open_voting', key);
+  }
+  bluffReveal(key: HostKey): Promise<void> {
+    return this.hostCall('bluff_reveal', key);
+  }
+  bluffNext(key: HostKey): Promise<void> {
+    return this.hostCall('bluff_next', key);
+  }
+  async bluffHostFact(key: HostKey): Promise<BluffHostFact | null> {
+    const rows = await this.hostCall<BluffHostFact[]>('bluff_host_fact', key);
+    return rows[0] ?? null;
   }
 }

@@ -6,13 +6,20 @@ export type RoomState =
   | 'buzzed'
   | 'answer_shown'
   | 'round_end'
-  | 'finished';
+  | 'finished'
+  // "Варіанти": players write a lie, vote for the truth, then everything is revealed.
+  | 'bluff_writing'
+  | 'bluff_voting'
+  | 'bluff_reveal';
+
+export type RoomMode = 'board' | 'bluff';
 
 /** Row of `public.rooms`: the whole visible state of one game. */
 export interface Room {
   id: string;
   code: string;
   quiz_title: string;
+  mode: RoomMode;
   state: RoomState;
   round: number;
   round_count: number;
@@ -30,7 +37,26 @@ export interface Room {
   /** The presses that came after it while the winner answers, with how late each was. */
   late_presses: LatePress[];
   spent_player_ids: string[];
+  /** "Варіанти": when the current phase runs out, by the database's clock. */
+  phase_ends_at: string | null;
+  writing_seconds: number;
+  voting_seconds: number;
+  /** Who has written, or while voting, who has voted. */
+  bluff_done: string[];
+  /** The shuffled options while voting; at the reveal with their kind, author and voters. */
+  bluff_options: BluffOption[] | null;
+  /** What each player gained or lost in the round just revealed. */
+  bluff_deltas: Record<string, number> | null;
   version: number;
+}
+
+export interface BluffOption {
+  id: string;
+  text: string;
+  /** Known only at the reveal. */
+  kind?: 'truth' | 'decoy' | 'player';
+  player_id?: string | null;
+  voter_ids?: string[];
 }
 
 export interface LatePress {

@@ -34,6 +34,37 @@
       <vq-winner-banner />
       <vq-standings [currentPlayerId]="playerId()" />
     }
+    @case ('bluff_writing') {
+      <section vdCard class="stack">
+        <div class="bluff-head">
+          <vq-bluff-fact />
+          <vq-phase-timer />
+        </div>
+        @if (session(); as playerSession) {
+          <vq-bluff-writer [session]="playerSession" />
+        }
+      </section>
+    }
+    @case ('bluff_voting') {
+      <section vdCard class="stack">
+        <div class="bluff-head">
+          <vq-bluff-fact />
+          <vq-phase-timer />
+        </div>
+        @if (session(); as playerSession) {
+          <vq-bluff-voter [session]="playerSession" />
+        }
+      </section>
+    }
+    @case ('bluff_reveal') {
+      <section vdCard class="stack">
+        <vq-bluff-fact />
+        @if (playerId(); as id) {
+          <vq-bluff-result [playerId]="id" />
+        }
+      </section>
+      <vq-standings [currentPlayerId]="playerId()" />
+    }
     @case ('answer_shown') {
       <vq-question-view />
       <vq-standings [currentPlayerId]="playerId()" />

@@ -1,0 +1,27 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-3);
+}
+.prompt {
+  margin: 0;
+  font-weight: var(--vd-weight-semibold);
+}
+.options {
+  display: grid;
+  gap: var(--vd-space-2);
+}
+.option {
+  justify-content: start;
+  min-block-size: 3rem;
+  white-space: normal;
+  text-align: start;
+}
+.status {
+  display: grid;
+  gap: var(--vd-space-1);
+  margin: 0;
+  color: var(--vd-color-text-muted);
+}
+.count {
+  font-size: var(--vd-text-sm);
+}

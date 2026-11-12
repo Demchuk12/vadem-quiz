@@ -1,0 +1,26 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-2);
+  justify-items: center;
+  text-align: center;
+}
+.delta {
+  margin: 0;
+  font-size: var(--vd-text-3xl);
+  font-weight: var(--vd-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+.gain {
+  color: var(--vd-color-success-text);
+}
+.loss {
+  color: var(--vd-color-danger-text);
+}
+.lines {
+  display: grid;
+  gap: var(--vd-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--vd-color-text-muted);
+}
