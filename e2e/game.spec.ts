@@ -173,15 +173,16 @@ test('a nickname cannot be taken twice and a bad code is explained', async ({ br
   await expect(page.getByRole('alert')).toContainText('не знайдено');
 });
 
-test('the create button stays level with the input when the error appears', async ({ page }) => {
+test('a new quiz starts from its game card and asks for a title', async ({ page }) => {
   await page.goto('/quizzes');
-  const input = page.getByLabel('Назва нового квізу');
-  const button = page.getByRole('button', { name: 'Створити' });
-  const offset = async () => (await button.boundingBox())!.y - (await input.boundingBox())!.y;
-  expect(Math.abs(await offset())).toBeLessThan(1);
-  await button.click();
-  await expect(page.getByText('Вкажіть назву.')).toBeVisible();
-  expect(Math.abs(await offset())).toBeLessThan(1);
+  await page.getByRole('button', { name: /^Своя гра/ }).click();
+  const dialog = page.getByRole('dialog', { name: 'Новий квіз · Своя гра' });
+  await dialog.getByRole('button', { name: 'Створити' }).click();
+  await expect(dialog.getByText('Вкажіть назву.')).toBeVisible();
+  await dialog.getByRole('button', { name: 'Скасувати' }).click();
+  await expect(dialog).toBeHidden();
+
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
 test('AI fills the editor as a draft, one round at a time', async ({ browser }) => {

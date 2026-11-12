@@ -1,0 +1,76 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-3);
+}
+.heading {
+  font-size: var(--vd-text-lg);
+}
+.games {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--vd-space-3);
+}
+.game {
+  display: grid;
+  gap: var(--vd-space-2);
+  align-content: start;
+  text-align: start;
+}
+.name {
+  font-size: var(--vd-text-lg);
+  font-weight: var(--vd-weight-bold);
+}
+.about {
+  color: var(--vd-color-text-muted);
+}
+.meta {
+  font-size: var(--vd-text-sm);
+  color: var(--vd-color-text-subtle);
+}
+
+/* A glimpse of each game: a corner of the board, a few options with the truth among them. */
+.art {
+  display: grid;
+  block-size: 6.5rem;
+  margin-block-end: var(--vd-space-2);
+}
+.board {
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--vd-space-1);
+}
+.tile {
+  display: grid;
+  place-items: center;
+  border: var(--vd-border-width) solid var(--vd-color-border);
+  border-radius: var(--vd-radius-md);
+  background-color: var(--vd-color-surface);
+  color: var(--vd-color-text-subtle);
+  font-size: var(--vd-text-xs);
+  font-weight: var(--vd-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+.tile.lit {
+  border-color: transparent;
+  background-color: var(--vd-color-action);
+  color: var(--vd-color-on-action);
+}
+.bluff {
+  gap: var(--vd-space-1-5);
+  align-content: center;
+}
+.option {
+  justify-self: start;
+  padding: var(--vd-space-1) var(--vd-space-3);
+  border: var(--vd-border-width) solid var(--vd-color-border);
+  border-radius: var(--vd-radius-full);
+  background-color: var(--vd-color-surface);
+  font-size: var(--vd-text-sm);
+}
+.option:nth-child(2) {
+  margin-inline-start: var(--vd-space-6);
+}
+.option.truth {
+  border-color: var(--vd-color-action);
+  background-color: var(--vd-color-action-subtle);
+  color: var(--vd-color-action-text);
+}

@@ -44,7 +44,8 @@ export async function hostGame(browser: Browser, quizJson = QUIZ_JSON): Promise<
   const context = await browser.newContext();
   const host = await context.newPage();
   await host.goto('/quizzes');
-  await host.getByLabel('Назва нового квізу').fill('Тестовий квіз');
+  await host.getByRole('button', { name: /^Своя гра/ }).click();
+  await host.getByRole('dialog').getByLabel('Назва квізу').fill('Тестовий квіз');
   await host.getByRole('button', { name: 'Створити' }).click();
   await expect(host.getByRole('button', { name: 'Зберегти' })).toBeVisible();
 

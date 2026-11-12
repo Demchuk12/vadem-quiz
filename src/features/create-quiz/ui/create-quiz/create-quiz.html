@@ -1,0 +1,42 @@
+<h2 class="heading">Новий квіз</h2>
+
+<div class="games">
+  <button vdCard type="button" class="game" (click)="choose('board')">
+    <span class="art board" aria-hidden="true">
+      @for (value of [100, 200, 300, 200, 300, 400, 300, 400, 500]; track $index) {
+        <span class="tile" [class.lit]="$index === 4">{{ value }}</span>
+      }
+    </span>
+    <span class="name">Своя гра</span>
+    <span class="about">Дошка з категоріями: хто перший натисне кнопку, той і відповідає.</span>
+    <span class="meta">Раунди · категорії · бали за складність</span>
+  </button>
+
+  <button vdCard type="button" class="game" (click)="choose('bluff')">
+    <span class="art bluff" aria-hidden="true">
+      <span class="option">старих трамваїв</span>
+      <span class="option truth">льоду</span>
+      <span class="option">соломи</span>
+    </span>
+    <span class="name">Варіанти</span>
+    <span class="about">Вигадайте правдоподібну брехню, вгадайте правду і заплутайте друзів.</span>
+    <span class="meta">Від 3 гравців · {{ facts.min }}–{{ facts.max }} фактів</span>
+  </button>
+</div>
+
+<dialog vdDialog size="sm" [open]="mode() !== null" (openChange)="$event || close()">
+  <form [formGroup]="form" (ngSubmit)="create()">
+    <header vdDialogHeader>
+      <h2 vdDialogTitle>Новий квіз · {{ gameName() }}</h2>
+    </header>
+    <div vdDialogBody>
+      <vd-field label="Назва квізу" error="Вкажіть назву.">
+        <input vdInput formControlName="title" maxlength="120" autocomplete="off" />
+      </vd-field>
+    </div>
+    <footer vdDialogFooter>
+      <button vdButton type="button" variant="ghost" (click)="close()">Скасувати</button>
+      <button vdButton type="submit" variant="primary" [loading]="busy()">Створити</button>
+    </footer>
+  </form>
+</dialog>

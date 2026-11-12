@@ -3,8 +3,8 @@ import { expect, test } from '@playwright/test';
 
 test('a "Варіанти" quiz is made of facts with a truth and a decoy', async ({ page }) => {
   await page.goto('/quizzes');
-  await page.getByRole('radio', { name: 'Варіанти' }).check();
-  await page.getByLabel('Назва нового квізу').fill('Дивні факти');
+  await page.getByRole('button', { name: /^Варіанти/ }).click();
+  await page.getByRole('dialog').getByLabel('Назва квізу').fill('Дивні факти');
   await page.getByRole('button', { name: 'Створити' }).click();
 
   await expect(page.getByLabel('Факт без закінчення')).toHaveCount(10);
