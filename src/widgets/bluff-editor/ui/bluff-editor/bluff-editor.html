@@ -1,0 +1,83 @@
+<vd-field label="Назва квізу">
+  <input vdInput maxlength="120" [value]="quiz().title" (input)="setTitle($event)" />
+</vd-field>
+
+<p class="hint">
+  Кожен факт — це раунд. Гравці вигадують своє закінчення, щоб заплутати інших, а ви додаєте власну
+  пастку. Найкраще працюють дивні, але правдиві факти: такі, де правда звучить як брехня.
+</p>
+
+<ol class="facts">
+  @for (fact of quiz().facts; track $index; let i = $index) {
+    <li vdCard class="fact" [class.incomplete]="!isComplete(fact)">
+      <div class="fact-head">
+        <span class="number">Факт {{ i + 1 }}</span>
+        <button
+          vdButton
+          variant="ghost"
+          iconOnly
+          [attr.aria-label]="'Видалити факт ' + (i + 1)"
+          [disabled]="quiz().facts.length <= 1"
+          (click)="remove(i)"
+        >
+          <vd-icon name="trash" />
+        </button>
+      </div>
+      <vd-field
+        label="Факт без закінчення"
+        [hint]="i === 0 ? 'Наприклад: «У Швеції є готель, збудований з…»' : ''"
+      >
+        <textarea
+          vdInput
+          rows="2"
+          [attr.maxlength]="lengths.text"
+          [value]="fact.text"
+          (input)="setFact(i, { text: valueOf($event) })"
+        ></textarea>
+      </vd-field>
+      <div class="pair">
+        <vd-field label="Правдиве закінчення">
+          <input
+            vdInput
+            [attr.maxlength]="lengths.ending"
+            [value]="fact.truth"
+            (input)="setFact(i, { truth: valueOf($event) })"
+          />
+        </vd-field>
+        <vd-field
+          label="Пастка ведучого"
+          [hint]="i === 0 ? 'Ваша брехня серед варіантів: хто її обере, втратить бал.' : ''"
+        >
+          <input
+            vdInput
+            [attr.maxlength]="lengths.ending"
+            [value]="fact.decoy"
+            (input)="setFact(i, { decoy: valueOf($event) })"
+          />
+        </vd-field>
+      </div>
+      <vd-field
+        label="Пояснення"
+        [hint]="i === 0 ? 'Необовʼязково. Гравці побачать його, коли відкриється правда.' : ''"
+      >
+        <textarea
+          vdInput
+          rows="2"
+          [attr.maxlength]="lengths.explanation"
+          [value]="fact.explanation"
+          (input)="setFact(i, { explanation: valueOf($event) })"
+        ></textarea>
+      </vd-field>
+    </li>
+  }
+</ol>
+
+<div class="footer">
+  <button vdButton [disabled]="quiz().facts.length >= limits.max" (click)="add()">
+    <vd-icon slot="start" name="plus" />
+    Додати факт
+  </button>
+  <span class="count">
+    {{ quiz().facts.length }} з {{ limits.max }} · для гри потрібно щонайменше {{ limits.min }}
+  </span>
+</div>

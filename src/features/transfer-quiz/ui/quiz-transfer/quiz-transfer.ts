@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, DOCUMENT, inject, input, output } from '@angular/core';
-import { QuizImportError, parseQuizDocument, type QuizDocument } from '@entities/quiz';
+import { QuizImportError, isBluff, parseQuizDocument, type AnyQuizDocument } from '@entities/quiz';
 import { VdButton } from '@vadem/ui/button';
 import { VdIcon } from '@vadem/ui/icon';
 import { VdToaster } from '@vadem/ui/toast';
@@ -14,8 +14,8 @@ import { VdToaster } from '@vadem/ui/toast';
 })
 export class QuizTransfer {
   readonly quizId = input.required<string>();
-  readonly quiz = input.required<QuizDocument>();
-  readonly imported = output<QuizDocument>();
+  readonly quiz = input.required<AnyQuizDocument>();
+  readonly imported = output<AnyQuizDocument>();
 
   private readonly toaster = inject(VdToaster);
   private readonly document = inject(DOCUMENT);
@@ -38,6 +38,14 @@ export class QuizTransfer {
     if (!file) return;
     try {
       const { document, droppedImages } = parseQuizDocument(await file.text(), this.quizId());
+      // A file of the other game would turn this quiz into it and drop what it holds.
+      if (isBluff(document) !== isBluff(this.quiz())) {
+        throw new QuizImportError(
+          isBluff(document)
+            ? 'Це файл гри «Варіанти». Створіть для нього квіз цього типу.'
+            : 'Це файл «Своєї гри». Створіть для нього квіз цього типу.',
+        );
+      }
       this.imported.emit(document);
       this.toaster.success(
         'Квіз імпортовано, збережіть його',

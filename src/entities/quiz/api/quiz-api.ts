@@ -8,7 +8,7 @@ import type {
   GeneratedRoundResult,
   NewQuiz,
 } from './quiz-api.types';
-import type { QuizDocument } from '../model/quiz-document.types';
+import type { AnyQuizDocument } from '../model/bluff-document.types';
 
 @Injectable({ providedIn: 'root' })
 export class QuizApi {
@@ -17,10 +17,10 @@ export class QuizApi {
   create(title: string): Promise<NewQuiz> {
     return this.rpc.callRow('create_quiz', { p_title: title });
   }
-  get(quizId: string, token: string): Promise<QuizDocument> {
+  get(quizId: string, token: string): Promise<AnyQuizDocument> {
     return this.rpc.call('get_quiz', { p_quiz_id: quizId, p_token: token });
   }
-  save(quizId: string, token: string, document: QuizDocument): Promise<void> {
+  save(quizId: string, token: string, document: AnyQuizDocument): Promise<void> {
     return this.rpc.call('save_quiz', { p_quiz_id: quizId, p_token: token, p_document: document });
   }
   delete(quizId: string, token: string): Promise<void> {

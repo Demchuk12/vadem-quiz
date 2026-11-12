@@ -14,6 +14,21 @@ export {
   updateQuestion,
 } from './model/quiz-document';
 export { SavedQuizzes, type SavedQuiz } from './model/saved-quizzes';
+export {
+  addFact,
+  bluffProgress,
+  emptyBluffQuiz,
+  isBluff,
+  isFactComplete,
+  removeFact,
+  updateFact,
+} from './model/bluff-document';
+export {
+  type AnyQuizDocument,
+  type BluffDocument,
+  type BluffFact,
+} from './model/bluff-document.types';
+export { BLUFF_FACTS, BLUFF_LENGTHS } from './config/bluff-limits';
 export { QuizWriter } from './api/quiz-writer';
 export { provideAiWriting } from './api/provide-ai-writing';
 export {

@@ -8,12 +8,20 @@
     @for (quiz of quizzes(); track quiz.id) {
       <li vdCard>
         <div class="row">
-          <span class="title">{{ quiz.title }}</span>
+          <span class="title">
+            {{ quiz.title }}
+            @if (quiz.mode === 'bluff') {
+              <span vdBadge variant="accent">Варіанти</span>
+            }
+          </span>
           <div class="actions">
             @if (quiz.lastRoomCode; as code) {
               <a vdButton size="sm" [routerLink]="['/host', code]">Гра {{ code }}</a>
             }
-            <vq-start-room-button [quiz]="quiz" />
+            <!-- A "Варіанти" game needs its host and player screens before it can start. -->
+            @if (quiz.mode !== 'bluff') {
+              <vq-start-room-button [quiz]="quiz" />
+            }
             <a vdButton size="sm" [routerLink]="['/quizzes', quiz.id]">
               <vd-icon slot="start" name="pencil" />
               Редагувати

@@ -1,4 +1,8 @@
 <form [formGroup]="form" (ngSubmit)="create()">
+  <vd-segmented formControlName="mode" aria-label="Тип гри">
+    <vd-segment value="board">Своя гра</vd-segment>
+    <vd-segment value="bluff">Варіанти</vd-segment>
+  </vd-segmented>
   <vd-field label="Назва нового квізу" error="Вкажіть назву.">
     <input vdInput formControlName="title" maxlength="120" />
   </vd-field>

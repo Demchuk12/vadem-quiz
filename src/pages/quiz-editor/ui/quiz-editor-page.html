@@ -58,9 +58,13 @@
         </div>
       </div>
 
-      <vq-quiz-generator [quizId]="quizId()" [quiz]="document" (generated)="change($event)" />
-
-      <vq-quiz-editor [quizId]="quizId()" [quiz]="document" (quizChange)="change($event)" />
+      @if (board(); as boardQuiz) {
+        <vq-quiz-generator [quizId]="quizId()" [quiz]="boardQuiz" (generated)="change($event)" />
+        <vq-quiz-editor [quizId]="quizId()" [quiz]="boardQuiz" (quizChange)="change($event)" />
+      }
+      @if (bluff(); as bluffQuiz) {
+        <vq-bluff-editor [quiz]="bluffQuiz" (quizChange)="change($event)" />
+      }
     }
   }
 }

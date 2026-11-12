@@ -1,0 +1,45 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-6);
+}
+.hint,
+.count {
+  margin: 0;
+  color: var(--vd-color-text-muted);
+}
+.facts {
+  display: grid;
+  gap: var(--vd-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fact {
+  display: grid;
+  gap: var(--vd-space-3);
+}
+.fact-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.number {
+  font-weight: var(--vd-weight-semibold);
+}
+.incomplete .number::after {
+  content: ' · не заповнено';
+  font-weight: var(--vd-weight-regular);
+  color: var(--vd-color-text-muted);
+}
+.pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--vd-space-3);
+  align-items: start;
+}
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-3);
+  align-items: center;
+}

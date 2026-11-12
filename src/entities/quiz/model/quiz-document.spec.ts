@@ -1,3 +1,4 @@
+import type { QuizDocument } from './quiz-document.types';
 import {
   QuizImportError,
   addCategory,
@@ -164,7 +165,7 @@ describe('parseQuizDocument', () => {
   });
 
   it('fills in optional fields', () => {
-    const { document } = parseQuizDocument(file(), 'id');
+    const document = parseQuizDocument(file(), 'id').document as QuizDocument;
     expect(document.rounds[0]!.categories[0]!.questions[0]!.imagePath).toBeNull();
     expect(document.rounds[0]!.categories[0]!.questions[0]!.explanation).toBe('');
   });
@@ -191,7 +192,7 @@ describe('parseQuizDocument', () => {
       'id',
     );
     expect(droppedImages).toBe(1);
-    const [own, foreign] = document.rounds[0]!.categories[0]!.questions;
+    const [own, foreign] = (document as QuizDocument).rounds[0]!.categories[0]!.questions;
     expect(own!.imagePath).toBe('id/a.webp');
     expect(foreign!.imagePath).toBeNull();
   });

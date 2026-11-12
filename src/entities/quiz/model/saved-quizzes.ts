@@ -5,6 +5,8 @@ export interface SavedQuiz {
   id: string;
   token: string;
   title: string;
+  /** Which game it is; quizzes saved before "Варіанти" have none and are boards. */
+  mode?: 'board' | 'bluff';
   /** The last room started from this quiz, so the host can get back to it. */
   lastRoomCode?: string;
 }

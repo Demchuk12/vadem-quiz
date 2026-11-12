@@ -10,6 +10,7 @@ import type {
   QuizProgress,
   QuizQuestion,
 } from './quiz-document.types';
+import type { AnyQuizDocument, BluffDocument } from './bluff-document.types';
 
 const emptyQuestion = (basePoints: number): QuizQuestion => ({
   basePoints,
@@ -172,7 +173,7 @@ function asRecord(value: unknown, where: string): Record<string, unknown> {
 export function parseQuizDocument(
   json: string,
   quizId: string,
-): { document: QuizDocument; droppedImages: number } {
+): { document: AnyQuizDocument; droppedImages: number } {
   let raw: unknown;
   try {
     raw = JSON.parse(json);
@@ -191,6 +192,7 @@ export function parseQuizDocument(
   };
 
   const root = asRecord(raw, 'Квіз');
+  if (root['mode'] === 'bluff') return { document: parseBluff(root), droppedImages: 0 };
   const rounds = asArray(root['rounds'], 'rounds');
   const roundMultipliers = asArray(root['roundMultipliers'], 'roundMultipliers').map((m, i) =>
     asPositiveInt(m, `roundMultipliers[${i}]`),
@@ -227,4 +229,21 @@ export function parseQuizDocument(
     })),
   };
   return { document, droppedImages };
+}
+
+function parseBluff(root: Record<string, unknown>): BluffDocument {
+  return {
+    title: asString(root['title'], 'title'),
+    mode: 'bluff',
+    facts: asArray(root['facts'], 'facts').map((f, i) => {
+      const at = `Факт ${i + 1}`;
+      const fact = asRecord(f, at);
+      return {
+        text: asString(fact['text'], at),
+        truth: asString(fact['truth'], at),
+        decoy: asString(fact['decoy'], at),
+        explanation: asString(fact['explanation'], at),
+      };
+    }),
+  };
 }

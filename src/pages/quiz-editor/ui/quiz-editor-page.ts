@@ -11,8 +11,10 @@ import { RouterLink } from '@angular/router';
 import {
   QuizApi,
   SavedQuizzes,
+  bluffProgress,
+  isBluff,
   quizProgress,
-  type QuizDocument,
+  type AnyQuizDocument,
   type SavedQuiz,
 } from '@entities/quiz';
 import { QuizGenerator } from '@features/generate-quiz';
@@ -24,6 +26,7 @@ import { VD_ALERT } from '@vadem/ui/alert';
 import { VdButton } from '@vadem/ui/button';
 import { VdSkeleton } from '@vadem/ui/skeleton';
 import { VdToaster } from '@vadem/ui/toast';
+import { BluffEditor } from '@widgets/bluff-editor';
 import { QuizEditor } from '@widgets/quiz-editor';
 
 type LoadState = 'loading' | 'ready' | 'forbidden' | 'error';
@@ -36,6 +39,7 @@ type LoadState = 'loading' | 'ready' | 'forbidden' | 'error';
     VD_ALERT,
     VdButton,
     VdSkeleton,
+    BluffEditor,
     QuizEditor,
     QuizGenerator,
     QuizTransfer,
@@ -53,13 +57,23 @@ export class QuizEditorPage implements OnInit, HasUnsavedChanges {
   private readonly toaster = inject(VdToaster);
 
   protected readonly load = signal<LoadState>('loading');
-  protected readonly quiz = signal<QuizDocument | null>(null);
+  protected readonly quiz = signal<AnyQuizDocument | null>(null);
+  /** The quiz as one kind or the other, for the editor that fits it. */
+  protected readonly board = computed(() => {
+    const quiz = this.quiz();
+    return quiz && !isBluff(quiz) ? quiz : null;
+  });
+  protected readonly bluff = computed(() => {
+    const quiz = this.quiz();
+    return quiz && isBluff(quiz) ? quiz : null;
+  });
   protected readonly dirty = signal(false);
   private readonly saveAction = apiAction();
   protected readonly saving = this.saveAction.busy;
   protected readonly progress = computed(() => {
     const quiz = this.quiz();
-    return quiz ? quizProgress(quiz) : { complete: 0, total: 0, missingTitles: 0 };
+    if (!quiz) return { complete: 0, total: 0, missingTitles: 0 };
+    return isBluff(quiz) ? bluffProgress(quiz) : quizProgress(quiz);
   });
 
   private saved: SavedQuiz | undefined;
@@ -87,7 +101,7 @@ export class QuizEditorPage implements OnInit, HasUnsavedChanges {
     }
   }
 
-  protected change(quiz: QuizDocument): void {
+  protected change(quiz: AnyQuizDocument): void {
     this.quiz.set(quiz);
     this.dirty.set(true);
   }
@@ -101,7 +115,7 @@ export class QuizEditorPage implements OnInit, HasUnsavedChanges {
       errorTitle: 'Не вдалося зберегти',
     });
     if (done) {
-      this.saved = { ...saved, title: quiz.title };
+      this.saved = { ...saved, title: quiz.title, mode: isBluff(quiz) ? 'bluff' : 'board' };
       this.savedQuizzes.save(this.saved);
       this.dirty.set(false);
       this.toaster.success('Квіз збережено');
