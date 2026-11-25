@@ -1,6 +1,6 @@
 // Limits and fixed values of the function.
 
-import type { Language, Vendor } from './types.ts';
+import type { Language, Mode, Vendor } from './types.ts';
 
 /** Stays under the platform's request limit, however many attempts it takes. */
 export const TIME_BUDGET_MS = 130_000;
@@ -21,8 +21,12 @@ export const MAX_CATEGORIES = 8;
 
 export const MAX_QUESTIONS = 8;
 
-/** A "Варіанти" quiz is written whole: one list of facts, a round each. */
-export const MAX_FACTS = 20;
+/** The other games are written whole: one list, a round each. */
+export const MAX_LIST = 20;
+
+/** The largest number a "На око" answer may be, either way, and the longest unit. */
+export const MAX_GUESS = 1e12;
+export const MAX_UNIT = 20;
 
 /** False endings offered for each fact. */
 export const DECOYS = 3;
@@ -49,6 +53,8 @@ export const HEADERS = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 };
+
+export const MODES: Mode[] = ['board', 'bluff', 'guess'];
 
 export const VENDORS: Vendor[] = ['openai', 'anthropic', 'gemini', 'groq', 'mistral', 'openrouter'];
 

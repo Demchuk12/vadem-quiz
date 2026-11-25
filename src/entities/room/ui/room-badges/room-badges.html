@@ -2,9 +2,5 @@
   @if (!store.connected()) {
     <span vdBadge variant="warning" role="status">{{ t().badges.offline }}</span>
   }
-  <span vdBadge>
-    {{ room.mode === 'bluff' ? t().badges.fact : t().badges.round }} {{ room.round }}/{{
-      room.round_count
-    }}
-  </span>
+  <span vdBadge> {{ t().badges.rounds[room.mode] }} {{ room.round }}/{{ room.round_count }} </span>
 }

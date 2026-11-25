@@ -6,6 +6,7 @@ export const MESSAGES = defineMessages({
     whoIsFirst: 'Хто перший?',
     answers: (nickname: string) => `${nickname} відповідає`,
     write: 'Вигадайте своє закінчення',
+    guess: 'Хто ближче?',
     score: 'Рахунок',
   },
   en: {
@@ -13,6 +14,7 @@ export const MESSAGES = defineMessages({
     whoIsFirst: 'Who is first?',
     answers: (nickname) => `${nickname} is answering`,
     write: 'Make up your ending',
+    guess: 'Who is closest?',
     score: 'Score',
   },
 });

@@ -1,4 +1,5 @@
 import { bluffProgress, emptyBluffQuiz } from './bluff-document';
+import { emptyGuessQuiz, guessProgress } from './guess-document';
 import { emptyQuiz, quizProgress } from './quiz-document';
 import type { QuizProgress } from './quiz-document.types';
 import type { AnyQuizDocument, QuizDocuments, QuizMode } from './quiz-kind.types';
@@ -12,6 +13,7 @@ const KINDS: {
 } = {
   board: { empty: emptyQuiz, progress: quizProgress },
   bluff: { empty: emptyBluffQuiz, progress: bluffProgress },
+  guess: { empty: emptyGuessQuiz, progress: guessProgress },
 };
 
 /** A document without a mode is a board: there was only one game once. */

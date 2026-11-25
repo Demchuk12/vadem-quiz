@@ -1,0 +1,37 @@
+@use 'shared/ui/styles/motion';
+
+:host {
+  display: grid;
+  gap: var(--vd-space-2);
+}
+p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.text {
+  font-size: var(--vd-text-xl);
+  font-weight: var(--vd-weight-semibold);
+  line-height: var(--vd-leading-snug);
+}
+.answer {
+  @include motion.enter(vq-pop);
+
+  color: var(--vd-color-action-text);
+  font-size: var(--vd-text-3xl);
+  font-weight: var(--vd-weight-extrabold);
+  font-variant-numeric: tabular-nums;
+}
+.note {
+  color: var(--vd-color-text-muted);
+}
+:host([data-large]) {
+  .text {
+    font-size: var(--vd-text-4xl);
+  }
+  .answer {
+    font-size: calc(var(--vd-text-4xl) * 1.25);
+  }
+  .note {
+    font-size: var(--vd-text-xl);
+  }
+}

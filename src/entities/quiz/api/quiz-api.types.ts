@@ -31,7 +31,7 @@ export interface AiModel {
 export interface GenerateRoundRequest {
   /** What the AI writes in, unless the topic asks for another language. */
   language: Locale;
-  /** "bluff" writes the facts of a "Варіанти" quiz: one category of `questions` facts. */
+  /** Other games come as one category: the facts of "Варіанти", the questions of "На око". */
   mode?: QuizMode;
   quizId: string;
   token: string;
@@ -69,6 +69,8 @@ export interface GeneratedRoundResult {
       imageUrl?: string;
       /** "Варіанти" only: false endings for the host's decoy. */
       decoys?: string[];
+      /** "На око" only: what the number in `answer` counts. */
+      unit?: string;
     }[];
   }[];
 }

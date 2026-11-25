@@ -1,0 +1,112 @@
+@use 'shared/ui/styles/motion';
+
+:host {
+  --vq-dot: 0.875rem;
+
+  display: grid;
+  gap: var(--vd-space-4);
+}
+.empty {
+  margin: 0;
+  color: var(--vd-color-text-muted);
+}
+.line {
+  position: relative;
+  block-size: calc(var(--vq-dot) * 2);
+  margin-inline: calc(var(--vq-dot) / 2);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 50%;
+    border-block-start: 2px solid var(--vd-color-border-strong);
+  }
+}
+.answer {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 50%;
+  inline-size: 3px;
+  margin-inline-start: -1.5px;
+  border-radius: var(--vd-radius-full);
+  background-color: var(--vd-color-action);
+}
+.dot {
+  position: absolute;
+  inset-block-start: calc(50% - var(--vq-dot) / 2);
+  inline-size: var(--vq-dot);
+  block-size: var(--vq-dot);
+  margin-inline-start: calc(var(--vq-dot) / -2);
+  border: 2px solid var(--vd-color-bg);
+  border-radius: 50%;
+  background-color: var(--vd-color-text-subtle);
+}
+.dot[data-place='1'] {
+  z-index: 1;
+  background-color: var(--vd-color-action);
+}
+.rows {
+  display: grid;
+  gap: var(--vd-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.row {
+  // Not longer than a breath, however many play.
+  @include motion.enter(vq-rise, min(calc(var(--order, 0) * 500ms), 4s));
+
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: var(--vd-space-3);
+  align-items: center;
+  padding: var(--vd-space-2) var(--vd-space-4);
+  border: var(--vd-border-width) solid var(--vd-color-border);
+  border-radius: var(--vd-radius-lg);
+  background-color: var(--vd-color-surface);
+}
+.row[data-place='1'] {
+  border-color: var(--vd-color-success-border);
+  background-color: var(--vd-color-success-subtle);
+}
+.current {
+  outline: 2px solid var(--vd-color-action);
+}
+.place {
+  min-inline-size: 1.5em;
+  color: var(--vd-color-text-muted);
+  font-weight: var(--vd-weight-bold);
+}
+.who {
+  display: grid;
+}
+.name {
+  font-weight: var(--vd-weight-semibold);
+  overflow-wrap: anywhere;
+}
+.miss {
+  color: var(--vd-color-text-muted);
+  font-size: var(--vd-text-sm);
+}
+.value,
+.points {
+  font-variant-numeric: tabular-nums;
+}
+.points {
+  min-inline-size: 2.5em;
+  font-weight: var(--vd-weight-bold);
+  text-align: end;
+}
+:host([data-large]) {
+  --vq-dot: 1.25rem;
+
+  .name,
+  .value,
+  .points {
+    font-size: var(--vd-text-xl);
+  }
+  .miss {
+    font-size: var(--vd-text-base);
+  }
+}

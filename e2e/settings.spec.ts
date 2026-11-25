@@ -7,7 +7,7 @@ import {
   type BrowserContext,
   type Page,
 } from '@playwright/test';
-import { bluffRoom, rpc } from './bluff-room';
+import { bluffRoom, openRoom, rpc } from './rooms';
 
 const ENGLISH_BOARD = {
   title: 'Test quiz',
@@ -31,6 +31,17 @@ const ENGLISH_FACTS = Array.from({ length: 5 }, (_, i) => ({
   truth: `ice ${i}`,
   decoy: `straw ${i}`,
 }));
+
+const ENGLISH_GUESSES = {
+  title: 'Test quiz',
+  mode: 'guess',
+  guesses: Array.from({ length: 5 }, (_, i) => ({
+    text: `How many steps has tower ${i}?`,
+    answer: 1665,
+    unit: 'steps',
+    explanation: 'Counted from the ground.',
+  })),
+};
 
 async function context(
   browser: Browser,
@@ -90,6 +101,7 @@ async function everyScreen(
   for (const [game, document] of [
     ['Quiz Board', ENGLISH_BOARD],
     ['Bluff', { title: 'Test quiz', mode: 'bluff', facts: ENGLISH_FACTS }],
+    ['Ballpark', ENGLISH_GUESSES],
   ] as const) {
     await page.goto('/quizzes');
     await check(page);
@@ -107,7 +119,7 @@ async function everyScreen(
     await check(page);
   }
 
-  const { code: boardCode, roomId, hostToken } = await boardRoom();
+  const { code: boardCode, roomId, hostToken } = await openRoom(ENGLISH_BOARD);
   const host = await (
     await context(browser, { ...settings, [`host.${boardCode}`]: hostToken } as typeof settings)
   ).newPage();
@@ -168,22 +180,34 @@ async function everyScreen(
   await bluffHost.getByRole('button', { name: 'Reveal the answers' }).click();
   await expect(bluffStream.getByText('Got it right: Ann')).toBeVisible();
   for (const screen of bluffScreens) await check(screen);
-}
 
-async function boardRoom() {
-  const [quiz] = await rpc<{ quiz_id: string; owner_token: string }[]>('create_quiz', {
-    p_title: 'Test quiz',
-  });
-  await rpc('save_quiz', {
-    p_quiz_id: quiz!.quiz_id,
-    p_token: quiz!.owner_token,
-    p_document: ENGLISH_BOARD,
-  });
-  const [room] = await rpc<{ room_id: string; room_code: string; host_token: string }[]>(
-    'create_room',
-    { p_quiz_id: quiz!.quiz_id, p_quiz_token: quiz!.owner_token },
-  );
-  return { roomId: room!.room_id, code: room!.room_code, hostToken: room!.host_token };
+  const guess = await openRoom(ENGLISH_GUESSES);
+  const guessHost = await (
+    await context(browser, {
+      ...settings,
+      [`host.${guess.code}`]: guess.hostToken,
+    } as typeof settings)
+  ).newPage();
+  await guessHost.goto(`/host/${guess.code}`);
+  const guessStream = await site.newPage();
+  await guessStream.goto(`/stream/${guess.code}`);
+  const guessPhone = await joinIn(browser, settings, guess.code, 'Ann');
+  await joinIn(browser, settings, guess.code, 'Bob');
+  const guessScreens = [guessHost, guessStream, guessPhone];
+  await guessHost.getByRole('button', { name: 'Start the game' }).click();
+  await guessPhone.getByLabel('Your number, steps').fill('abc');
+  await guessPhone.getByRole('button', { name: 'Send' }).click();
+  await expect(guessPhone.getByText('Enter a number')).toBeVisible();
+  for (const screen of guessScreens) await check(screen);
+  await guessPhone.getByLabel('Your number, steps').fill('1,600');
+  await expect(guessPhone.getByText('Counts as 1600')).toBeVisible();
+  await guessPhone.getByRole('button', { name: 'Send' }).click();
+  await expect(guessStream.getByText('Answered: 1 of 2')).toBeVisible();
+  for (const screen of guessScreens) await check(screen);
+  await guessHost.getByRole('button', { name: 'Reveal the answer' }).click();
+  await expect(guessStream.getByText('off by 65 steps')).toBeVisible();
+  await expect(guessPhone.getByText('Place 1')).toBeVisible();
+  for (const screen of guessScreens) await check(screen);
 }
 
 async function joinIn(

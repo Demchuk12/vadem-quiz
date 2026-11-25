@@ -1,0 +1,28 @@
+@if (rows().length === 0) {
+  <p class="empty">{{ t().guess.nobody }}</p>
+} @else {
+  <div class="line" role="img" [attr.aria-label]="t().guess.scale">
+    <span class="answer"></span>
+    @for (row of rows(); track row.player_id) {
+      <span class="dot" [attr.data-place]="row.place" [style.inset-inline-start]="at(row)"></span>
+    }
+  </div>
+  <ol class="rows" [attr.aria-label]="t().guess.results">
+    @for (row of rows(); track row.player_id) {
+      <li
+        class="row"
+        [attr.data-place]="row.place"
+        [class.current]="row.player_id === currentPlayerId()"
+        [style.--order]="rows().length - 1 - $index"
+      >
+        <span class="place">{{ row.place }}</span>
+        <span class="who">
+          <span class="name">{{ row.nickname }}</span>
+          <span class="miss">{{ miss(row) }}</span>
+        </span>
+        <span class="value">{{ value(row) }}</span>
+        <span class="points">{{ points(row) }}</span>
+      </li>
+    }
+  </ol>
+}

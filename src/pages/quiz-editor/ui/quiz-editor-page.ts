@@ -18,7 +18,7 @@ import {
   type AnyQuizDocument,
   type SavedQuiz,
 } from '@entities/quiz';
-import { FactGenerator, QuizGenerator } from '@features/generate-quiz';
+import { FactGenerator, GuessGenerator, QuizGenerator } from '@features/generate-quiz';
 import { QuizTransfer } from '@features/transfer-quiz';
 import { apiAction } from '@shared/api';
 import { QuestionLoader } from '@shared/ui';
@@ -28,6 +28,7 @@ import { VdButton } from '@vadem/ui/button';
 import { VdSkeleton } from '@vadem/ui/skeleton';
 import { VdToaster } from '@vadem/ui/toast';
 import { BluffEditor } from '@widgets/bluff-editor';
+import { GuessEditor } from '@widgets/guess-editor';
 import { QuizEditor } from '@widgets/quiz-editor';
 import { MESSAGES } from '../i18n/messages';
 
@@ -44,6 +45,8 @@ type LoadState = 'loading' | 'ready' | 'forbidden' | 'error';
     BluffEditor,
     QuizEditor,
     FactGenerator,
+    GuessEditor,
+    GuessGenerator,
     QuizGenerator,
     QuizTransfer,
   ],
@@ -65,6 +68,7 @@ export class QuizEditorPage implements OnInit, HasUnsavedChanges {
   /** The quiz as one kind or another, for the editor that fits it. */
   protected readonly board = computed(() => asKind(this.quiz(), 'board'));
   protected readonly bluff = computed(() => asKind(this.quiz(), 'bluff'));
+  protected readonly guess = computed(() => asKind(this.quiz(), 'guess'));
   protected readonly dirty = signal(false);
   private readonly saveAction = apiAction();
   protected readonly saving = this.saveAction.busy;

@@ -1,0 +1,33 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-4);
+}
+p {
+  margin: 0;
+}
+.head {
+  display: flex;
+  gap: var(--vd-space-3);
+  align-items: start;
+  justify-content: space-between;
+
+  vq-guess-question {
+    flex: 1;
+    min-inline-size: 0;
+  }
+}
+.secret {
+  display: grid;
+  gap: var(--vd-space-1);
+  padding: var(--vd-space-3) var(--vd-space-4);
+  border: var(--vd-border-width) dashed var(--vd-color-border-strong);
+  border-radius: var(--vd-radius-lg);
+}
+.number {
+  font-size: var(--vd-text-xl);
+  font-weight: var(--vd-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+.explanation {
+  color: var(--vd-color-text-muted);
+}

@@ -44,6 +44,21 @@ export const MESSAGES = defineMessages({
       replaceText:
         'AI перепише всі факти цього квізу. Поки ви не збережете, збережена версія лишається цілою.',
     },
+    guesses: {
+      topic: 'Тема питань',
+      hint: 'AI напише питання з числовою відповіддю, яку цікаво прикинути. Перевірте числа: він буває впевнено неправий.',
+      placeholder: 'Наприклад: рекорди природи, історія, спорт',
+      writer: 'Хто пише питання',
+      generate: (count: number) =>
+        `Згенерувати ${count} ${plural('uk', count, { other: 'питань', one: 'питання', few: 'питання' })}`,
+      working: 'Рахуємо дивні числа…',
+      failed: 'Не вдалося згенерувати питання',
+      done: 'Питання написано',
+      doneText: (writer: string) => `Писав ${writer}. Перевірте числа й збережіть квіз.`,
+      replaceTitle: 'Замінити питання?',
+      replaceText:
+        'AI перепише всі питання цього квізу. Поки ви не збережете, збережена версія лишається цілою.',
+    },
     ownAi: {
       title: 'Свої нейронки',
       about:
@@ -108,6 +123,21 @@ export const MESSAGES = defineMessages({
       replaceTitle: 'Replace the facts?',
       replaceText:
         'The AI rewrites every fact of this quiz. The saved version stays as it is until you save.',
+    },
+    guesses: {
+      topic: 'Topic of the questions',
+      hint: 'The AI writes questions whose number is fun to estimate. Check the numbers: it can be confidently wrong.',
+      placeholder: 'For example: records of nature, history, sports',
+      writer: 'Who writes the questions',
+      generate: (count) =>
+        `Generate ${count} ${plural('en', count, { one: 'question', other: 'questions' })}`,
+      working: 'Counting odd numbers…',
+      failed: 'Could not generate the questions',
+      done: 'The questions are written',
+      doneText: (writer) => `Written by ${writer}. Check the numbers and save the quiz.`,
+      replaceTitle: 'Replace the questions?',
+      replaceText:
+        'The AI rewrites every question of this quiz. The saved version stays as it is until you save.',
     },
     ownAi: {
       title: 'Your own AIs',

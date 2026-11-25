@@ -2,7 +2,14 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { injectMessages } from '@shared/i18n';
-import { BLUFF_FACTS, QuizApi, SavedQuizzes, emptyDocument, type QuizMode } from '@entities/quiz';
+import {
+  BLUFF_FACTS,
+  GUESS_QUESTIONS,
+  QuizApi,
+  SavedQuizzes,
+  emptyDocument,
+  type QuizMode,
+} from '@entities/quiz';
 import { apiAction } from '@shared/api';
 import { VdButton } from '@vadem/ui/button';
 import { VD_CARD } from '@vadem/ui/card';
@@ -28,6 +35,7 @@ export class CreateQuiz {
 
   protected readonly busy = this.action.busy;
   protected readonly facts = BLUFF_FACTS;
+  protected readonly questions = GUESS_QUESTIONS;
   /** The game being created; null while the dialog is closed. */
   protected readonly mode = signal<QuizMode | null>(null);
   protected readonly gameName = computed(() => this.t().games[this.mode() ?? 'board']);

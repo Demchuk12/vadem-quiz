@@ -10,8 +10,8 @@
         <div class="row">
           <span class="title">
             {{ quiz.title }}
-            @if (quiz.mode === 'bluff') {
-              <span vdBadge variant="accent">{{ t().bluff }}</span>
+            @if (quiz.mode && quiz.mode !== 'board') {
+              <span vdBadge variant="accent">{{ t().games[quiz.mode] }}</span>
             }
           </span>
           <div class="actions">

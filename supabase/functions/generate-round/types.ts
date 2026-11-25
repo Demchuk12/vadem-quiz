@@ -4,8 +4,8 @@ export type ProviderId = 'gemini' | 'groq' | 'openrouter';
 
 export type Choice = ProviderId | 'auto' | 'own';
 
-/** A board of categories, or the facts of "Варіанти". */
-export type Mode = 'board' | 'bluff';
+/** A board of categories, the facts of "Варіанти", or the questions of "На око". */
+export type Mode = 'board' | 'bluff' | 'guess';
 
 export type Vendor = 'openai' | 'anthropic' | 'gemini' | 'groq' | 'mistral' | 'openrouter';
 
@@ -53,6 +53,8 @@ export interface GeneratedQuestion {
   explanation?: string;
   /** "Варіанти" only: false endings the host may use as their decoy. */
   decoys?: string[];
+  /** "На око" only: what the number in `answer` counts. */
+  unit?: string;
   /** From the AI: a Wikipedia article title, or empty. Replaced by `imageUrl` before replying. */
   image?: string;
   imageUrl?: string;

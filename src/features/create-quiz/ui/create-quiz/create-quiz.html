@@ -22,6 +22,17 @@
     <span class="about">{{ t().bluffAbout }}</span>
     <span class="meta">{{ t().bluffMeta(facts.min, facts.max) }}</span>
   </button>
+
+  <button vdCard type="button" class="game" (click)="choose('guess')">
+    <span class="art guess" aria-hidden="true">
+      <span class="mark" style="--at: 10%">1200</span>
+      <span class="mark right" style="--at: 60%">1665</span>
+      <span class="mark" style="--at: 88%">1800</span>
+    </span>
+    <span class="name">{{ t().games.guess }}</span>
+    <span class="about">{{ t().guessAbout }}</span>
+    <span class="meta">{{ t().guessMeta(questions.min, questions.max) }}</span>
+  </button>
 </div>
 
 <dialog vdDialog size="sm" [open]="mode() !== null" (openChange)="$event || close()">

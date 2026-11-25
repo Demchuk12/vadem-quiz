@@ -6,7 +6,7 @@ export function secondsLeft(endsAt: number | null, now: number): number {
   return Math.max(0, Math.ceil((endsAt - now) / 1000));
 }
 
-/** The clock of the room's current state: presses in "Своя гра", writing and voting in "Варіанти". */
+/** The clock of the room's current state, in seconds; null in one without a clock. */
 export function phaseSeconds(room: Room): number | null {
   switch (room.state) {
     case 'buzzing_open':
@@ -15,6 +15,8 @@ export function phaseSeconds(room: Room): number | null {
       return room.writing_seconds;
     case 'bluff_voting':
       return room.voting_seconds;
+    case 'guess_open':
+      return room.guess_seconds;
     default:
       return null;
   }

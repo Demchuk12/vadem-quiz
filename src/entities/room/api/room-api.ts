@@ -3,6 +3,7 @@ import { Rpc } from '@shared/api';
 import type {
   BluffHostFact,
   BluffMyRound,
+  GuessHostQuestion,
   HostAnswer,
   HostKey,
   JoinedRoom,
@@ -103,6 +104,33 @@ export class RoomApi {
   }
   async bluffHostFact(key: HostKey): Promise<BluffHostFact | null> {
     const rows = await this.hostCall<BluffHostFact[]>('bluff_host_fact', key);
+    return rows[0] ?? null;
+  }
+
+  // "На око"
+  guessSubmit(roomId: string, playerId: string, token: string, value: number): Promise<void> {
+    return this.rpc.call('guess_submit', {
+      p_room_id: roomId,
+      p_player_id: playerId,
+      p_token: token,
+      p_value: value,
+    });
+  }
+  guessMyValue(roomId: string, playerId: string, token: string): Promise<number | null> {
+    return this.rpc.call('guess_my_value', {
+      p_room_id: roomId,
+      p_player_id: playerId,
+      p_token: token,
+    });
+  }
+  guessReveal(key: HostKey): Promise<void> {
+    return this.hostCall('guess_reveal', key);
+  }
+  guessNext(key: HostKey): Promise<void> {
+    return this.hostCall('guess_next', key);
+  }
+  async guessHostQuestion(key: HostKey): Promise<GuessHostQuestion | null> {
+    const rows = await this.hostCall<GuessHostQuestion[]>('guess_host_question', key);
     return rows[0] ?? null;
   }
 }

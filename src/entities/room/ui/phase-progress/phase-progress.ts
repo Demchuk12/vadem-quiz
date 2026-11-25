@@ -15,13 +15,15 @@ export class PhaseProgress {
   private readonly store = inject(RoomStore);
 
   protected readonly players = computed(() => {
-    const done = new Set(this.store.room()?.bluff_done ?? []);
+    const room = this.store.room();
+    const done = new Set(room?.mode === 'guess' ? room.guess_done : room?.bluff_done);
     return this.store.players().map((player) => ({ player, done: done.has(player.id) }));
   });
   protected readonly summary = computed(() => {
-    const { voted, wrote } = this.t().progress;
+    const { voted, wrote, answered } = this.t().progress;
+    const state = this.store.room()?.state;
     const done = this.players().filter((entry) => entry.done).length;
-    const say = this.store.room()?.state === 'bluff_voting' ? voted : wrote;
+    const say = state === 'guess_open' ? answered : state === 'bluff_voting' ? voted : wrote;
     return say(done, this.players().length);
   });
 }

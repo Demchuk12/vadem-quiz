@@ -1,0 +1,57 @@
+<section vdCard>
+  <form [formGroup]="form" (ngSubmit)="start()">
+    <vd-field
+      [label]="t().guesses.topic"
+      [hint]="t().guesses.hint"
+      [error]="t().promptError"
+      [descriptionIds]="promptCount.descriptionId()"
+    >
+      <textarea
+        vdInput
+        id="guesses-topic"
+        rows="3"
+        formControlName="prompt"
+        [placeholder]="t().guesses.placeholder"
+      ></textarea>
+      <vd-character-count
+        #promptCount
+        controlId="guesses-topic"
+        [value]="prompt()"
+        [maxLength]="maxLength"
+      />
+    </vd-field>
+    <div class="writer">
+      <vd-field class="provider-field" [label]="t().guesses.writer">
+        <vd-select [value]="ai.provider()" (valueChange)="ai.choose($any($event))">
+          <vq-ai-provider-icon slot="start" [provider]="ai.iconOf(ai.provider())" />
+          @for (option of ai.options(); track option.id) {
+            <vd-option [value]="option.id" [label]="option.label">
+              <vq-ai-provider-icon [provider]="option.icon" />
+              {{ option.label }}
+            </vd-option>
+          }
+        </vd-select>
+      </vd-field>
+      <vq-own-ai-settings />
+    </div>
+    <div class="actions">
+      <button vdButton type="submit" [loading]="busy()">
+        <vd-icon slot="start" name="star" />
+        {{ t().guesses.generate(count()) }}
+      </button>
+      @if (busy()) {
+        <vq-question-loader size="sm" [label]="t().guesses.working" />
+      }
+    </div>
+  </form>
+</section>
+
+<vd-alert-dialog
+  [title]="t().guesses.replaceTitle"
+  [description]="t().guesses.replaceText"
+  [confirmLabel]="t().replace"
+  [cancelLabel]="t().cancel"
+  [open]="confirming()"
+  [action]="replace"
+  (openChange)="confirming.set($event)"
+/>

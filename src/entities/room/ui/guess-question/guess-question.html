@@ -1,0 +1,16 @@
+@if (room(); as room) {
+  @if (final()) {
+    <div>
+      <span vdBadge variant="warning">{{ t().guess.final }}</span>
+    </div>
+  }
+  <p class="text">{{ room.question_text }}</p>
+  @if (answer(); as number) {
+    <p class="answer">{{ number }}</p>
+    @if (room.answer_explanation) {
+      <p class="note">{{ room.answer_explanation }}</p>
+    }
+  } @else if (large() && room.guess_unit) {
+    <p class="note">{{ t().guess.unit(room.guess_unit) }}</p>
+  }
+}

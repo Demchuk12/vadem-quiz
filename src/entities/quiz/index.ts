@@ -26,6 +26,15 @@ export {
   updateFact,
 } from './model/bluff-document';
 export { type BluffDocument, type BluffFact } from './model/bluff-document.types';
+export {
+  addGuess,
+  applyGeneratedGuesses,
+  isGuessComplete,
+  removeGuess,
+  updateGuess,
+} from './model/guess-document';
+export { type GuessDocument, type GuessQuestion } from './model/guess-document.types';
+export { GUESS_LENGTHS, GUESS_QUESTIONS, GUESS_SECONDS } from './config/guess-limits';
 export { asKind, documentProgress, emptyDocument, kindOf } from './model/quiz-kind';
 export { type AnyQuizDocument, type QuizMode } from './model/quiz-kind.types';
 export { BLUFF_FACTS, BLUFF_LENGTHS, BLUFF_SECONDS } from './config/bluff-limits';

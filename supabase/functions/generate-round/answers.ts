@@ -1,9 +1,15 @@
 // Reads an AI's reply into a round of the right shape.
 
-import { DECOYS } from './config.ts';
+import { DECOYS, MAX_GUESS, MAX_UNIT } from './config.ts';
 import { Retryable } from './errors.ts';
 import { isOwn } from './http.ts';
 import type { GeneratedQuestion, GeneratedRound, RoundRequest } from './types.ts';
+
+/** Without a strict schema, a model may write a number as a number. */
+const withTextAnswer = (question: GeneratedQuestion) =>
+  typeof question?.answer === 'number'
+    ? { ...question, answer: String(question.answer) }
+    : question;
 
 export const isQuestion = (question: GeneratedQuestion | undefined) =>
   typeof question?.text === 'string' &&
@@ -28,13 +34,15 @@ export function checkRound(value: unknown, request: RoundRequest): GeneratedRoun
     )
     .map((category) => ({
       title: category.title,
-      questions: category.questions.filter(isQuestion).slice(0, request.questions),
+      questions: category.questions
+        .map(withTextAnswer)
+        .filter(isQuestion)
+        .slice(0, request.questions),
     }))
-    .map((category) =>
-      request.mode === 'bluff'
-        ? { ...category, questions: category.questions.flatMap((q) => withDecoys(q)) }
-        : category,
-    )
+    .map((category) => {
+      const keep = { board: null, bluff: withDecoys, guess: withNumber }[request.mode];
+      return keep ? { ...category, questions: category.questions.flatMap(keep) } : category;
+    })
     .filter((category) => category.questions.length === request.questions)
     .slice(0, request.categories);
   if (categories.length < request.categories) {
@@ -61,6 +69,15 @@ function withDecoys(question: GeneratedQuestion): GeneratedQuestion[] {
     ),
   ].slice(0, DECOYS);
   return decoys.length > 0 ? [{ ...question, decoys }] : [];
+}
+
+/** An answer is a plain number; a question without one is of no use to the game. */
+function withNumber(question: GeneratedQuestion): GeneratedQuestion[] {
+  const answer = question.answer.replace(/[\s'’]/g, '').replace('−', '-');
+  const value = /^-?\d+(\.\d+)?$/.test(answer) ? Number(answer) : NaN;
+  if (!(Math.abs(value) <= MAX_GUESS)) return [];
+  const unit = typeof question.unit === 'string' ? question.unit.trim().slice(0, MAX_UNIT) : '';
+  return [{ ...question, answer: String(Math.round(value * 1000) / 1000), unit }];
 }
 
 export const normalize = (text: string) =>

@@ -39,6 +39,10 @@ const room = (patch: Partial<Room> = {}): Room => ({
   bluff_done: [],
   bluff_options: null,
   bluff_deltas: null,
+  guess_seconds: null,
+  guess_unit: null,
+  guess_done: [],
+  guess_results: null,
   version: 1,
   ...patch,
 });

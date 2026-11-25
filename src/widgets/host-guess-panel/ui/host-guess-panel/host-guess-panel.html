@@ -1,0 +1,31 @@
+@if (store.room(); as room) {
+  <div class="head">
+    <vq-guess-question />
+    <vq-phase-timer />
+  </div>
+
+  @if (room.state === 'guess_open') {
+    @if (answer(); as number) {
+      <div class="secret">
+        <p class="vd-eyebrow">{{ t().answer }}</p>
+        <p class="number">{{ number }}</p>
+        @if (question()?.explanation; as explanation) {
+          <p class="explanation">{{ explanation }}</p>
+        }
+      </div>
+    }
+    <vq-phase-progress />
+  } @else {
+    <vq-guess-scale />
+  }
+
+  <div>
+    <button vdButton variant="primary" size="lg" [loading]="host.busy()" (click)="next()">
+      @if (room.state === 'guess_open') {
+        {{ t().reveal }}
+      } @else {
+        {{ last() ? t().results : t().next }}
+      }
+    </button>
+  </div>
+}

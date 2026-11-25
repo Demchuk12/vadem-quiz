@@ -66,72 +66,51 @@ export const GEMINI_SCHEMA = {
   required: ['categories'],
 };
 
-/** "Варіанти": the same envelope, each fact with its false endings. */
-const BLUFF_FACT = {
-  text: { type: 'string' },
-  answer: { type: 'string' },
-  decoys: { type: 'array', items: { type: 'string' } },
-  explanation: { type: 'string' },
+const TEXT = { type: 'string' };
+
+/** What one item of the other games holds, in the same envelope as a board's round. */
+const ITEMS = {
+  bluff: {
+    text: TEXT,
+    answer: TEXT,
+    decoys: { type: 'array', items: TEXT },
+    explanation: TEXT,
+  },
+  guess: { text: TEXT, answer: TEXT, unit: TEXT, explanation: TEXT },
 };
 
-export const BLUFF_STRICT_SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
-  required: ['categories'],
-  properties: {
-    categories: {
-      type: 'array',
-      items: {
-        type: 'object',
-        additionalProperties: false,
-        required: ['title', 'questions'],
-        properties: {
-          title: { type: 'string' },
-          questions: {
-            type: 'array',
-            items: {
-              type: 'object',
-              additionalProperties: false,
-              required: ['text', 'answer', 'decoys', 'explanation'],
-              properties: BLUFF_FACT,
+const listSchema = (properties: Record<string, unknown>, strict: boolean) => {
+  // Strict schemas need every object closed; Gemini's do not take the keyword.
+  const closed = strict ? { additionalProperties: false } : {};
+  return {
+    type: 'object',
+    ...closed,
+    required: ['categories'],
+    properties: {
+      categories: {
+        type: 'array',
+        items: {
+          type: 'object',
+          ...closed,
+          required: ['title', 'questions'],
+          properties: {
+            title: TEXT,
+            questions: {
+              type: 'array',
+              items: { type: 'object', ...closed, required: Object.keys(properties), properties },
             },
           },
         },
       },
     },
-  },
+  };
 };
 
-export const BLUFF_GEMINI_SCHEMA = {
-  type: 'object',
-  properties: {
-    categories: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          title: { type: 'string' },
-          questions: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: BLUFF_FACT,
-              required: ['text', 'answer', 'decoys'],
-            },
-          },
-        },
-        required: ['title', 'questions'],
-      },
-    },
-  },
-  required: ['categories'],
-};
+export const strictSchema = ({ mode }: RoundRequest) =>
+  mode === 'board' ? STRICT_SCHEMA : listSchema(ITEMS[mode], true);
 
-export const strictSchema = (request: RoundRequest) =>
-  request.mode === 'bluff' ? BLUFF_STRICT_SCHEMA : STRICT_SCHEMA;
-
-export const geminiSchema = (request: RoundRequest) =>
-  request.mode === 'bluff' ? BLUFF_GEMINI_SCHEMA : GEMINI_SCHEMA;
+export const geminiSchema = ({ mode }: RoundRequest) =>
+  mode === 'board' ? GEMINI_SCHEMA : listSchema(ITEMS[mode], false);
 
 /** The OpenAI-style strict format for a request. */
 export const strictFormat = (request: RoundRequest) => ({

@@ -5,11 +5,12 @@ import {
   MAX_AVOID,
   MAX_AVOID_ANSWERS,
   MAX_CATEGORIES,
-  MAX_FACTS,
+  MAX_LIST,
   MAX_OWN,
   MAX_PROMPT_LENGTH,
   MAX_QUESTIONS,
   MAX_TEXT,
+  MODES,
   VENDORS,
 } from './config.ts';
 import { Failure } from './errors.ts';
@@ -75,11 +76,11 @@ export function parseRequest(body: unknown): RoundRequest {
   const avoid = Array.isArray(b['avoid']) ? b['avoid'] : [];
   const avoidAnswers = Array.isArray(b['avoidAnswers']) ? b['avoidAnswers'] : [];
   const provider = b['provider'] ?? 'auto';
-  const mode: Mode = b['mode'] === 'bluff' ? 'bluff' : 'board';
-  // Facts come as one list: a single "category" of up to twenty.
+  const mode: Mode = MODES.find((known) => known === b['mode']) ?? 'board';
+  // The other games come as one list: a single "category" of up to twenty.
   const shapeOk =
-    mode === 'bluff'
-      ? b['categories'] === 1 && isCount(b['questions'], MAX_FACTS)
+    mode !== 'board'
+      ? b['categories'] === 1 && isCount(b['questions'], MAX_LIST)
       : isCount(b['categories'], MAX_CATEGORIES) && isCount(b['questions'], MAX_QUESTIONS);
   if (
     !shapeOk ||

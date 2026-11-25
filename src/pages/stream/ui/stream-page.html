@@ -18,8 +18,8 @@
         <vq-winner-banner />
       }
       @case ('bluff_writing') {
-        <div class="bluff">
-          <div class="bluff-head">
+        <div class="round">
+          <div class="question-head">
             <vq-bluff-fact large />
             <vq-phase-timer />
           </div>
@@ -28,8 +28,8 @@
         </div>
       }
       @case ('bluff_voting') {
-        <div class="bluff">
-          <div class="bluff-head">
+        <div class="round">
+          <div class="question-head">
             <vq-bluff-fact large />
             <vq-phase-timer />
           </div>
@@ -38,9 +38,25 @@
         </div>
       }
       @case ('bluff_reveal') {
-        <div class="bluff">
+        <div class="round">
           <vq-bluff-fact large />
           <vq-bluff-reveal large />
+        </div>
+      }
+      @case ('guess_open') {
+        <div class="round">
+          <div class="question-head">
+            <vq-guess-question large />
+            <vq-phase-timer />
+          </div>
+          <p class="big">{{ t().guess }}</p>
+          <vq-phase-progress />
+        </div>
+      }
+      @case ('guess_reveal') {
+        <div class="round">
+          <vq-guess-question large />
+          <vq-guess-scale large />
         </div>
       }
       @default {

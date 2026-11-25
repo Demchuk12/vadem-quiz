@@ -6,8 +6,7 @@ export const MESSAGES = defineMessages({
     board: (round: number) => `Дошка, раунд ${round}`,
     badges: {
       offline: 'Немає звʼязку',
-      round: 'Раунд',
-      fact: 'Факт',
+      rounds: { board: 'Раунд', bluff: 'Факт', guess: 'Питання' },
     },
     status: {
       connecting: 'Підключаємося до гри…',
@@ -44,7 +43,20 @@ export const MESSAGES = defineMessages({
     progress: {
       wrote: (done: number, total: number) => `Написали ${done} з ${total}`,
       voted: (done: number, total: number) => `Проголосували ${done} з ${total}`,
+      answered: (done: number, total: number) => `Відповіли ${done} з ${total}`,
       ready: 'готово',
+    },
+    guess: {
+      final: 'Фінал: бали ×2',
+      unit: (unit: string) => `Відповідь: ${unit}`,
+      scale: 'Відповіді на шкалі',
+      results: 'Хто наскільки близько',
+      place: (place: number) => `${place} місце`,
+      exact: 'Точно в ціль!',
+      offBy: (distance: string) => `промах ${distance}`,
+      yourAnswer: (value: string) => `Ваша відповідь: ${value}`,
+      noAnswer: 'Ви не відповіли',
+      nobody: 'Ніхто не відповів',
     },
     bluff: {
       blank: 'пропуск',
@@ -69,8 +81,7 @@ export const MESSAGES = defineMessages({
     board: (round) => `Board, round ${round}`,
     badges: {
       offline: 'No connection',
-      round: 'Round',
-      fact: 'Fact',
+      rounds: { board: 'Round', bluff: 'Fact', guess: 'Question' },
     },
     status: {
       connecting: 'Connecting to the game…',
@@ -107,7 +118,20 @@ export const MESSAGES = defineMessages({
     progress: {
       wrote: (done, total) => `Written: ${done} of ${total}`,
       voted: (done, total) => `Voted: ${done} of ${total}`,
+      answered: (done, total) => `Answered: ${done} of ${total}`,
       ready: 'done',
+    },
+    guess: {
+      final: 'Final: points ×2',
+      unit: (unit) => `Answer in: ${unit}`,
+      scale: 'The answers on a scale',
+      results: 'Who came how close',
+      place: (place) => `Place ${place}`,
+      exact: 'Spot on!',
+      offBy: (distance) => `off by ${distance}`,
+      yourAnswer: (value) => `Your answer: ${value}`,
+      noAnswer: 'You did not answer',
+      nobody: 'Nobody answered',
     },
     bluff: {
       blank: 'blank',

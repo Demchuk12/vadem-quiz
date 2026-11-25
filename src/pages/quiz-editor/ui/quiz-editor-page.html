@@ -66,6 +66,10 @@
         <vq-fact-generator [quizId]="quizId()" [quiz]="bluffQuiz" (generated)="change($event)" />
         <vq-bluff-editor [quiz]="bluffQuiz" (quizChange)="change($event)" />
       }
+      @if (guess(); as guessQuiz) {
+        <vq-guess-generator [quizId]="quizId()" [quiz]="guessQuiz" (generated)="change($event)" />
+        <vq-guess-editor [quiz]="guessQuiz" (quizChange)="change($event)" />
+      }
     }
   }
 }

@@ -11,7 +11,7 @@ import {
   REWORD_LEAKS,
 } from './config.ts';
 import { Retryable } from './errors.ts';
-import { leaksAnswer } from './leaks.ts';
+import { holdsNumber, leaksAnswer } from './leaks.ts';
 import type { Attempt, GeneratedRound, Place, RoundRequest } from './types.ts';
 
 /**
@@ -25,9 +25,15 @@ export function flawed(round: GeneratedRound, request: RoundRequest): Place[] {
   round.categories.forEach((category, c) =>
     category.questions.forEach((question, q) => {
       const answer = normalize(question.answer);
-      const repeats = writing && seen.has(answer);
-      if (repeats || leaksAnswer(question.text, question.answer)) places.push({ c, q });
-      else seen.add(answer);
+      // Two different questions may share a number; only the same question again is a repeat.
+      const key = request.mode === 'guess' ? normalize(question.text) : answer;
+      const repeats = writing && seen.has(key);
+      const leaks =
+        request.mode === 'guess'
+          ? holdsNumber(question.text, question.answer)
+          : leaksAnswer(question.text, question.answer);
+      if (repeats || leaks) places.push({ c, q });
+      else seen.add(key);
     }),
   );
   return places;
@@ -104,6 +110,7 @@ export async function withoutFlaws(
         explanation: fresh.explanation || (sameAnswer ? old.explanation : ''),
         image: sameAnswer ? old.image : '',
         ...(fresh.decoys ? { decoys: fresh.decoys } : {}),
+        ...(fresh.unit !== undefined ? { unit: fresh.unit } : {}),
       };
     });
     current = { categories };

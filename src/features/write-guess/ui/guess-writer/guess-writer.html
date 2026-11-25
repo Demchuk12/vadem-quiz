@@ -1,0 +1,26 @@
+<form (submit)="submit($event)" novalidate>
+  <vd-field [label]="t().label(unit())" [hint]="t().hint" [error]="t().required">
+    <input
+      vdInput
+      size="lg"
+      inputmode="decimal"
+      autocomplete="off"
+      [invalid]="invalid()"
+      [touched]="tried()"
+      [value]="text()"
+      (input)="type($event)"
+    />
+  </vd-field>
+  @if (understood(); as number) {
+    <p class="understood">{{ t().understood(number) }} {{ unit() }}</p>
+  }
+  <button vdButton type="submit" size="lg" variant="primary" [loading]="busy()">
+    {{ sent() === null ? t().send : t().change }}
+  </button>
+</form>
+<p class="status" aria-live="polite">
+  @if (sent() !== null) {
+    {{ t().sent(format(sent()!)) }}
+  }
+  <span class="count">{{ t().answered(done(), total()) }}</span>
+</p>

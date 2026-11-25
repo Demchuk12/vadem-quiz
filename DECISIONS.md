@@ -274,6 +274,24 @@ button: they are set once, and a phone's menu has room for one quiet button. The
 has none of it and follows the host's choice, since open tabs share both settings. The light logo
 copies carry the green accent, as the dark ones do (D10).
 
+## D32 — "На око": the closest number wins
+
+A third game: every question has a number for an answer, players enter theirs, the closest win. The
+owner named a show as the inspiration; the game takes the general idea only, with rules and a name
+of its own. Places by distance give 3, 2 and 1, an equal distance shares the place and the next one
+is skipped, as in the leaderboard; an exact hit adds 2 and the last question doubles everything.
+Over or under makes no difference.
+
+- The answer and everyone's numbers stay in `private` until the reveal. A question ends when all
+  have answered, when the host ends it, or when its clock (30 s, optional) runs out.
+- Numbers are `numeric(18, 3)` up to a trillion, so every value is exact in a browser too. Typed
+  numbers follow the language where it matters: "1,234" is a thousand in English and not in
+  Ukrainian, so the phone says how it read a number that could be read differently.
+- On the reveal's scale a typical miss stands halfway to the edge and far ones crowd toward it: a
+  plain scale would push all but one player into a point after one wild answer.
+- The kind of a quiz is now `kindOf`, with a table of what each kind can do, instead of "bluff or
+  not"; ending a phase on time is one helper for all three games.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

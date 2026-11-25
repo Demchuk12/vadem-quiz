@@ -1,0 +1,12 @@
+@if (row(); as row) {
+  <p class="delta" [class.gain]="row.delta > 0">
+    <span class="vd-visually-hidden">{{ t().bluff.roundPoints }}</span>
+    {{ row.delta > 0 ? '+' + score(row.delta) : '0' }}
+  </p>
+  <p class="line">
+    {{ t().guess.place(row.place) }} ·
+    {{ row.exact ? t().guess.exact : t().guess.yourAnswer(format(row.value)) }}
+  </p>
+} @else {
+  <p class="line">{{ t().guess.noAnswer }}</p>
+}

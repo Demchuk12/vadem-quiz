@@ -39,6 +39,8 @@ export interface GeneratedQuestion {
   explanation?: string;
   /** "Варіанти" only: false endings for the host's decoy. */
   decoys?: string[];
+  /** "На око" only: what the number in `answer` counts. */
+  unit?: string;
   /** A photo of the answer, already stored with the quiz: it shows once the answer is revealed. */
   answerImagePath?: string | null;
 }

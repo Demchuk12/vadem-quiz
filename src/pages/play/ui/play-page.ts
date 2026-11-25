@@ -15,6 +15,9 @@ import {
   BluffFact,
   BluffResult,
   GameBoard,
+  GuessQuestion,
+  GuessResult,
+  GuessScale,
   PhaseTimer,
   QuestionView,
   RoomApi,
@@ -31,6 +34,7 @@ import {
 } from '@entities/room';
 import { BuzzButton } from '@features/buzz';
 import { BluffVoter } from '@features/vote-bluff';
+import { GuessWriter } from '@features/write-guess';
 import { BluffWriter } from '@features/write-bluff';
 import { VademLogo } from '@shared/ui';
 import { VdButton } from '@vadem/ui/button';
@@ -52,6 +56,10 @@ import { MESSAGES } from '../i18n/messages';
     BluffWriter,
     BuzzButton,
     GameBoard,
+    GuessQuestion,
+    GuessResult,
+    GuessScale,
+    GuessWriter,
     PhaseTimer,
     QuestionView,
     RoomBadges,

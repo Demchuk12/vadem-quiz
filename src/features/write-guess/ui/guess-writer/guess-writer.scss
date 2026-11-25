@@ -1,0 +1,22 @@
+:host,
+form {
+  display: grid;
+  gap: var(--vd-space-3);
+}
+input {
+  font-variant-numeric: tabular-nums;
+}
+p {
+  margin: 0;
+}
+.understood,
+.status {
+  color: var(--vd-color-text-muted);
+}
+.status {
+  display: grid;
+  gap: var(--vd-space-1);
+}
+.count {
+  font-size: var(--vd-text-sm);
+}

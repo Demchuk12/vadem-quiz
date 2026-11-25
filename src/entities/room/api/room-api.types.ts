@@ -29,6 +29,12 @@ export interface BluffMyRound {
   option_id: string | null;
 }
 
+/** The answer to the current "На око" question, for the host alone. */
+export interface GuessHostQuestion {
+  answer: number;
+  explanation: string;
+}
+
 /** What proves a call comes from the host of a room. */
 export interface HostKey {
   roomId: string;

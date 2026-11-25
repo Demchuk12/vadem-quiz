@@ -80,3 +80,11 @@ export function leaksAnswer(question: string, answer: string): boolean {
     .map(spell)
     .some((word) => word.length >= Math.min(stem.length, 4) && word.startsWith(stem));
 }
+
+/** True when the question states its own number. Digits grouped by spaces count as one number. */
+export function holdsNumber(question: string, answer: string): boolean {
+  const plain = question.replace(/(\d)[\s'’](?=\d{3})/g, '$1').replace(/(\d),(?=\d)/g, '$1.');
+  return (plain.match(/\d+(\.\d+)?/g) ?? []).some(
+    (number) => Number(number) === Math.abs(Number(answer)),
+  );
+}

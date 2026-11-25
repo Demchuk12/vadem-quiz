@@ -10,9 +10,12 @@ export type RoomState =
   // "Варіанти": players write a lie, vote for the truth, then everything is revealed.
   | 'bluff_writing'
   | 'bluff_voting'
-  | 'bluff_reveal';
+  | 'bluff_reveal'
+  // "На око": players enter a number, then everything is revealed.
+  | 'guess_open'
+  | 'guess_reveal';
 
-export type RoomMode = 'board' | 'bluff';
+export type RoomMode = 'board' | 'bluff' | 'guess';
 
 /** Row of `public.rooms`: the whole visible state of one game. */
 export interface Room {
@@ -43,13 +46,29 @@ export interface Room {
   buzz_seconds: number | null;
   writing_seconds: number | null;
   voting_seconds: number | null;
+  guess_seconds: number | null;
   /** Who has written, or while voting, who has voted. */
   bluff_done: string[];
   /** The shuffled options while voting; at the reveal with their kind, author and voters. */
   bluff_options: BluffOption[] | null;
   /** What each player gained or lost in the round just revealed. */
   bluff_deltas: Record<string, number> | null;
+  /** "На око": what the number counts, if anything. */
+  guess_unit: string | null;
+  /** Who has answered. */
+  guess_done: string[];
+  /** Everyone who answered, closest first; null until the reveal. */
+  guess_results: GuessResult[] | null;
   version: number;
+}
+
+export interface GuessResult {
+  player_id: string;
+  value: number;
+  /** Equal distances share a place, and the next one is skipped. */
+  place: number;
+  delta: number;
+  exact: boolean;
 }
 
 export interface BluffOption {

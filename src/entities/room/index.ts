@@ -2,6 +2,7 @@ export { RoomApi } from './api/room-api';
 export type {
   BluffHostFact,
   BluffMyRound,
+  GuessHostQuestion,
   HostAnswer,
   HostKey,
   JoinedRoom,
@@ -31,6 +32,9 @@ export { RoomStore } from './model/room-store';
 export { BluffFact } from './ui/bluff-fact/bluff-fact';
 export { BluffReveal } from './ui/bluff-reveal/bluff-reveal';
 export { BluffResult } from './ui/bluff-result/bluff-result';
+export { GuessQuestion } from './ui/guess-question/guess-question';
+export { GuessResult } from './ui/guess-result/guess-result';
+export { GuessScale } from './ui/guess-scale/guess-scale';
 export { LateLadder } from './ui/late-ladder/late-ladder';
 export { PhaseProgress } from './ui/phase-progress/phase-progress';
 export { PhaseTimer } from './ui/phase-timer/phase-timer';

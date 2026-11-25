@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { bluffRoom, rpc } from './bluff-room';
+import { bluffRoom, rpc } from './rooms';
 import { joinGame } from './helpers';
 
 test('a "Варіанти" quiz is made of facts with a truth and a decoy', async ({ page }) => {

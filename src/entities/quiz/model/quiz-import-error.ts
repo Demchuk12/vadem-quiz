@@ -2,12 +2,14 @@ export type ImportProblem =
   | 'not_json'
   | 'round_count'
   | 'text'
+  | 'number'
   | 'positive_int'
   | 'seconds'
   | 'list'
   | 'object'
   | 'board_file'
-  | 'bluff_file';
+  | 'bluff_file'
+  | 'guess_file';
 
 /** Where in the file: numbers count from 1, as the host sees them. Empty for the whole quiz. */
 export interface ImportPlace {
@@ -16,6 +18,7 @@ export interface ImportPlace {
   category?: number;
   question?: number;
   fact?: number;
+  guess?: number;
 }
 
 /** Why an imported file does not fit. The texts are in i18n. */

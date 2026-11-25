@@ -7,7 +7,7 @@
 }
 .games {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
   gap: var(--vd-space-3);
 }
 .game {
@@ -73,4 +73,41 @@
   border-color: var(--vd-color-action);
   background-color: var(--vd-color-action-subtle);
   color: var(--vd-color-action-text);
+}
+.guess {
+  position: relative;
+  align-content: center;
+
+  &::before {
+    content: '';
+    border-block-start: 2px solid var(--vd-color-border-strong);
+  }
+}
+.mark {
+  position: absolute;
+  inset-block-start: calc(50% - 1.75rem);
+  inset-inline-start: var(--at);
+  display: grid;
+  gap: var(--vd-space-1);
+  justify-items: center;
+  color: var(--vd-color-text-subtle);
+  font-size: var(--vd-text-sm);
+  font-variant-numeric: tabular-nums;
+  translate: -50% 0;
+
+  &::after {
+    content: '';
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    border-radius: 50%;
+    background-color: var(--vd-color-border-strong);
+  }
+}
+.mark.right {
+  color: var(--vd-color-action-text);
+  font-weight: var(--vd-weight-bold);
+
+  &::after {
+    background-color: var(--vd-color-action);
+  }
 }

@@ -36,7 +36,7 @@
     }
     @case ('bluff_writing') {
       <section vdCard class="stack">
-        <div class="bluff-head">
+        <div class="question-head">
           <vq-bluff-fact />
           <vq-phase-timer />
         </div>
@@ -47,7 +47,7 @@
     }
     @case ('bluff_voting') {
       <section vdCard class="stack">
-        <div class="bluff-head">
+        <div class="question-head">
           <vq-bluff-fact />
           <vq-phase-timer />
         </div>
@@ -63,6 +63,27 @@
           <vq-bluff-result [playerId]="id" />
         }
       </section>
+      <vq-standings [currentPlayerId]="playerId()" />
+    }
+    @case ('guess_open') {
+      <section vdCard class="stack">
+        <div class="question-head">
+          <vq-guess-question />
+          <vq-phase-timer />
+        </div>
+        @if (session(); as playerSession) {
+          <vq-guess-writer [session]="playerSession" />
+        }
+      </section>
+    }
+    @case ('guess_reveal') {
+      <section vdCard class="stack">
+        <vq-guess-question />
+        @if (playerId(); as id) {
+          <vq-guess-result [playerId]="id" />
+        }
+      </section>
+      <vq-guess-scale [currentPlayerId]="playerId()" />
       <vq-standings [currentPlayerId]="playerId()" />
     }
     @case ('answer_shown') {

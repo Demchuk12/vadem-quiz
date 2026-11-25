@@ -10,6 +10,7 @@ import type {
   QuizProgress,
   QuizQuestion,
 } from './quiz-document.types';
+import type { GuessDocument } from './guess-document.types';
 import { QuizImportError, type ImportPlace } from './quiz-import-error';
 import type { BluffDocument } from './bluff-document.types';
 import type { AnyQuizDocument } from './quiz-kind.types';
@@ -167,6 +168,12 @@ function asSeconds(value: unknown, where: ImportPlace): number | null | undefine
   throw new QuizImportError('seconds', where);
 }
 
+function asNumberOrNull(value: unknown, where: ImportPlace): number | null {
+  if (value === undefined || value === null) return null;
+  if (typeof value === 'number' && Math.abs(value) <= 1e12) return value;
+  throw new QuizImportError('number', where);
+}
+
 function asArray(value: unknown, where: ImportPlace): unknown[] {
   if (Array.isArray(value)) return value;
   throw new QuizImportError('list', where);
@@ -206,6 +213,7 @@ export function parseQuizDocument(
 
   const root = asRecord(raw, {});
   if (root['mode'] === 'bluff') return { document: parseBluff(root), droppedImages: 0 };
+  if (root['mode'] === 'guess') return { document: parseGuess(root), droppedImages: 0 };
   const rounds = asArray(root['rounds'], { field: 'rounds' });
   const roundMultipliers = asArray(root['roundMultipliers'], { field: 'roundMultipliers' }).map(
     (m, i) => asPositiveInt(m, { field: `roundMultipliers[${i}]` }),
@@ -259,6 +267,24 @@ function parseBluff(root: Record<string, unknown>): BluffDocument {
         truth: asString(fact['truth'], at),
         decoy: asString(fact['decoy'], at),
         explanation: asString(fact['explanation'], at),
+      };
+    }),
+  };
+}
+
+function parseGuess(root: Record<string, unknown>): GuessDocument {
+  return {
+    title: asString(root['title'], { field: 'title' }),
+    mode: 'guess',
+    guessSeconds: asSeconds(root['guessSeconds'], { field: 'guessSeconds' }),
+    guesses: asArray(root['guesses'], { field: 'guesses' }).map((g, i) => {
+      const at = { guess: i + 1 };
+      const guess = asRecord(g, at);
+      return {
+        text: asString(guess['text'], at),
+        answer: asNumberOrNull(guess['answer'], at),
+        unit: asString(guess['unit'], at),
+        explanation: asString(guess['explanation'], at),
       };
     }),
   };
