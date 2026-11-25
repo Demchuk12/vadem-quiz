@@ -7,7 +7,9 @@ export type {
   JoinedRoom,
   NewRoom,
 } from './api/room-api.types';
-export { bluffKey, bluffResult, revealOrder, secondsLeft, votableOptions } from './lib/bluff';
+export { MIN_PLAYERS } from './config/min-players';
+export { bluffKey, bluffResult, revealOrder, votableOptions } from './lib/bluff';
+export { endPhaseOnTime } from './lib/end-phase';
 export { playGameSounds } from './lib/game-sounds';
 export { buzzerStateFor, everyoneSpent, normalizeRoomCode } from './lib/game-logic';
 export { injectDelayFormat, injectScoreFormat } from './lib/format';
@@ -27,10 +29,10 @@ export type {
 export { RoomSessions, type PlayerSession } from './model/room-sessions';
 export { RoomStore } from './model/room-store';
 export { BluffFact } from './ui/bluff-fact/bluff-fact';
-export { BluffProgress } from './ui/bluff-progress/bluff-progress';
 export { BluffReveal } from './ui/bluff-reveal/bluff-reveal';
 export { BluffResult } from './ui/bluff-result/bluff-result';
 export { LateLadder } from './ui/late-ladder/late-ladder';
+export { PhaseProgress } from './ui/phase-progress/phase-progress';
 export { PhaseTimer } from './ui/phase-timer/phase-timer';
 export { GameBoard } from './ui/game-board/game-board';
 export { QuestionView } from './ui/question-view/question-view';

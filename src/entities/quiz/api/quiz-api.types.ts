@@ -1,4 +1,5 @@
 import type { Locale } from '@shared/i18n';
+import type { QuizMode } from '../model/quiz-kind.types';
 import type { EditSource } from '../model/ai-edit';
 
 export interface NewQuiz {
@@ -31,7 +32,7 @@ export interface GenerateRoundRequest {
   /** What the AI writes in, unless the topic asks for another language. */
   language: Locale;
   /** "bluff" writes the facts of a "Варіанти" quiz: one category of `questions` facts. */
-  mode?: 'board' | 'bluff';
+  mode?: QuizMode;
   quizId: string;
   token: string;
   prompt: string;

@@ -20,17 +20,14 @@ export {
   applyGeneratedFacts,
   bluffProgress,
   emptyBluffQuiz,
-  isBluff,
   isFactComplete,
   removeFact,
   swapDecoy,
   updateFact,
 } from './model/bluff-document';
-export {
-  type AnyQuizDocument,
-  type BluffDocument,
-  type BluffFact,
-} from './model/bluff-document.types';
+export { type BluffDocument, type BluffFact } from './model/bluff-document.types';
+export { asKind, documentProgress, emptyDocument, kindOf } from './model/quiz-kind';
+export { type AnyQuizDocument, type QuizMode } from './model/quiz-kind.types';
 export { BLUFF_FACTS, BLUFF_LENGTHS, BLUFF_SECONDS } from './config/bluff-limits';
 export { DEFAULT_BUZZ_SECONDS } from './config/quiz-defaults';
 export { QuizWriter } from './api/quiz-writer';

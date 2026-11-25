@@ -18,7 +18,7 @@ import {
   rankPlayers,
   upsertById,
 } from '../lib/game-logic';
-import { PhaseClock } from '../lib/bluff';
+import { PhaseClock } from '../lib/phase-clock';
 import { VerdictTracker } from '../lib/verdicts';
 import type { Player, Room, RoomCell, RoomLoadStatus, Verdict } from './room';
 

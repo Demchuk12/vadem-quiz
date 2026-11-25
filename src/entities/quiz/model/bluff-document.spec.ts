@@ -3,12 +3,12 @@ import {
   applyGeneratedFacts,
   bluffProgress,
   emptyBluffQuiz,
-  isBluff,
   removeFact,
   swapDecoy,
   updateFact,
 } from './bluff-document';
 import { emptyQuiz, parseQuizDocument } from './quiz-document';
+import { kindOf } from './quiz-kind';
 
 describe('bluff document', () => {
   it('starts with ten empty facts', () => {
@@ -32,8 +32,8 @@ describe('bluff document', () => {
   });
 
   it('tells the two kinds apart', () => {
-    expect(isBluff(emptyBluffQuiz('Факти'))).toBe(true);
-    expect(isBluff(emptyQuiz('Дошка'))).toBe(false);
+    expect(kindOf(emptyBluffQuiz('Факти'))).toBe('bluff');
+    expect(kindOf(emptyQuiz('Дошка'))).toBe('board');
   });
 
   it('imports an exported bluff quiz', () => {

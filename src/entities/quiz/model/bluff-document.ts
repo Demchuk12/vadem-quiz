@@ -1,5 +1,5 @@
 import { BLUFF_FACTS, BLUFF_SECONDS } from '../config/bluff-limits';
-import type { AnyQuizDocument, BluffDocument, BluffFact } from './bluff-document.types';
+import type { BluffDocument, BluffFact } from './bluff-document.types';
 import type { GeneratedRound, QuizProgress } from './quiz-document.types';
 
 const emptyFact = (): BluffFact => ({ text: '', truth: '', decoy: '', explanation: '' });
@@ -13,9 +13,6 @@ export function emptyBluffQuiz(title: string): BluffDocument {
     votingSeconds: BLUFF_SECONDS.voting,
   };
 }
-
-export const isBluff = (doc: AnyQuizDocument): doc is BluffDocument =>
-  'mode' in doc && doc.mode === 'bluff';
 
 export const isFactComplete = (fact: BluffFact): boolean =>
   fact.text.trim() !== '' && fact.truth.trim() !== '' && fact.decoy.trim() !== '';

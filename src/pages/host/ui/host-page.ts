@@ -12,6 +12,7 @@ import { injectMessages } from '@shared/i18n';
 import {
   GameBoard,
   HostSession,
+  MIN_PLAYERS,
   RoomLinks,
   RoomStatus,
   RoomStore,
@@ -73,8 +74,7 @@ export class HostPage implements OnInit {
   protected readonly adjusting = signal<Player | null>(null);
   private readonly code = computed(() => normalizeRoomCode(this.room()));
   protected readonly streamUrl = computed(() => this.links.stream(this.code()));
-  /** "Варіанти" needs the truth, the decoy and three lies to be worth guessing. */
-  protected readonly minPlayers = computed(() => (this.store.room()?.mode === 'bluff' ? 3 : 1));
+  protected readonly minPlayers = computed(() => MIN_PLAYERS[this.store.room()?.mode ?? 'board']);
 
   constructor() {
     playGameSounds(this.store, inject(Sound));

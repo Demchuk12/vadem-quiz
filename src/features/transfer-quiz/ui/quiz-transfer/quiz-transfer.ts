@@ -3,7 +3,7 @@ import { injectMessages } from '@shared/i18n';
 import {
   QuizImportError,
   injectImportErrorText,
-  isBluff,
+  kindOf,
   parseQuizDocument,
   type AnyQuizDocument,
 } from '@entities/quiz';
@@ -49,8 +49,9 @@ export class QuizTransfer {
     try {
       const { document, droppedImages } = parseQuizDocument(await file.text(), this.quizId());
       // A file of the other game would turn this quiz into it and drop what it holds.
-      if (isBluff(document) !== isBluff(this.quiz())) {
-        throw new QuizImportError(isBluff(document) ? 'bluff_file' : 'board_file');
+      const kind = kindOf(document);
+      if (kind !== kindOf(this.quiz())) {
+        throw new QuizImportError(`${kind}_file`);
       }
       this.imported.emit(document);
       this.toaster.success(

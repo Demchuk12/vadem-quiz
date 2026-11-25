@@ -24,7 +24,7 @@
             <vq-phase-timer />
           </div>
           <p class="big">{{ t().write }}</p>
-          <vq-bluff-progress />
+          <vq-phase-progress />
         </div>
       }
       @case ('bluff_voting') {
@@ -34,7 +34,7 @@
             <vq-phase-timer />
           </div>
           <vq-bluff-reveal large />
-          <vq-bluff-progress />
+          <vq-phase-progress />
         </div>
       }
       @case ('bluff_reveal') {

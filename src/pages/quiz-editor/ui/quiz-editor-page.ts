@@ -12,9 +12,9 @@ import { injectMessages } from '@shared/i18n';
 import {
   QuizApi,
   SavedQuizzes,
-  bluffProgress,
-  isBluff,
-  quizProgress,
+  asKind,
+  documentProgress,
+  kindOf,
   type AnyQuizDocument,
   type SavedQuiz,
 } from '@entities/quiz';
@@ -62,22 +62,16 @@ export class QuizEditorPage implements OnInit, HasUnsavedChanges {
 
   protected readonly load = signal<LoadState>('loading');
   protected readonly quiz = signal<AnyQuizDocument | null>(null);
-  /** The quiz as one kind or the other, for the editor that fits it. */
-  protected readonly board = computed(() => {
-    const quiz = this.quiz();
-    return quiz && !isBluff(quiz) ? quiz : null;
-  });
-  protected readonly bluff = computed(() => {
-    const quiz = this.quiz();
-    return quiz && isBluff(quiz) ? quiz : null;
-  });
+  /** The quiz as one kind or another, for the editor that fits it. */
+  protected readonly board = computed(() => asKind(this.quiz(), 'board'));
+  protected readonly bluff = computed(() => asKind(this.quiz(), 'bluff'));
   protected readonly dirty = signal(false);
   private readonly saveAction = apiAction();
   protected readonly saving = this.saveAction.busy;
   protected readonly progress = computed(() => {
     const quiz = this.quiz();
     if (!quiz) return { complete: 0, total: 0, missingTitles: 0 };
-    return isBluff(quiz) ? bluffProgress(quiz) : quizProgress(quiz);
+    return documentProgress(quiz);
   });
 
   private saved: SavedQuiz | undefined;
@@ -119,7 +113,7 @@ export class QuizEditorPage implements OnInit, HasUnsavedChanges {
       errorTitle: this.t().saveFailed,
     });
     if (done) {
-      this.saved = { ...saved, title: quiz.title, mode: isBluff(quiz) ? 'bluff' : 'board' };
+      this.saved = { ...saved, title: quiz.title, mode: kindOf(quiz) };
       this.savedQuizzes.save(this.saved);
       this.dirty.set(false);
       this.toaster.success(this.t().saved);

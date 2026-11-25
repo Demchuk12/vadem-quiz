@@ -1,5 +1,3 @@
-import type { QuizDocument } from './quiz-document.types';
-
 /** A quiz of the "Варіанти" mode, as edited, exported and imported. Mirrors `get_quiz` / `save_quiz`. */
 export interface BluffFact {
   /** The fact with its ending left out: "У Швеції є готель, збудований з…". */
@@ -22,6 +20,3 @@ export interface BluffDocument {
   writingSeconds?: number | null;
   votingSeconds?: number | null;
 }
-
-/** Either kind of quiz, as `get_quiz` returns it. */
-export type AnyQuizDocument = QuizDocument | BluffDocument;

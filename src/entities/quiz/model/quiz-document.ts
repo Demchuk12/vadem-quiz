@@ -11,7 +11,8 @@ import type {
   QuizQuestion,
 } from './quiz-document.types';
 import { QuizImportError, type ImportPlace } from './quiz-import-error';
-import type { AnyQuizDocument, BluffDocument } from './bluff-document.types';
+import type { BluffDocument } from './bluff-document.types';
+import type { AnyQuizDocument } from './quiz-kind.types';
 
 const emptyQuestion = (basePoints: number): QuizQuestion => ({
   basePoints,

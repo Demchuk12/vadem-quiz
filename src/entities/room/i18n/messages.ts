@@ -41,11 +41,13 @@ export const MESSAGES = defineMessages({
     },
     lateLadder: 'Хто натиснув пізніше',
     timer: 'Залишилось секунд',
-    bluff: {
-      blank: 'пропуск',
+    progress: {
       wrote: (done: number, total: number) => `Написали ${done} з ${total}`,
       voted: (done: number, total: number) => `Проголосували ${done} з ${total}`,
       ready: 'готово',
+    },
+    bluff: {
+      blank: 'пропуск',
       truth: 'Правда',
       decoy: 'Пастка ведучого',
       lieOf: (nickname: string) => `Варіант гравця ${nickname}`,
@@ -102,11 +104,13 @@ export const MESSAGES = defineMessages({
     },
     lateLadder: 'Who pressed later',
     timer: 'Seconds left',
-    bluff: {
-      blank: 'blank',
+    progress: {
       wrote: (done, total) => `Written: ${done} of ${total}`,
       voted: (done, total) => `Voted: ${done} of ${total}`,
       ready: 'done',
+    },
+    bluff: {
+      blank: 'blank',
       truth: 'The truth',
       decoy: 'The host’s decoy',
       lieOf: (nickname) => `${nickname}’s answer`,

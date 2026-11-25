@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import type { QuizMode } from './quiz-kind.types';
 import { readJson, writeJson } from '@shared/lib';
 
 export interface SavedQuiz {
@@ -6,7 +7,7 @@ export interface SavedQuiz {
   token: string;
   title: string;
   /** Which game it is; quizzes saved before "Варіанти" have none and are boards. */
-  mode?: 'board' | 'bluff';
+  mode?: QuizMode;
   /** The last room started from this quiz, so the host can get back to it. */
   lastRoomCode?: string;
 }

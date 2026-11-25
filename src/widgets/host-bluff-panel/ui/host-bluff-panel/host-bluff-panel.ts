@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   computed,
   effect,
   inject,
@@ -11,13 +10,13 @@ import {
 import { injectMessages } from '@shared/i18n';
 import {
   BluffFact,
-  BluffProgress,
+  PhaseProgress,
   BluffReveal,
   HostSession,
   PhaseTimer,
   RoomApi,
   RoomStore,
-  secondsLeft,
+  endPhaseOnTime,
   type BluffHostFact,
 } from '@entities/room';
 import { VdButton } from '@vadem/ui/button';
@@ -30,7 +29,7 @@ import { MESSAGES } from '../../i18n/messages';
  */
 @Component({
   selector: 'vq-host-bluff-panel',
-  imports: [BluffFact, BluffProgress, BluffReveal, PhaseTimer, VdButton],
+  imports: [BluffFact, PhaseProgress, BluffReveal, PhaseTimer, VdButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './host-bluff-panel.scss',
   templateUrl: './host-bluff-panel.html',
@@ -48,7 +47,6 @@ export class HostBluffPanel {
     const room = this.store.room();
     return !!room && room.round >= room.round_count;
   });
-  private readonly now = signal(Date.now());
 
   constructor() {
     // The truth and the decoy of each new fact, for the host's eyes.
@@ -64,23 +62,7 @@ export class HostBluffPanel {
       });
     });
 
-    const timer = setInterval(() => this.now.set(Date.now()), 500);
-    inject(DestroyRef).onDestroy(() => clearInterval(timer));
-
-    // Each phase is ended once, when its clock reaches zero.
-    let ended = '';
-    effect(() => {
-      const room = this.store.room();
-      const endsAt = this.store.phaseEndsAt();
-      if (!room || endsAt === null || secondsLeft(endsAt, this.now()) > 0) return;
-      const phase = `${room.round}:${room.state}`;
-      if (phase === ended) return;
-      if (room.state === 'bluff_writing' || room.state === 'bluff_voting') {
-        ended = phase;
-        // The players' last submission may have ended it a moment earlier: nothing to report.
-        untracked(() => void this.step(room.state).catch(() => undefined));
-      }
-    });
+    endPhaseOnTime(['bluff_writing', 'bluff_voting'], (state) => this.step(state));
   }
 
   /** The host's button: the step from the current phase to the next one. */

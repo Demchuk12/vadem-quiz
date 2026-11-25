@@ -8,7 +8,7 @@ import type {
   GeneratedRoundResult,
   NewQuiz,
 } from './quiz-api.types';
-import type { AnyQuizDocument } from '../model/bluff-document.types';
+import type { AnyQuizDocument } from '../model/quiz-kind.types';
 
 @Injectable({ providedIn: 'root' })
 export class QuizApi {

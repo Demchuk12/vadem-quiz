@@ -1,4 +1,4 @@
-import { defineMessages } from '@shared/i18n';
+import { defineMessages, plural } from '@shared/i18n';
 
 export const MESSAGES = defineMessages({
   uk: {
@@ -7,7 +7,8 @@ export const MESSAGES = defineMessages({
     toQuizzes: 'До моїх квізів',
     stream: 'Екран для стріму',
     start: 'Почати гру',
-    minPlayers: (count: number) => `Для гри «Варіанти» потрібно щонайменше ${count} гравці.`,
+    minPlayers: (count: number) =>
+      `Для цієї гри потрібно щонайменше ${count} ${plural('uk', count, { one: 'гравець', few: 'гравці', other: 'гравців' })}.`,
     endRound: 'Завершити раунд достроково',
     roundOver: (round: number) => `Раунд ${round} завершено`,
     nextRound: 'Наступний раунд',
@@ -20,7 +21,7 @@ export const MESSAGES = defineMessages({
     toQuizzes: 'To my quizzes',
     stream: 'Stream screen',
     start: 'Start the game',
-    minPlayers: (count) => `A Bluff game needs at least ${count} players.`,
+    minPlayers: (count) => `This game needs at least ${count} players.`,
     endRound: 'End the round early',
     roundOver: (round) => `Round ${round} is over`,
     nextRound: 'Next round',

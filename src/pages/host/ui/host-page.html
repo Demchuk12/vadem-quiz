@@ -40,7 +40,7 @@
               <vd-icon slot="start" name="rocket" />
               {{ t().start }}
             </button>
-            @if (room.mode === 'bluff' && store.players().length < minPlayers()) {
+            @if (minPlayers() > 1 && store.players().length < minPlayers()) {
               <p class="hint">{{ t().minPlayers(minPlayers()) }}</p>
             }
           </vq-room-join-info>

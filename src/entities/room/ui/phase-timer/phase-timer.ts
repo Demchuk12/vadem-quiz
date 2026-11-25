@@ -7,11 +7,11 @@ import {
   signal,
 } from '@angular/core';
 import { injectMessages } from '@shared/i18n';
-import { secondsLeft } from '../../lib/bluff';
+import { secondsLeft } from '../../lib/phase-clock';
 import { RoomStore } from '../../model/room-store';
 import { MESSAGES } from '../../i18n/messages';
 
-/** The countdown of the current "Варіанти" phase. Hidden when the phase has no clock. */
+/** The countdown of the current phase. Hidden when the phase has no clock. */
 @Component({
   selector: 'vq-phase-timer',
   changeDetection: ChangeDetectionStrategy.OnPush,
