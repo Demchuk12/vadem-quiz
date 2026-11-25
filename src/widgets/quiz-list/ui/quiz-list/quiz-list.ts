@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { injectMessages } from '@shared/i18n';
 import { SavedQuizzes } from '@entities/quiz';
 import { DeleteQuizButton } from '@features/delete-quiz';
 import { StartRoomButton } from '@features/start-room';
@@ -8,6 +9,7 @@ import { VdButton } from '@vadem/ui/button';
 import { VD_CARD } from '@vadem/ui/card';
 import { VD_EMPTY_STATE } from '@vadem/ui/empty-state';
 import { VdIcon } from '@vadem/ui/icon';
+import { MESSAGES } from '../../i18n/messages';
 
 /** The quizzes of this browser and what can be done with each. */
 @Component({
@@ -27,6 +29,7 @@ import { VdIcon } from '@vadem/ui/icon';
   templateUrl: './quiz-list.html',
 })
 export class QuizList {
+  protected readonly t = injectMessages(MESSAGES);
   private readonly saved = inject(SavedQuizzes);
 
   protected readonly quizzes = signal(this.saved.list());

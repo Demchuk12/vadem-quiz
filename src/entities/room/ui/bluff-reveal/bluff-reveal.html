@@ -7,12 +7,12 @@
     >
       <span class="text">{{ entry.option.text }}</span>
       @if (revealed()) {
-        <span class="label">{{ entry.label }}</span>
+        <span class="label">{{ label(entry) }}</span>
         <span class="voters">
           @if (entry.voters.length > 0) {
-            Повелися: {{ entry.voters.join(', ') }}
+            {{ votersText(entry) }}
           } @else {
-            Ніхто не обрав
+            {{ t().bluff.nobody }}
           }
         </span>
       }

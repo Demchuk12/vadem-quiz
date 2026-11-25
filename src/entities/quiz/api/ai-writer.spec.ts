@@ -1,6 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Media } from '@shared/api';
+import { I18n } from '@shared/i18n';
 import { AiSettings } from './ai-settings';
 import { AiWriter } from './ai-writer';
 import type { OwnAi } from './ai-writer.types';
@@ -93,6 +94,13 @@ describe('AiWriter', () => {
     writer.choose('gemini');
     await writer.write(request);
     expect(sent[0]).toMatchObject({ provider: 'gemini', own: [] });
+  });
+
+  it('asks the AI to write in the app’s language', async () => {
+    const { writer, sent } = setUp();
+    TestBed.inject(I18n).use('en');
+    await writer.write(request);
+    expect(sent[0]!.language).toBe('en');
   });
 
   it('falls back to "auto" when the chosen own AI is removed', () => {

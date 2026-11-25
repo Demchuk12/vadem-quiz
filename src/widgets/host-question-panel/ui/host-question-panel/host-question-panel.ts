@@ -8,6 +8,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import {
   HostSession,
   PhaseTimer,
@@ -19,6 +20,7 @@ import {
 } from '@entities/room';
 import { QuestionControls } from '@features/run-question';
 import { Media } from '@shared/api';
+import { MESSAGES } from '../../i18n/messages';
 
 const TICK_MS = 1000;
 
@@ -34,6 +36,7 @@ const TICK_MS = 1000;
   templateUrl: './host-question-panel.html',
 })
 export class HostQuestionPanel {
+  protected readonly t = injectMessages(MESSAGES);
   protected readonly store = inject(RoomStore);
   protected readonly media = inject(Media);
   private readonly api = inject(RoomApi);

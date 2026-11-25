@@ -6,8 +6,11 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { formatDelay, lateLadder } from '../../lib/game-logic';
+import { injectMessages } from '@shared/i18n';
+import { injectDelayFormat } from '../../lib/format';
+import { lateLadder } from '../../lib/game-logic';
 import { RoomStore } from '../../model/room-store';
+import { MESSAGES } from '../../i18n/messages';
 
 /** Who pressed after the winner and how close they came, while the winner answers. */
 @Component({
@@ -18,6 +21,7 @@ import { RoomStore } from '../../model/room-store';
   host: { '[attr.data-large]': 'large() ? "" : null' },
 })
 export class LateLadder {
+  protected readonly t = injectMessages(MESSAGES);
   /** For a shared screen. */
   readonly large = input(false, { transform: booleanAttribute });
 
@@ -26,5 +30,5 @@ export class LateLadder {
     const room = this.store.room();
     return room ? lateLadder(room, this.store.players()) : [];
   });
-  protected readonly format = formatDelay;
+  protected readonly format = injectDelayFormat();
 }

@@ -8,11 +8,13 @@ import {
   Router,
   RouterOutlet,
 } from '@angular/router';
+import { injectMessages } from '@shared/i18n';
 import { QuestionLoader } from '@shared/ui';
 import { filter, map } from 'rxjs';
-import { InstallPrompt } from '@shared/lib';
+import { InstallPrompt, Theme } from '@shared/lib';
 import { VdToasterOutlet } from '@vadem/ui/toast';
 import { AppUpdates } from './app-updates';
+import { MESSAGES } from './i18n/messages';
 
 @Component({
   selector: 'vq-root',
@@ -22,6 +24,7 @@ import { AppUpdates } from './app-updates';
   templateUrl: './app.html',
 })
 export class App {
+  protected readonly t = injectMessages(MESSAGES);
   /** A page loads its code on first visit; a slow one shows the loader instead of nothing. */
   protected readonly navigating = toSignal(
     inject(Router).events.pipe(
@@ -41,5 +44,6 @@ export class App {
     inject(AppUpdates).watch();
     // The browser announces installability once, possibly before any page that offers it opens.
     inject(InstallPrompt);
+    inject(Theme);
   }
 }

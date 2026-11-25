@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { injectMessages } from '@shared/i18n';
 import {
   GameBoard,
   HostSession,
@@ -33,6 +34,7 @@ import { HostBluffPanel } from '@widgets/host-bluff-panel';
 import { HostQuestionPanel } from '@widgets/host-question-panel';
 import { RoomHeader } from '@widgets/room-header';
 import { RoomJoinInfo } from '@widgets/room-join-info';
+import { MESSAGES } from '../i18n/messages';
 
 @Component({
   selector: 'vq-host-page',
@@ -60,6 +62,7 @@ import { RoomJoinInfo } from '@widgets/room-join-info';
   templateUrl: './host-page.html',
 })
 export class HostPage implements OnInit {
+  protected readonly t = injectMessages(MESSAGES);
   /** Room code from the URL. */
   readonly room = input.required<string>();
 

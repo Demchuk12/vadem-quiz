@@ -1,19 +1,19 @@
 <section class="hero">
   <div class="banner"><vq-tile-banner /></div>
   <div class="hero-text">
-    <h1>Квіз із друзями</h1>
-    <p>Хто перший натиснув, той і відповідає.</p>
+    <h1>{{ t().title }}</h1>
+    <p>{{ t().tagline }}</p>
   </div>
 </section>
 
 <div class="panel">
   <div class="panel-content">
-    <h2>Приєднатися до гри</h2>
-    <p class="hint">Введіть код кімнати від ведучого й оберіть нікнейм.</p>
+    <h2>{{ t().join }}</h2>
+    <p class="hint">{{ t().hint }}</p>
     @if (lastGame; as game) {
       <a vdButton [routerLink]="['/play', game]">
         <vd-icon slot="start" name="arrow-right" />
-        Повернутися до гри {{ game }}
+        {{ t().back(game) }}
       </a>
     }
     <vq-join-form [code]="code()" />

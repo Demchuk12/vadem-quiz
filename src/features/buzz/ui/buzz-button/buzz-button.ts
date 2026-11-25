@@ -6,10 +6,12 @@ import {
   inject,
   input,
 } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { RoomApi, RoomStore, buzzerStateFor, type PlayerSession } from '@entities/room';
 import { apiAction } from '@shared/api';
 import { VdBuzzer, type VdBuzzerState } from '@vadem/ui/buzzer';
 import { LateMeter } from '../late-meter/late-meter';
+import { MESSAGES } from '../../i18n/messages';
 
 const PRESS_VIBRATION_MS = 40;
 
@@ -22,6 +24,7 @@ const PRESS_VIBRATION_MS = 40;
   templateUrl: './buzz-button.html',
 })
 export class BuzzButton {
+  protected readonly t = injectMessages(MESSAGES);
   readonly session = input.required<PlayerSession>();
 
   private readonly store = inject(RoomStore);
@@ -48,20 +51,21 @@ export class BuzzButton {
   });
 
   protected readonly label = computed(() => {
+    const t = this.t();
     switch (this.state()) {
       case 'ready':
         // Someone just missed: the others get the floor.
-        return this.store.verdict()?.correct === false ? 'Ваш шанс!' : 'Відповісти!';
+        return this.store.verdict()?.correct === false ? t.yourChance : t.answer;
       case 'won':
-        return 'Ви відповідаєте!';
+        return t.youAnswer;
       case 'spent':
-        return 'Спробу використано';
+        return t.spent;
       case 'locked':
-        if (this.pressing()) return 'Надсилаємо…';
+        if (this.pressing()) return t.sending;
         if (this.store.room()?.state === 'buzzed') {
-          return `${this.store.winner()?.nickname ?? 'Хтось'} відповідає`;
+          return t.answers(this.store.winner()?.nickname ?? t.someone);
         }
-        return 'Зачекайте';
+        return t.wait;
     }
   });
 

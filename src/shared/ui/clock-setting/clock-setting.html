@@ -3,8 +3,8 @@
   {{ label() }}
 </label>
 @if (value(); as seconds) {
-  <vd-field class="seconds" [label]="secondsLabel()" [hint]="'Від ' + min + ' до ' + max">
-    <vd-number-input decreaseLabel="Менше" increaseLabel="Більше">
+  <vd-field class="seconds" [label]="secondsLabel()" [hint]="t().clock.range(min, max)">
+    <vd-number-input [decreaseLabel]="t().clock.less" [increaseLabel]="t().clock.more">
       <input
         vdNumberInput
         type="number"
@@ -17,5 +17,5 @@
     </vd-number-input>
   </vd-field>
 } @else {
-  <p class="manual">Без таймера: далі гру веде ведучий кнопками.</p>
+  <p class="manual">{{ t().clock.manual }}</p>
 }

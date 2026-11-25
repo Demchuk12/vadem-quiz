@@ -1,7 +1,7 @@
 import type { GenerateRoundRequest, OwnAiCredentials } from './quiz-api.types';
 import type { GeneratedRound } from '../model/quiz-document.types';
 
-export type AiRequest = Omit<GenerateRoundRequest, 'provider' | 'own'>;
+export type AiRequest = Omit<GenerateRoundRequest, 'provider' | 'own' | 'language'>;
 
 export interface AiResult {
   round: GeneratedRound;

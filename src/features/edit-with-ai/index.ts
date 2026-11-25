@@ -1,2 +1,2 @@
 export { AiEdit } from './ui/ai-edit/ai-edit';
-export { type AiEditKind } from './config/edit-kinds';
+export { type AiEditKind } from './model/edit-kinds.types';

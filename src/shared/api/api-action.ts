@@ -1,6 +1,8 @@
 import { inject, signal, type Signal } from '@angular/core';
 import { VdToaster } from '@vadem/ui/toast';
+import { injectMessages } from '../i18n';
 import { errorMessage } from './api-error';
+import { MESSAGES } from './i18n/messages';
 
 export interface ApiActionOptions {
   /** Shown above the message in the error toast. */
@@ -18,6 +20,7 @@ export interface ApiAction {
 /** One user action against the server: blocks repeats and reports failures. Injection context. */
 export function apiAction(): ApiAction {
   const toaster = inject(VdToaster);
+  const t = injectMessages(MESSAGES);
   const busy = signal(false);
 
   return {
@@ -29,7 +32,7 @@ export function apiAction(): ApiAction {
         await work();
         return true;
       } catch (error) {
-        const message = errorMessage(error);
+        const message = errorMessage(error, t());
         if (options.onError) options.onError(message);
         else if (options.errorTitle) toaster.error(options.errorTitle, message);
         else toaster.error(message);

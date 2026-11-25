@@ -104,8 +104,8 @@ describe('rankPlayers', () => {
 
 describe('formatScore', () => {
   it('uses a typographic minus and keeps zero plain', () => {
-    expect(formatScore(-400)).toBe('−400');
-    expect(formatScore(0)).toBe('0');
+    expect(formatScore(-400, 'uk')).toBe('−400');
+    expect(formatScore(0, 'uk')).toBe('0');
   });
 });
 
@@ -189,8 +189,9 @@ describe('lateLadder', () => {
 
 describe('formatDelay', () => {
   it('shows seconds with a comma, to the millisecond', () => {
-    expect(formatDelay(3)).toBe('+0,003 с');
-    expect(formatDelay(183)).toBe('+0,183 с');
-    expect(formatDelay(1250)).toBe('+1,250 с');
+    expect(formatDelay(3, 'uk')).toBe('+0,003 с');
+    expect(formatDelay(183, 'uk')).toBe('+0,183 с');
+    expect(formatDelay(1250, 'uk')).toBe('+1,250 с');
+    expect(formatDelay(1250, 'en')).toBe('+1.250 s');
   });
 });

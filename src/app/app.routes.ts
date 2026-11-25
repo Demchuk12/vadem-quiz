@@ -1,8 +1,7 @@
 import type { Routes } from '@angular/router';
 import { confirmUnsavedChanges } from '@shared/lib';
 
-const TITLE = 'Квіз із друзями';
-
+/** A title is a key of the app's texts: see AppTitle. */
 export const routes: Routes = [
   {
     path: '',
@@ -11,22 +10,20 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'join' },
       {
         path: 'join',
-        title: TITLE,
         loadComponent: () => import('@pages/join').then((m) => m.JoinPage),
       },
       {
         path: 'join/:code',
-        title: TITLE,
         loadComponent: () => import('@pages/join').then((m) => m.JoinPage),
       },
       {
         path: 'quizzes',
-        title: `Мої квізи · ${TITLE}`,
+        title: 'quizzes',
         loadComponent: () => import('@pages/quizzes').then((m) => m.QuizzesPage),
       },
       {
         path: 'quizzes/:quizId',
-        title: `Редактор · ${TITLE}`,
+        title: 'editor',
         canDeactivate: [confirmUnsavedChanges],
         loadComponent: () => import('@pages/quiz-editor').then((m) => m.QuizEditorPage),
       },
@@ -38,17 +35,17 @@ export const routes: Routes = [
     children: [
       {
         path: 'host/:room',
-        title: `Ведучий · ${TITLE}`,
+        title: 'host',
         loadComponent: () => import('@pages/host').then((m) => m.HostPage),
       },
       {
         path: 'play/:room',
-        title: `Гра · ${TITLE}`,
+        title: 'play',
         loadComponent: () => import('@pages/play').then((m) => m.PlayPage),
       },
       {
         path: 'stream/:room',
-        title: `Трансляція · ${TITLE}`,
+        title: 'stream',
         loadComponent: () => import('@pages/stream').then((m) => m.StreamPage),
       },
     ],

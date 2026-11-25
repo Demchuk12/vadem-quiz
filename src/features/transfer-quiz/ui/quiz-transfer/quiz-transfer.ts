@@ -1,8 +1,16 @@
 import { ChangeDetectionStrategy, Component, DOCUMENT, inject, input, output } from '@angular/core';
-import { QuizImportError, isBluff, parseQuizDocument, type AnyQuizDocument } from '@entities/quiz';
+import { injectMessages } from '@shared/i18n';
+import {
+  QuizImportError,
+  injectImportErrorText,
+  isBluff,
+  parseQuizDocument,
+  type AnyQuizDocument,
+} from '@entities/quiz';
 import { VdButton } from '@vadem/ui/button';
 import { VdIcon } from '@vadem/ui/icon';
 import { VdToaster } from '@vadem/ui/toast';
+import { MESSAGES } from '../../i18n/messages';
 
 /** Import and export of a quiz as a JSON file: also the only backup of a browser-bound quiz. */
 @Component({
@@ -13,11 +21,13 @@ import { VdToaster } from '@vadem/ui/toast';
   templateUrl: './quiz-transfer.html',
 })
 export class QuizTransfer {
+  protected readonly t = injectMessages(MESSAGES);
   readonly quizId = input.required<string>();
   readonly quiz = input.required<AnyQuizDocument>();
   readonly imported = output<AnyQuizDocument>();
 
   private readonly toaster = inject(VdToaster);
+  private readonly describe = injectImportErrorText();
   private readonly document = inject(DOCUMENT);
 
   protected exportFile(): void {
@@ -40,23 +50,16 @@ export class QuizTransfer {
       const { document, droppedImages } = parseQuizDocument(await file.text(), this.quizId());
       // A file of the other game would turn this quiz into it and drop what it holds.
       if (isBluff(document) !== isBluff(this.quiz())) {
-        throw new QuizImportError(
-          isBluff(document)
-            ? 'Це файл гри «Варіанти». Створіть для нього квіз цього типу.'
-            : 'Це файл «Своєї гри». Створіть для нього квіз цього типу.',
-        );
+        throw new QuizImportError(isBluff(document) ? 'bluff_file' : 'board_file');
       }
       this.imported.emit(document);
       this.toaster.success(
-        'Квіз імпортовано, збережіть його',
-        droppedImages > 0
-          ? `Картинок з іншого квізу прибрано: ${droppedImages}. Їх треба завантажити знову.`
-          : undefined,
+        this.t().done,
+        droppedImages > 0 ? this.t().dropped(droppedImages) : undefined,
       );
     } catch (error) {
-      const message =
-        error instanceof QuizImportError ? error.message : 'Не вдалося прочитати файл';
-      this.toaster.error('Імпорт не вдався', message);
+      const message = error instanceof QuizImportError ? this.describe(error) : this.t().unreadable;
+      this.toaster.error(this.t().failed, message);
     }
   }
 }

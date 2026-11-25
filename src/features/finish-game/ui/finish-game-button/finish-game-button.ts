@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { HostSession, RoomApi } from '@entities/room';
 import { VdAlertDialog } from '@vadem/ui/alert-dialog';
 import { VdButton } from '@vadem/ui/button';
+import { MESSAGES } from '../../i18n/messages';
 
 @Component({
   selector: 'vq-finish-game-button',
@@ -10,6 +12,7 @@ import { VdButton } from '@vadem/ui/button';
   templateUrl: './finish-game-button.html',
 })
 export class FinishGameButton {
+  protected readonly t = injectMessages(MESSAGES);
   private readonly api = inject(RoomApi);
   private readonly host = inject(HostSession);
 

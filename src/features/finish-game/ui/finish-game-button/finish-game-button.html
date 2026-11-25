@@ -1,10 +1,10 @@
-<button vdButton variant="ghost" (click)="confirming.set(true)">Завершити гру</button>
+<button vdButton variant="ghost" (click)="confirming.set(true)">{{ t().finish }}</button>
 
 <vd-alert-dialog
-  title="Завершити гру?"
-  description="Гравці побачать підсумки, продовжити цю гру вже не вийде."
-  confirmLabel="Завершити"
-  cancelLabel="Скасувати"
+  [title]="t().title"
+  [description]="t().text"
+  [confirmLabel]="t().confirm"
+  [cancelLabel]="t().cancel"
   variant="danger"
   [open]="confirming()"
   [action]="finish"

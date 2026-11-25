@@ -26,9 +26,7 @@
 .number {
   font-weight: var(--vd-weight-semibold);
 }
-.incomplete .number::after {
-  content: ' · не заповнено';
-  font-weight: var(--vd-weight-regular);
+.incomplete {
   color: var(--vd-color-text-muted);
 }
 .pair {

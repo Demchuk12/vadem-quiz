@@ -1,6 +1,6 @@
+import { QuizImportError } from './quiz-import-error';
 import type { QuizDocument } from './quiz-document.types';
 import {
-  QuizImportError,
   addCategory,
   applyGeneratedRound,
   emptyQuiz,

@@ -1,7 +1,7 @@
 @if (quizzes().length === 0) {
   <div vdEmptyState icon="folder">
-    <p vdEmptyStateTitle>Квізів поки немає</p>
-    <p vdEmptyStateDescription>Створіть перший, щоб зібрати питання й запустити гру.</p>
+    <p vdEmptyStateTitle>{{ t().empty }}</p>
+    <p vdEmptyStateDescription>{{ t().emptyText }}</p>
   </div>
 } @else {
   <ul>
@@ -11,17 +11,17 @@
           <span class="title">
             {{ quiz.title }}
             @if (quiz.mode === 'bluff') {
-              <span vdBadge variant="accent">Варіанти</span>
+              <span vdBadge variant="accent">{{ t().bluff }}</span>
             }
           </span>
           <div class="actions">
             @if (quiz.lastRoomCode; as code) {
-              <a vdButton size="sm" [routerLink]="['/host', code]">Гра {{ code }}</a>
+              <a vdButton size="sm" [routerLink]="['/host', code]">{{ t().game(code) }}</a>
             }
             <vq-start-room-button [quiz]="quiz" />
             <a vdButton size="sm" [routerLink]="['/quizzes', quiz.id]">
               <vd-icon slot="start" name="pencil" />
-              Редагувати
+              {{ t().edit }}
             </a>
             <vq-delete-quiz-button [quiz]="quiz" (deleted)="refresh()" />
           </div>

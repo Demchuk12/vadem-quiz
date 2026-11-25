@@ -12,7 +12,7 @@
         <vq-game-board />
       }
       @case ('round_end') {
-        <p class="big">Раунд {{ room.round }} завершено</p>
+        <p class="big">{{ t().roundOver(room.round) }}</p>
       }
       @case ('finished') {
         <vq-winner-banner />
@@ -23,7 +23,7 @@
             <vq-bluff-fact large />
             <vq-phase-timer />
           </div>
-          <p class="big">Вигадайте своє закінчення</p>
+          <p class="big">{{ t().write }}</p>
           <vq-bluff-progress />
         </div>
       }
@@ -48,18 +48,18 @@
         @switch (room.state) {
           @case ('buzzing_open') {
             <div class="press">
-              <p class="big">Хто перший?</p>
+              <p class="big">{{ t().whoIsFirst }}</p>
               <vq-phase-timer />
             </div>
           }
           @case ('buzzed') {
-            <p class="big">{{ store.winner()?.nickname }} відповідає</p>
+            <p class="big">{{ t().answers(store.winner()?.nickname ?? '') }}</p>
             <vq-late-ladder large />
           }
         }
       }
     }
-    <aside slot="aside" aria-label="Рахунок">
+    <aside slot="aside" [attr.aria-label]="t().score">
       <vq-standings />
     </aside>
   </vq-sidebar-layout>

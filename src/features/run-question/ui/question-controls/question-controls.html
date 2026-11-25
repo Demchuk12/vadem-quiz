@@ -2,25 +2,25 @@
   @switch (room.state) {
     @case ('question_shown') {
       <button vdButton variant="primary" size="lg" [loading]="busy()" (click)="act('openBuzz')">
-        Відкрити відповіді
+        {{ t().open }}
       </button>
     }
     @case ('buzzing_open') {
       @if (nobodyLeft()) {
-        <span vdBadge variant="warning">Усі вже відповідали</span>
+        <span vdBadge variant="warning">{{ t().nobodyLeft }}</span>
       } @else {
-        <span vdBadge variant="info">Чекаємо на натискання</span>
+        <span vdBadge variant="info">{{ t().waiting }}</span>
       }
     }
     @case ('buzzed') {
-      <span class="winner">{{ store.winner()?.nickname }} відповідає</span>
+      <span class="winner">{{ t().answers(store.winner()?.nickname ?? '') }}</span>
       <button vdButton variant="primary" [loading]="busy()" (click)="judge(true)">
         <vd-icon slot="start" name="check" />
-        Правильно
+        {{ t().correct }}
       </button>
       <button vdButton variant="danger" [disabled]="busy()" (click)="judge(false)">
         <vd-icon slot="start" name="x" />
-        Неправильно
+        {{ t().wrong }}
       </button>
       <vq-late-ladder class="ladder" />
     }
@@ -32,13 +32,13 @@
         [loading]="busy()"
         (click)="act('returnToBoard')"
       >
-        До дошки
+        {{ t().toBoard }}
       </button>
     }
   }
   @if (room.state !== 'answer_shown') {
     <button vdButton variant="ghost" [disabled]="busy()" (click)="act('skipQuestion')">
-      Пропустити
+      {{ t().skip }}
     </button>
   }
 }

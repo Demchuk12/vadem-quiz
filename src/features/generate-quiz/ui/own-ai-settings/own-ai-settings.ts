@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import {
   AiProviderIcon,
   QuizWriter,
@@ -15,7 +16,8 @@ import { VdIcon } from '@vadem/ui/icon';
 import { VD_PASSWORD_INPUT } from '@vadem/ui/password-input';
 import { VdCombobox, VdOption, VdSelect } from '@vadem/ui/select';
 import { VdToaster } from '@vadem/ui/toast';
-import { VENDORS } from '../../config/vendors';
+import { VENDORS, type Vendor } from '../../config/vendors';
+import { MESSAGES } from '../../i18n/messages';
 
 /**
  * Connects the host's own AIs by key: pick the company, paste the key, check it, pick a model.
@@ -39,6 +41,7 @@ import { VENDORS } from '../../config/vendors';
   templateUrl: './own-ai-settings.html',
 })
 export class OwnAiSettings {
+  protected readonly t = injectMessages(MESSAGES);
   protected readonly ai = inject(QuizWriter);
   private readonly api = inject(QuizApi);
   private readonly toaster = inject(VdToaster);
@@ -63,6 +66,10 @@ export class OwnAiSettings {
     return (event.target as HTMLInputElement).value;
   }
 
+  protected vendorName(vendor: Vendor): string {
+    return vendor.free ? `${vendor.label}, ${this.t().free}` : vendor.label;
+  }
+
   protected setVendor(vendor: AiVendor): void {
     this.vendor.set(vendor);
     this.reset();
@@ -78,7 +85,7 @@ export class OwnAiSettings {
   /** Asks the provider which models the key may use; that also proves the key works. */
   protected async check(): Promise<void> {
     if (this.key().length < 8) {
-      this.keyError.set('Вставте ключ повністю.');
+      this.keyError.set(this.t().ownAi.keyShort);
       return;
     }
     await this.checking.run(
@@ -101,8 +108,8 @@ export class OwnAiSettings {
       modelLabel: model.label,
     });
     this.toaster.success(
-      'Нейронку підключено',
-      `Тепер питання пише ${this.ai.labelOf(this.ai.provider())}.`,
+      this.t().ownAi.done,
+      this.t().ownAi.doneText(this.ai.labelOf(this.ai.provider())),
     );
     this.reset();
     this.open.set(false);

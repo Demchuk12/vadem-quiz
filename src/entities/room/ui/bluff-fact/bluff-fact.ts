@@ -6,8 +6,10 @@ import {
   inject,
   input,
 } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { factStem } from '../../lib/bluff';
 import { RoomStore } from '../../model/room-store';
+import { MESSAGES } from '../../i18n/messages';
 
 /** The fact of the round: a blank where the ending goes, the truth there once revealed. */
 @Component({
@@ -18,6 +20,7 @@ import { RoomStore } from '../../model/room-store';
   templateUrl: './bluff-fact.html',
 })
 export class BluffFact {
+  protected readonly t = injectMessages(MESSAGES);
   /** The stream's size, read from across a room. */
   readonly large = input(false, { transform: booleanAttribute });
 

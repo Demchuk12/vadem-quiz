@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { injectMessages } from '../../i18n';
 import { VdField } from '@vadem/ui/field';
 import { VD_NUMBER_INPUT } from '@vadem/ui/number-input';
 import { VdSwitch } from '@vadem/ui/switch';
+import { MESSAGES } from '../i18n/messages';
 
 /** The shortest and longest clock a phase may have; the database checks the same. */
 const MIN_SECONDS = 5;
@@ -16,6 +18,7 @@ const MAX_SECONDS = 300;
   templateUrl: './clock-setting.html',
 })
 export class ClockSetting {
+  protected readonly t = injectMessages(MESSAGES);
   /** What the clock limits, as the switch says it: "Обмежити час на натискання". */
   readonly label = input.required<string>();
   readonly secondsLabel = input.required<string>();

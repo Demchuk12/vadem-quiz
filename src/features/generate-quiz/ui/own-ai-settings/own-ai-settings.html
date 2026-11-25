@@ -1,20 +1,17 @@
 <button vdButton type="button" variant="ghost" size="sm" (click)="open.set(true)">
   <vd-icon slot="start" name="key" />
-  Свої нейронки
+  {{ t().ownAi.title }}
 </button>
 
 <dialog vdDialog size="md" [open]="open()" (openChange)="open.set($event)">
   <header vdDialogHeader>
-    <h2 vdDialogTitle>Свої нейронки</h2>
-    <p vdDialogDescription>
-      Підключіть ChatGPT, Claude чи інший AI своїм ключем: вони пишуть точніше за безкоштовні. Ключ
-      зберігається лише в цьому браузері, а генерації оплачуються з вашого рахунку в провайдера.
-    </p>
+    <h2 vdDialogTitle>{{ t().ownAi.title }}</h2>
+    <p vdDialogDescription>{{ t().ownAi.about }}</p>
   </header>
 
   <div vdDialogBody class="body">
     @if (ai.ownAis().length > 0) {
-      <ul class="connected" aria-label="Підключені нейронки">
+      <ul class="connected" [attr.aria-label]="t().ownAi.connected">
         @for (own of ai.ownAis(); track own.id) {
           <li>
             <vq-ai-provider-icon [provider]="own.vendor" />
@@ -28,7 +25,7 @@
               variant="ghost"
               size="sm"
               iconOnly
-              [attr.aria-label]="'Прибрати ' + vendorLabels[own.vendor] + ' ' + own.modelLabel"
+              [attr.aria-label]="t().ownAi.remove(vendorLabels[own.vendor] + ' ' + own.modelLabel)"
               (click)="ai.removeOwn(own.id)"
             >
               <vd-icon name="trash" />
@@ -39,21 +36,21 @@
     }
 
     <form class="add" (submit)="$event.preventDefault(); models() ? add() : check()">
-      <h3>Підключити</h3>
-      <vd-field label="Компанія">
+      <h3>{{ t().ownAi.connect }}</h3>
+      <vd-field [label]="t().ownAi.company">
         <vd-select [value]="vendor()" (valueChange)="setVendor($any($event))">
           <vq-ai-provider-icon slot="start" [provider]="vendor()" />
           @for (option of vendors; track option.id) {
-            <vd-option [value]="option.id" [label]="option.label">
+            <vd-option [value]="option.id" [label]="vendorName(option)">
               <vq-ai-provider-icon [provider]="option.id" />
-              {{ option.label }}
+              {{ vendorName(option) }}
             </vd-option>
           }
         </vd-select>
       </vd-field>
 
-      <vd-field label="API-ключ" [error]="keyError()">
-        <vd-password-input revealLabel="Показати ключ">
+      <vd-field [label]="t().ownAi.key" [error]="keyError()">
+        <vd-password-input [revealLabel]="t().ownAi.reveal">
           <input
             vdPasswordInput
             type="password"
@@ -67,18 +64,19 @@
         </vd-password-input>
       </vd-field>
       <p class="hint">
-        Ключ створюється в
-        <a [href]="keysUrl()" target="_blank" rel="noopener noreferrer">кабінеті провайдера</a>.
+        {{ t().ownAi.keyFrom }}
+        <a [href]="keysUrl()" target="_blank" rel="noopener noreferrer">{{ t().ownAi.keyPage }}</a
+        >.
       </p>
 
       @if (models(); as list) {
         @if (list.length === 0) {
-          <p class="hint">Ключ працює, але не відкриває жодної моделі для тексту.</p>
+          <p class="hint">{{ t().ownAi.noModels }}</p>
         } @else {
-          <vd-field label="Модель">
+          <vd-field [label]="t().ownAi.model">
             <vd-combobox
-              placeholder="Знайти модель"
-              emptyText="Такої моделі немає"
+              [placeholder]="t().ownAi.findModel"
+              [emptyText]="t().ownAi.noSuchModel"
               [value]="model()"
               (valueChange)="model.set($any($event))"
             >
@@ -94,11 +92,11 @@
         @if (models()) {
           <button vdButton type="submit" variant="primary" [disabled]="!model()">
             <vd-icon slot="start" name="plus" />
-            Додати
+            {{ t().ownAi.add }}
           </button>
         } @else {
           <button vdButton type="submit" variant="primary" [loading]="busy()">
-            Перевірити ключ
+            {{ t().ownAi.check }}
           </button>
         }
       </div>

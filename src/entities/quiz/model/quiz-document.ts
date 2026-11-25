@@ -10,6 +10,7 @@ import type {
   QuizProgress,
   QuizQuestion,
 } from './quiz-document.types';
+import { QuizImportError, type ImportPlace } from './quiz-import-error';
 import type { AnyQuizDocument, BluffDocument } from './bluff-document.types';
 
 const emptyQuestion = (basePoints: number): QuizQuestion => ({
@@ -136,47 +137,45 @@ export function applyGeneratedRound(
   );
 }
 
-export class QuizImportError extends Error {}
-
-function asString(value: unknown, where: string): string {
+function asString(value: unknown, where: ImportPlace): string {
   if (typeof value === 'string') return value;
   if (value === undefined || value === null) return '';
-  throw new QuizImportError(`${where}: очікується текст`);
+  throw new QuizImportError('text', where);
 }
 
-function asImagePath(value: unknown, where: string): string | null {
+function asImagePath(value: unknown, where: ImportPlace): string | null {
   if (value === undefined || value === null || value === '') return null;
   return asString(value, where);
 }
 
-function asPositiveInt(value: unknown, where: string): number {
+function asPositiveInt(value: unknown, where: ImportPlace): number {
   if (typeof value === 'number' && Number.isInteger(value) && value > 0) return value;
-  throw new QuizImportError(`${where}: очікується додатне ціле число`);
+  throw new QuizImportError('positive_int', where);
 }
 
 /**
  * A clock from a file: null is no clock, a number whole seconds in range. An older file has no
  * such key, and the quiz keeps the clock it has.
  */
-function asSeconds(value: unknown, where: string): number | null | undefined {
+function asSeconds(value: unknown, where: ImportPlace): number | null | undefined {
   if (value === undefined) return undefined;
   if (value === null) return null;
   if (typeof value === 'number' && Number.isInteger(value) && value >= 5 && value <= 300) {
     return value;
   }
-  throw new QuizImportError(`${where}: очікується від 5 до 300 секунд`);
+  throw new QuizImportError('seconds', where);
 }
 
-function asArray(value: unknown, where: string): unknown[] {
+function asArray(value: unknown, where: ImportPlace): unknown[] {
   if (Array.isArray(value)) return value;
-  throw new QuizImportError(`${where}: очікується список`);
+  throw new QuizImportError('list', where);
 }
 
-function asRecord(value: unknown, where: string): Record<string, unknown> {
+function asRecord(value: unknown, where: ImportPlace): Record<string, unknown> {
   if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
     return value as Record<string, unknown>;
   }
-  throw new QuizImportError(`${where}: очікується об'єкт`);
+  throw new QuizImportError('object', where);
 }
 
 /**
@@ -191,11 +190,11 @@ export function parseQuizDocument(
   try {
     raw = JSON.parse(json);
   } catch {
-    throw new QuizImportError('Файл не є коректним JSON');
+    throw new QuizImportError('not_json');
   }
 
   let droppedImages = 0;
-  const ownImage = (value: unknown, where: string): string | null => {
+  const ownImage = (value: unknown, where: ImportPlace): string | null => {
     const path = asImagePath(value, where);
     if (path !== null && !path.startsWith(`${quizId}/`)) {
       droppedImages += 1;
@@ -204,29 +203,29 @@ export function parseQuizDocument(
     return path;
   };
 
-  const root = asRecord(raw, 'Квіз');
+  const root = asRecord(raw, {});
   if (root['mode'] === 'bluff') return { document: parseBluff(root), droppedImages: 0 };
-  const rounds = asArray(root['rounds'], 'rounds');
-  const roundMultipliers = asArray(root['roundMultipliers'], 'roundMultipliers').map((m, i) =>
-    asPositiveInt(m, `roundMultipliers[${i}]`),
+  const rounds = asArray(root['rounds'], { field: 'rounds' });
+  const roundMultipliers = asArray(root['roundMultipliers'], { field: 'roundMultipliers' }).map(
+    (m, i) => asPositiveInt(m, { field: `roundMultipliers[${i}]` }),
   );
   if (rounds.length === 0 || rounds.length !== roundMultipliers.length) {
-    throw new QuizImportError('Кількість раундів не збігається з кількістю множників');
+    throw new QuizImportError('round_count');
   }
 
   const document: QuizDocument = {
-    title: asString(root['title'], 'title'),
-    buzzSeconds: asSeconds(root['buzzSeconds'], 'buzzSeconds'),
+    title: asString(root['title'], { field: 'title' }),
+    buzzSeconds: asSeconds(root['buzzSeconds'], { field: 'buzzSeconds' }),
     roundMultipliers,
     rounds: rounds.map((r, ri) => ({
-      categories: asArray(asRecord(r, `Раунд ${ri + 1}`)['categories'], `Раунд ${ri + 1}`).map(
+      categories: asArray(asRecord(r, { round: ri + 1 })['categories'], { round: ri + 1 }).map(
         (c, ci) => {
-          const where = `Раунд ${ri + 1}, категорія ${ci + 1}`;
+          const where = { round: ri + 1, category: ci + 1 };
           const category = asRecord(c, where);
           return {
             title: asString(category['title'], where),
             questions: asArray(category['questions'], where).map((q, qi) => {
-              const at = `${where}, питання ${qi + 1}`;
+              const at = { ...where, question: qi + 1 };
               const question = asRecord(q, at);
               return {
                 basePoints: asPositiveInt(question['basePoints'], at),
@@ -247,12 +246,12 @@ export function parseQuizDocument(
 
 function parseBluff(root: Record<string, unknown>): BluffDocument {
   return {
-    title: asString(root['title'], 'title'),
+    title: asString(root['title'], { field: 'title' }),
     mode: 'bluff',
-    writingSeconds: asSeconds(root['writingSeconds'], 'writingSeconds'),
-    votingSeconds: asSeconds(root['votingSeconds'], 'votingSeconds'),
-    facts: asArray(root['facts'], 'facts').map((f, i) => {
-      const at = `Факт ${i + 1}`;
+    writingSeconds: asSeconds(root['writingSeconds'], { field: 'writingSeconds' }),
+    votingSeconds: asSeconds(root['votingSeconds'], { field: 'votingSeconds' }),
+    facts: asArray(root['facts'], { field: 'facts' }).map((f, i) => {
+      const at = { fact: i + 1 };
       const fact = asRecord(f, at);
       return {
         text: asString(fact['text'], at),

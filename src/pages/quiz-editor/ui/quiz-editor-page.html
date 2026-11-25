@@ -1,6 +1,6 @@
 @switch (load()) {
   @case ('loading') {
-    <vq-question-loader size="sm" class="skeleton-loader" label="Відкриваємо квіз…" />
+    <vq-question-loader size="sm" class="skeleton-loader" [label]="t().opening" />
     <div class="skeleton" aria-hidden="true">
       <div class="skeleton-card">
         <div vdSkeleton shape="text" size="sm" class="w-25"></div>
@@ -24,22 +24,22 @@
   }
   @case ('forbidden') {
     <div vdAlert variant="danger" role="alert">
-      <p vdAlertTitle>Цей квіз недоступний на цьому пристрої</p>
-      <p>Доступ зберігається в браузері, де квіз створили.</p>
+      <p vdAlertTitle>{{ t().forbidden }}</p>
+      <p>{{ t().forbiddenText }}</p>
     </div>
-    <a vdButton routerLink="/quizzes">До моїх квізів</a>
+    <a vdButton routerLink="/quizzes">{{ t().toQuizzes }}</a>
   }
   @case ('error') {
-    <div vdAlert variant="danger" role="alert">Не вдалося завантажити квіз.</div>
+    <div vdAlert variant="danger" role="alert">{{ t().failed }}</div>
   }
   @case ('ready') {
     @if (quiz(); as document) {
       <div class="bar">
         <div class="bar-nav">
           <span class="progress" aria-live="polite">
-            Заповнено {{ progress().complete }} з {{ progress().total }}
+            {{ t().progress(progress().complete, progress().total) }}
             @if (dirty()) {
-              <span class="unsaved">· є незбережені зміни</span>
+              <span class="unsaved">· {{ t().unsaved }}</span>
             }
           </span>
         </div>
@@ -53,7 +53,7 @@
             [disabled]="!dirty()"
             (click)="save()"
           >
-            Зберегти
+            {{ t().save }}
           </button>
         </div>
       </div>

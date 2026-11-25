@@ -7,11 +7,11 @@
   @if (room.state !== 'bluff_reveal' && fact(); as hostFact) {
     <dl class="secret">
       <div>
-        <dt>Правда (бачите лише ви)</dt>
+        <dt>{{ t().truth }}</dt>
         <dd>{{ hostFact.truth }}</dd>
       </div>
       <div>
-        <dt>Ваша пастка</dt>
+        <dt>{{ t().decoy }}</dt>
         <dd>{{ hostFact.decoy }}</dd>
       </div>
     </dl>
@@ -28,13 +28,13 @@
     <button vdButton variant="primary" size="lg" [loading]="host.busy()" (click)="next()">
       @switch (room.state) {
         @case ('bluff_writing') {
-          Відкрити голосування
+          {{ t().openVoting }}
         }
         @case ('bluff_voting') {
-          Розкрити варіанти
+          {{ t().reveal }}
         }
         @default {
-          {{ last() ? 'Підбити підсумки' : 'Наступний факт' }}
+          {{ last() ? t().results : t().next }}
         }
       }
     </button>

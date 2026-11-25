@@ -14,8 +14,11 @@
       [attr.aria-pressed]="sound.enabled()"
       (click)="sound.toggle()"
     >
-      Звук: {{ sound.enabled() ? 'увімкнено' : 'вимкнено' }}
+      {{ t().sound(sound.enabled()) }}
     </button>
+    @if (!large()) {
+      <vq-app-settings />
+    }
     <ng-content />
   </div>
 }

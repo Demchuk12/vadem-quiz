@@ -3,6 +3,8 @@ import type { AiVendor } from '@entities/quiz';
 export interface Vendor {
   id: AiVendor;
   label: string;
+  /** Their key costs nothing to use. */
+  free?: boolean;
   /** Where the host makes a key. */
   keysUrl: string;
 }
@@ -10,10 +12,11 @@ export interface Vendor {
 export const VENDORS: Vendor[] = [
   {
     id: 'gemini',
-    label: 'Gemini (Google), безкоштовно',
+    label: 'Gemini (Google)',
+    free: true,
     keysUrl: 'https://aistudio.google.com/apikey',
   },
-  { id: 'groq', label: 'Groq, безкоштовно', keysUrl: 'https://console.groq.com/keys' },
+  { id: 'groq', label: 'Groq', free: true, keysUrl: 'https://console.groq.com/keys' },
   { id: 'openai', label: 'ChatGPT (OpenAI)', keysUrl: 'https://platform.openai.com/api-keys' },
   {
     id: 'anthropic',

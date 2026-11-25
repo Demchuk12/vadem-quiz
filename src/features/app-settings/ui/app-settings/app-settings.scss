@@ -1,0 +1,18 @@
+:host {
+  display: inline-flex;
+}
+.panel {
+  inline-size: max-content;
+}
+.setting {
+  display: grid;
+  gap: var(--vd-space-1);
+
+  & + & {
+    margin-block-start: var(--vd-space-3);
+  }
+}
+.label {
+  color: var(--vd-color-text-muted);
+  font-size: var(--vd-text-sm);
+}

@@ -9,11 +9,13 @@ import {
   untracked,
 } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { injectMessages } from '@shared/i18n';
 import { RoomApi, RoomStore, type PlayerSession } from '@entities/room';
 import { apiAction } from '@shared/api';
 import { VdButton } from '@vadem/ui/button';
 import { VdField } from '@vadem/ui/field';
 import { VdInput } from '@vadem/ui/input';
+import { MESSAGES } from '../../i18n/messages';
 
 /** The database takes up to this many characters for a lie. */
 const MAX_LENGTH = 80;
@@ -27,6 +29,7 @@ const MAX_LENGTH = 80;
   templateUrl: './bluff-writer.html',
 })
 export class BluffWriter {
+  protected readonly t = injectMessages(MESSAGES);
   readonly session = input.required<PlayerSession>();
 
   private readonly store = inject(RoomStore);

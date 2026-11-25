@@ -16,8 +16,13 @@ export interface OwnAi {
   model: string;
 }
 
+/** The language the host uses the app in. */
+export type Language = 'uk' | 'en';
+
 export interface RoundRequest {
   mode: Mode;
+  /** What new questions are written in, unless the topic asks for another language. */
+  language: Language;
   quizId: string;
   token: string;
   prompt: string;

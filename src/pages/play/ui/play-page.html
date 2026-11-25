@@ -3,31 +3,31 @@
 } @else if (store.room(); as room) {
   <h1 class="vd-visually-hidden">{{ room.quiz_title }}</h1>
   <header>
-    <a vdButton variant="ghost" size="sm" iconOnly routerLink="/join" aria-label="Вийти з гри">
+    <a vdButton variant="ghost" size="sm" iconOnly routerLink="/join" [attr.aria-label]="t().leave">
       <vd-icon name="arrow-left" />
     </a>
     <vq-vadem-logo mark />
     <span class="me">{{ me()?.nickname }}</span>
     <vq-room-badges />
-    <span class="score" aria-label="Ваш рахунок">{{ format(me()?.score ?? 0) }}</span>
+    <span class="score" [attr.aria-label]="t().yourScore">{{ format(me()?.score ?? 0) }}</span>
   </header>
 
   <vq-verdict mode="phone" [playerId]="playerId()" />
   @switch (room.state) {
     @case ('lobby') {
       <section vdCard class="stack">
-        <h2>Ви в кімнаті {{ room.code }}</h2>
-        <p class="notice">Гра почнеться, щойно ведучий її запустить.</p>
+        <h2>{{ t().inRoom(room.code) }}</h2>
+        <p class="notice">{{ t().waitForStart }}</p>
       </section>
       <vq-standings [currentPlayerId]="playerId()" showOnline />
     }
     @case ('board') {
-      <p class="notice">Ведучий обирає питання.</p>
+      <p class="notice">{{ t().hostPicks }}</p>
       <vq-game-board />
       <vq-standings [currentPlayerId]="playerId()" />
     }
     @case ('round_end') {
-      <h2>Раунд {{ room.round }} завершено</h2>
+      <h2>{{ t().roundOver(room.round) }}</h2>
       <vq-standings [currentPlayerId]="playerId()" />
     }
     @case ('finished') {

@@ -3,22 +3,24 @@
     @if (store.currentCell()?.category_title; as title) {
       <span vdBadge>{{ title }}</span>
     }
-    <span vdBadge variant="info">{{ room.current_points }} очок</span>
+    <span vdBadge variant="info"
+      >{{ room.current_points }} {{ t().question.points(room.current_points ?? 0) }}</span
+    >
   </div>
   @if (room.question_text; as text) {
     <p class="text">{{ text }}</p>
   }
   @if (questionImage(); as src) {
-    <img [src]="src" alt="Ілюстрація до питання" />
+    <img [src]="src" [alt]="t().question.image" />
   }
   @if (room.state === 'answer_shown') {
     <div class="answer">
-      <p class="vd-eyebrow">Правильна відповідь</p>
+      <p class="vd-eyebrow">{{ t().question.answer }}</p>
       @if (room.answer_text; as answer) {
         <p class="text">{{ answer }}</p>
       }
       @if (answerImage(); as src) {
-        <img [src]="src" alt="Ілюстрація до відповіді" />
+        <img [src]="src" [alt]="t().question.answerImage" />
       }
       @if (room.answer_explanation; as explanation) {
         <p class="explanation">{{ explanation }}</p>

@@ -8,6 +8,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import {
   BluffFact,
   BluffProgress,
@@ -20,6 +21,7 @@ import {
   type BluffHostFact,
 } from '@entities/room';
 import { VdButton } from '@vadem/ui/button';
+import { MESSAGES } from '../../i18n/messages';
 
 /**
  * The host's view of a "Варіанти" round: the fact with its truth and decoy, who is done, and the
@@ -34,6 +36,7 @@ import { VdButton } from '@vadem/ui/button';
   templateUrl: './host-bluff-panel.html',
 })
 export class HostBluffPanel {
+  protected readonly t = injectMessages(MESSAGES);
   protected readonly store = inject(RoomStore);
   /** Only a new fact resets the round's state, not every update of the room. */
   private readonly round = computed(() => this.store.room()?.round);

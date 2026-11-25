@@ -1,6 +1,6 @@
 // Limits and fixed values of the function.
 
-import type { Vendor } from './types.ts';
+import type { Language, Vendor } from './types.ts';
 
 /** Stays under the platform's request limit, however many attempts it takes. */
 export const TIME_BUDGET_MS = 130_000;
@@ -11,6 +11,9 @@ export const ATTEMPT_TIMEOUT_MS = 90_000;
 export const MIN_ATTEMPT_MS = 15_000;
 
 export const RETRY_DELAY_MS = 2_000;
+
+/** How the AI is told which language to write in. */
+export const LANGUAGES: Record<Language, string> = { uk: 'Ukrainian', en: 'English' };
 
 export const MAX_PROMPT_LENGTH = 1500;
 

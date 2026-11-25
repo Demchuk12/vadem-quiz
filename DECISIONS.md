@@ -248,6 +248,32 @@ seconds. The host's buttons work either way. A room copies the quiz's clocks whe
 and a document or file without a clock's key leaves that clock as it was, so an older page or
 export never switches one off.
 
+## D30 — Two languages through a small service of our own
+
+`I18n` in `shared/i18n` holds the language as a signal, and every slice keeps its texts in
+`i18n/messages.ts`, Ukrainian and English side by side. `defineMessages` takes its shape from
+Ukrainian, so a missing translation does not compile; a text with values in it is a function, which
+leaves word order and plurals to the language. Angular's own i18n builds one app per language and
+cannot switch in place, and a library would bring string keys the compiler does not check. Vadem
+reads its texts inside a computed, so a locale object that looks the language up on every read
+switches with the app.
+
+A first visit gets Ukrainian when the browser lists it anywhere, since many Ukrainian speakers keep
+an English device, and English otherwise. New AI questions come in the app's language; an edit
+keeps the language of the content. Quiz content itself is never translated. Nicknames with equal
+scores sort the same way in every language, so all screens agree.
+
+An e2e test walks every screen in English and fails on any Cyrillic left.
+
+## D31 — A light theme, with dark as the default
+
+Dark is the game's look and stays the default; the choice is light or dark, with no "as the
+system", by the owner's wish. Vadem's tokens carry both, so the app only sets `data-theme`, and a
+few lines in `index.html` set it before the first paint. Language and theme sit behind one gear
+button: they are set once, and a phone's menu has room for one quiet button. The stream's screen
+has none of it and follows the host's choice, since open tabs share both settings. The light logo
+copies carry the green accent, as the dark ones do (D10).
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path

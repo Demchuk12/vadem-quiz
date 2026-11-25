@@ -10,6 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { injectMessages } from '@shared/i18n';
 import {
   BluffFact,
   BluffResult,
@@ -23,7 +24,7 @@ import {
   RoomStore,
   Standings,
   WinnerBanner,
-  formatScore,
+  injectScoreFormat,
   normalizeRoomCode,
   type PlayerSession,
   VerdictScene,
@@ -35,6 +36,7 @@ import { VademLogo } from '@shared/ui';
 import { VdButton } from '@vadem/ui/button';
 import { VD_CARD } from '@vadem/ui/card';
 import { VdIcon } from '@vadem/ui/icon';
+import { MESSAGES } from '../i18n/messages';
 
 @Component({
   selector: 'vq-play-page',
@@ -64,6 +66,7 @@ import { VdIcon } from '@vadem/ui/icon';
   templateUrl: './play-page.html',
 })
 export class PlayPage implements OnInit {
+  protected readonly t = injectMessages(MESSAGES);
   /** Room code from the URL. */
   readonly room = input.required<string>();
 
@@ -74,7 +77,7 @@ export class PlayPage implements OnInit {
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly format = formatScore;
+  protected readonly format = injectScoreFormat();
   protected readonly session = signal<PlayerSession | null>(null);
   protected readonly playerId = computed(() => this.session()?.playerId ?? null);
   protected readonly me = computed(

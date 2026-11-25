@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { joinGame, localSupabase } from './helpers';
+import { bluffRoom, rpc } from './bluff-room';
+import { joinGame } from './helpers';
 
 test('a "Варіанти" quiz is made of facts with a truth and a decoy', async ({ page }) => {
   await page.goto('/quizzes');
@@ -99,41 +100,6 @@ test('AI writes the facts with decoys, and the host swaps in another', async ({ 
   await page.getByRole('button', { name: 'Згенерувати 10 фактів' }).click();
   await expect(page.getByRole('alertdialog', { name: 'Замінити факти?' })).toBeVisible();
 });
-
-/** Calls a database function as any client would, with the public key. */
-async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<T> {
-  const { url, anonKey } = localSupabase();
-  const response = await fetch(`${url}/rest/v1/rpc/${fn}`, {
-    method: 'POST',
-    headers: { apikey: anonKey, 'content-type': 'application/json' },
-    body: JSON.stringify(args),
-  });
-  if (!response.ok) throw new Error(`${fn}: ${response.status} ${await response.text()}`);
-  const text = await response.text();
-  return (text ? JSON.parse(text) : null) as T;
-}
-
-/** A "Варіанти" room with five facts, its first: "готель з… льоду", decoy "соломи". */
-async function bluffRoom(): Promise<{ roomId: string; code: string; hostToken: string }> {
-  const [quiz] = await rpc<{ quiz_id: string; owner_token: string }[]>('create_quiz', {
-    p_title: 'Тест варіантів',
-  });
-  const facts = Array.from({ length: 5 }, (_, i) =>
-    i === 0
-      ? { text: 'У Швеції є готель, збудований з…', truth: 'льоду', decoy: 'соломи' }
-      : { text: `Факт ${i + 1}…`, truth: `правда ${i + 1}`, decoy: `пастка ${i + 1}` },
-  );
-  await rpc('save_quiz', {
-    p_quiz_id: quiz!.quiz_id,
-    p_token: quiz!.owner_token,
-    p_document: { title: 'Тест варіантів', mode: 'bluff', facts },
-  });
-  const [room] = await rpc<{ room_id: string; room_code: string; host_token: string }[]>(
-    'create_room',
-    { p_quiz_id: quiz!.quiz_id, p_quiz_token: quiz!.owner_token },
-  );
-  return { roomId: room!.room_id, code: room!.room_code, hostToken: room!.host_token };
-}
 
 test('players write lies, vote, and see what the round brought them', async ({ browser }) => {
   const { roomId, code, hostToken } = await bluffRoom();
@@ -235,7 +201,7 @@ test('the host runs the round and the stream shows it without giving the truth a
   await host.getByRole('button', { name: 'Розкрити варіанти' }).click();
   const truth = stream.getByRole('listitem').filter({ hasText: 'Правда' });
   await expect(truth).toContainText('льоду');
-  await expect(truth).toContainText('Повелися: Bob');
+  await expect(truth).toContainText('Вгадали: Bob');
   await expect(
     stream.getByRole('listitem').filter({ hasText: 'Варіант гравця Ann' }),
   ).toContainText('Повелися: Cat');

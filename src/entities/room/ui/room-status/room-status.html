@@ -1,18 +1,18 @@
 @switch (status()) {
   @case ('loading') {
-    <vq-question-loader class="loader" label="Підключаємося до гри…" />
+    <vq-question-loader class="loader" [label]="t().status.connecting" />
   }
   @case ('not_found') {
     <div vdAlert variant="danger" role="alert">
-      <p vdAlertTitle>Кімнату не знайдено</p>
-      <p>Перевірте код або попросіть ведучого надіслати нове посилання.</p>
+      <p vdAlertTitle>{{ t().status.notFound }}</p>
+      <p>{{ t().status.notFoundHelp }}</p>
     </div>
-    <a vdButton routerLink="/join">До входу</a>
+    <a vdButton routerLink="/join">{{ t().status.toJoin }}</a>
   }
   @case ('error') {
     <div vdAlert variant="danger" role="alert">
-      <p vdAlertTitle>Не вдалося завантажити гру</p>
-      <p>Перевірте зʼєднання й оновіть сторінку.</p>
+      <p vdAlertTitle>{{ t().status.failed }}</p>
+      <p>{{ t().status.failedHelp }}</p>
     </div>
   }
 }

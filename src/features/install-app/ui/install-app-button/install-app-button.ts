@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { InstallPrompt } from '@shared/lib';
 import { VdButton } from '@vadem/ui/button';
 import { VdIcon } from '@vadem/ui/icon';
+import { MESSAGES } from '../../i18n/messages';
 
 /** Shows only where installing is possible and the app is not installed yet. */
 @Component({
@@ -12,5 +14,6 @@ import { VdIcon } from '@vadem/ui/icon';
   templateUrl: './install-app-button.html',
 })
 export class InstallAppButton {
+  protected readonly t = injectMessages(MESSAGES);
   protected readonly prompt = inject(InstallPrompt);
 }

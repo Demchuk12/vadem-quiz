@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
-import { HostSession, formatScore, type Player } from '@entities/room';
+import { injectMessages } from '@shared/i18n';
+import { HostSession, injectScoreFormat, type Player } from '@entities/room';
 import { VdButton } from '@vadem/ui/button';
 import { VD_DIALOG } from '@vadem/ui/dialog';
 import { VdField } from '@vadem/ui/field';
 import { VdInput } from '@vadem/ui/input';
+import { MESSAGES } from '../../i18n/messages';
 
 /** Open while `player` is set. The host can correct any score at any moment. */
 @Component({
@@ -14,12 +16,13 @@ import { VdInput } from '@vadem/ui/input';
   templateUrl: './adjust-score-dialog.html',
 })
 export class AdjustScoreDialog {
+  protected readonly t = injectMessages(MESSAGES);
   readonly player = input.required<Player | null>();
   readonly closed = output<void>();
 
   private readonly host = inject(HostSession);
 
-  protected readonly format = formatScore;
+  protected readonly format = injectScoreFormat();
   protected readonly busy = this.host.busy;
 
   protected onOpenChange(open: boolean): void {

@@ -3,7 +3,7 @@
     <img [src]="url" [alt]="label()" />
     <button vdButton size="sm" variant="ghost" (click)="pathChange.emit(null)">
       <vd-icon slot="start" name="trash" />
-      Прибрати картинку
+      {{ t().remove }}
     </button>
   </div>
 } @else {
@@ -15,7 +15,7 @@
   >
     <input type="file" accept="image/*" [attr.aria-label]="label()" [disabled]="uploading()" />
     <vd-icon name="upload" />
-    <strong>{{ uploading() ? 'Завантажуємо…' : label() }}</strong>
-    <span>Стиснемо до WebP, 1280 px</span>
+    <strong>{{ uploading() ? t().uploading : label() }}</strong>
+    <span>{{ t().compressed }}</span>
   </label>
 }

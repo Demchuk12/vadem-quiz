@@ -8,6 +8,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import {
   AiProviderIcon,
   QuizWriter,
@@ -29,7 +30,8 @@ import { VdIcon } from '@vadem/ui/icon';
 import { VdInput } from '@vadem/ui/input';
 import { VD_POPOVER, type VdPopover } from '@vadem/ui/popover';
 import { VdToaster } from '@vadem/ui/toast';
-import { KINDS, type AiEditKind, type Chip } from '../../config/edit-kinds';
+import type { AiEditKind, Chip } from '../../model/edit-kinds.types';
+import { MESSAGES } from '../../i18n/messages';
 
 const MIN_LENGTH = 3;
 const MAX_LENGTH = 1500;
@@ -48,6 +50,7 @@ let nextId = 0;
   templateUrl: './ai-edit.html',
 })
 export class AiEdit {
+  protected readonly t = injectMessages(MESSAGES);
   readonly quizId = input.required<string>();
   readonly quiz = input.required<QuizDocument>();
   readonly target = input.required<EditTarget>();
@@ -67,7 +70,7 @@ export class AiEdit {
   protected readonly headingId = `vq-ai-edit-${nextId++}`;
   protected readonly maxLength = MAX_LENGTH;
   protected readonly instruction = signal('');
-  protected readonly texts = computed(() => KINDS[this.kind()]);
+  protected readonly texts = computed(() => this.t().kinds[this.kind()]);
   protected readonly ready = computed(() => {
     const length = this.instruction().trim().length;
     return length >= MIN_LENGTH && length <= MAX_LENGTH;
@@ -82,19 +85,18 @@ export class AiEdit {
   protected readonly context = computed(() => {
     const { round, category, question } = this.target();
     const quiz = this.quiz();
+    const t = this.t();
     const categories = quiz.rounds[round]?.categories ?? [];
     const own = category === undefined ? undefined : categories[category];
-    const name = own?.title.trim() ? `«${own.title.trim()}»` : `Категорія ${(category ?? 0) + 1}`;
+    const name = own?.title.trim() ? t.quoted(own.title.trim()) : t.category((category ?? 0) + 1);
     if (question !== undefined && own?.questions[question]) {
-      return `${name} · ${pointsOf(own.questions[question].basePoints, round, quiz)} очок`;
+      return `${name} · ${t.points(pointsOf(own.questions[question].basePoints, round, quiz))}`;
     }
-    if (own) return `${name} · питань: ${own.questions.length}`;
-    return `Категорій: ${categories.length} · питань у кожній: ${categories[0]?.questions.length ?? 0}`;
+    if (own) return `${name} · ${t.questions(own.questions.length)}`;
+    return t.roundShape(categories.length, categories[0]?.questions.length ?? 0);
   });
 
-  protected readonly label = computed(() =>
-    this.kind() === 'category' ? `Змінити категорію з AI` : `${this.texts().title} з AI`,
-  );
+  protected readonly label = computed(() => this.t().label(this.texts().title));
 
   protected valueOf(event: Event): string {
     return (event.target as HTMLTextAreaElement).value;
@@ -114,10 +116,7 @@ export class AiEdit {
     const target = this.target();
     const source = editSource(before, target);
     if (!source) {
-      this.toaster.error(
-        'Раунд не вийде змінити цілком',
-        'У його категоріях різна кількість питань. Змініть категорії по одній.',
-      );
+      this.toaster.error(this.t().uneven, this.t().unevenText);
       return;
     }
     popover.hide();
@@ -141,15 +140,15 @@ export class AiEdit {
         this.instruction.set('');
         this.toaster.show({
           title: this.texts().done,
-          description: `Писав ${result.writer}. Перевірте й збережіть квіз.`,
+          description: this.t().doneText(result.writer),
           variant: 'success',
           action: {
-            label: 'Скасувати',
+            label: this.t().undo,
             onClick: () => this.edited.emit(restoreEdit(this.quiz(), target, before)),
           },
         });
       },
-      { errorTitle: 'Не вдалося змінити' },
+      { errorTitle: this.t().failed },
     );
     this.working.emit(false);
   }

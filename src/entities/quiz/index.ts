@@ -1,6 +1,5 @@
 export { QuizApi } from './api/quiz-api';
 export {
-  QuizImportError,
   addCategory,
   applyGeneratedRound,
   emptyQuiz,
@@ -13,6 +12,8 @@ export {
   updateCategory,
   updateQuestion,
 } from './model/quiz-document';
+export { injectImportErrorText } from './lib/import-error-text';
+export { QuizImportError } from './model/quiz-import-error';
 export { SavedQuizzes, type SavedQuiz } from './model/saved-quizzes';
 export {
   addFact,

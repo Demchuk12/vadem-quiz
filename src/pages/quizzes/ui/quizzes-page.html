@@ -1,15 +1,12 @@
 <header class="hero">
   <vq-tile-banner />
   <div class="hero-text">
-    <h1>Мої квізи</h1>
+    <h1>{{ t().title }}</h1>
   </div>
 </header>
 
 <div class="content">
-  <p class="hint">
-    Квізи привʼязані до цього браузера: акаунтів немає. Щоб не втратити квіз, експортуйте його в
-    JSON.
-  </p>
+  <p class="hint">{{ t().hint }}</p>
   <vq-create-quiz />
   <vq-quiz-list />
 </div>

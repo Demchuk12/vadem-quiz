@@ -1,0 +1,51 @@
+import { defineMessages } from '@shared/i18n';
+
+export const MESSAGES = defineMessages({
+  uk: {
+    title: 'Назва квізу',
+    writingClock: 'Обмежити час на вигадування',
+    writingSeconds: 'Секунд на вигадування',
+    votingClock: 'Обмежити час на голосування',
+    votingSeconds: 'Секунд на голосування',
+    about:
+      'Кожен факт — це раунд. Гравці вигадують своє закінчення, щоб заплутати інших, а ви додаєте власну пастку. Найкраще працюють дивні, але правдиві факти: такі, де правда звучить як брехня.',
+    fact: (number: number) => `Факт ${number}`,
+    incomplete: 'не заповнено',
+    removeFact: (number: number) => `Видалити факт ${number}`,
+    addFact: 'Додати факт',
+    text: 'Факт без закінчення',
+    textHint: 'Наприклад: «У Швеції є готель, збудований з…»',
+    truth: 'Правдиве закінчення',
+    decoy: 'Пастка ведучого',
+    decoyHint: 'Ваша брехня серед варіантів: хто її обере, втратить бал.',
+    ideas: 'Інші пастки від AI:',
+    ideasOf: (number: number) => `Інші пастки для факту ${number}`,
+    explanation: 'Пояснення',
+    explanationHint: 'Необовʼязково. Гравці побачать його, коли відкриється правда.',
+    count: (count: number, max: number, min: number) =>
+      `${count} з ${max} · для гри потрібно щонайменше ${min}`,
+  },
+  en: {
+    title: 'Quiz title',
+    writingClock: 'Limit the time to write',
+    writingSeconds: 'Seconds to write',
+    votingClock: 'Limit the time to vote',
+    votingSeconds: 'Seconds to vote',
+    about:
+      'Every fact is a round. The players make up an ending to fool the others, and you add a decoy of your own. Odd but true facts work best: the ones where the truth sounds like a lie.',
+    fact: (number) => `Fact ${number}`,
+    incomplete: 'not filled in',
+    removeFact: (number) => `Delete fact ${number}`,
+    addFact: 'Add a fact',
+    text: 'Fact without its ending',
+    textHint: 'For example: “In Sweden there is a hotel built of…”',
+    truth: 'True ending',
+    decoy: 'The host’s decoy',
+    decoyHint: 'Your lie among the answers: whoever picks it loses a point.',
+    ideas: 'Other decoys from the AI:',
+    ideasOf: (number) => `Other decoys for fact ${number}`,
+    explanation: 'Explanation',
+    explanationHint: 'Optional. The players see it once the truth is revealed.',
+    count: (count, max, min) => `${count} of ${max} · a game needs at least ${min}`,
+  },
+});

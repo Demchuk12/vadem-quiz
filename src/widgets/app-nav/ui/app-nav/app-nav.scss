@@ -21,6 +21,23 @@ nav {
   display: flex;
   gap: var(--vd-space-1);
 }
+/* On a phone the V alone leaves the menu on one row. */
+@media (width >= 30rem) {
+  .mark {
+    display: none;
+  }
+}
+@media (width < 30rem) {
+  nav {
+    padding-inline-end: var(--vd-space-2);
+  }
+  .links {
+    gap: 0;
+  }
+  .full {
+    display: none;
+  }
+}
 /* A position, so it has its own look, not only a color: filled like a pressed tab. */
 .active {
   --vd-button-bg: var(--vd-color-action-subtle);

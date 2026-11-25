@@ -1,3 +1,5 @@
+import { LOCALE_TAGS, type Locale } from '@shared/i18n';
+import { MESSAGES } from '../i18n/messages';
 import type { Player, Room, RoomCell } from '../model/room';
 import type { BoardColumn, LateEntry, PlayerBuzzerView, RankedPlayer } from '../model/room';
 
@@ -26,6 +28,7 @@ export function boardRows(columns: readonly BoardColumn[]): number {
 
 /** Highest score first. Equal scores share a rank and the next rank skips (1, 1, 3). */
 export function rankPlayers(players: readonly Player[]): RankedPlayer[] {
+  // One order on every screen, whatever language each is in.
   const sorted = [...players].sort(
     (a, b) => b.score - a.score || a.nickname.localeCompare(b.nickname, 'uk'),
   );
@@ -36,11 +39,14 @@ export function rankPlayers(players: readonly Player[]): RankedPlayer[] {
   });
 }
 
-const SCORE_FORMAT = new Intl.NumberFormat('uk-UA', { useGrouping: true });
+const SCORE_FORMATS = {
+  uk: new Intl.NumberFormat(LOCALE_TAGS.uk, { useGrouping: true }),
+  en: new Intl.NumberFormat(LOCALE_TAGS.en, { useGrouping: true }),
+} satisfies Record<Locale, Intl.NumberFormat>;
 
 /** "1 200", "−400", with a typographic minus. */
-export function formatScore(score: number): string {
-  return SCORE_FORMAT.format(score).replace('-', '−');
+export function formatScore(score: number, locale: Locale): string {
+  return SCORE_FORMATS[locale].format(score).replace('-', '−');
 }
 
 /** What the answer button shows to one player. The server still decides every press. */
@@ -85,12 +91,13 @@ export function lateLadder(room: Room, players: readonly Player[]): LateEntry[] 
     .sort((a, b) => a.ms - b.ms);
 }
 
-const DELAY_FORMAT = new Intl.NumberFormat('uk-UA', {
-  minimumFractionDigits: 3,
-  maximumFractionDigits: 3,
-});
+const DELAY_DIGITS = { minimumFractionDigits: 3, maximumFractionDigits: 3 };
+const DELAY_FORMATS = {
+  uk: new Intl.NumberFormat(LOCALE_TAGS.uk, DELAY_DIGITS),
+  en: new Intl.NumberFormat(LOCALE_TAGS.en, DELAY_DIGITS),
+} satisfies Record<Locale, Intl.NumberFormat>;
 
 /** "+0,183 с": to the millisecond, since close races are decided by a few of them. */
-export function formatDelay(ms: number): string {
-  return `+${DELAY_FORMAT.format(ms / 1000)} с`;
+export function formatDelay(ms: number, locale: Locale): string {
+  return `+${DELAY_FORMATS[locale].format(ms / 1000)} ${MESSAGES[locale].seconds}`;
 }

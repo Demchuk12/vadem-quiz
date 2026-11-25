@@ -1,5 +1,7 @@
-<nav aria-label="Головне меню">
-  <a class="home" routerLink="/join" aria-label="Vadem, на головну"><vq-vadem-logo /></a>
+<nav [attr.aria-label]="t().menu">
+  <a class="home" routerLink="/join" [attr.aria-label]="t().home"
+    ><vq-vadem-logo class="full" /><vq-vadem-logo class="mark" mark
+  /></a>
   <div class="links">
     <a
       vdButton
@@ -9,7 +11,7 @@
       routerLinkActive="active"
       ariaCurrentWhenActive="page"
     >
-      Увійти в гру
+      {{ t().join }}
     </a>
     <a
       vdButton
@@ -19,7 +21,8 @@
       routerLinkActive="active"
       ariaCurrentWhenActive="page"
     >
-      Мої квізи
+      {{ t().quizzes }}
     </a>
+    <vq-app-settings />
   </div>
 </nav>

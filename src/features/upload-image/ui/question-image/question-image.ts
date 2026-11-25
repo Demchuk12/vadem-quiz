@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { VdButton } from '@vadem/ui/button';
 import { VdDropzone } from '@vadem/ui/dropzone';
 import { VdIcon } from '@vadem/ui/icon';
 import { VdToaster } from '@vadem/ui/toast';
 import { Media, apiAction } from '@shared/api';
+import { MESSAGES } from '../../i18n/messages';
 
 const MAX_SOURCE_BYTES = 30 * 1024 * 1024;
 
@@ -16,6 +18,7 @@ const MAX_SOURCE_BYTES = 30 * 1024 * 1024;
   templateUrl: './question-image.html',
 })
 export class QuestionImage {
+  protected readonly t = injectMessages(MESSAGES);
   readonly quizId = input.required<string>();
   readonly path = input.required<string | null>();
   readonly label = input.required<string>();
@@ -37,11 +40,11 @@ export class QuestionImage {
     if (!file) return;
     await this.action.run(
       async () => this.pathChange.emit(await this.media.upload(this.quizId(), file)),
-      { errorTitle: 'Не вдалося завантажити картинку' },
+      { errorTitle: this.t().failed },
     );
   }
 
   protected reject(): void {
-    this.toaster.error('Цей файл не підходить', 'Потрібна картинка до 30 МБ.');
+    this.toaster.error(this.t().rejected, this.t().rejectedText);
   }
 }

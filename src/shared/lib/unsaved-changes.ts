@@ -1,5 +1,7 @@
 import { DOCUMENT, inject } from '@angular/core';
 import type { CanDeactivateFn } from '@angular/router';
+import { injectMessages } from '../i18n/messages';
+import { MESSAGES } from './i18n/messages';
 
 export interface HasUnsavedChanges {
   hasUnsavedChanges(): boolean;
@@ -8,4 +10,4 @@ export interface HasUnsavedChanges {
 /** Asks before leaving a page inside the app. Closing the tab is covered by `beforeunload`. */
 export const confirmUnsavedChanges: CanDeactivateFn<HasUnsavedChanges> = (page) =>
   !page.hasUnsavedChanges() ||
-  (inject(DOCUMENT).defaultView?.confirm('Є незбережені зміни. Вийти без збереження?') ?? true);
+  (inject(DOCUMENT).defaultView?.confirm(injectMessages(MESSAGES)().unsaved) ?? true);

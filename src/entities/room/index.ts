@@ -9,13 +9,8 @@ export type {
 } from './api/room-api.types';
 export { bluffKey, bluffResult, revealOrder, secondsLeft, votableOptions } from './lib/bluff';
 export { playGameSounds } from './lib/game-sounds';
-export {
-  buzzerStateFor,
-  everyoneSpent,
-  formatDelay,
-  formatScore,
-  normalizeRoomCode,
-} from './lib/game-logic';
+export { buzzerStateFor, everyoneSpent, normalizeRoomCode } from './lib/game-logic';
+export { injectDelayFormat, injectScoreFormat } from './lib/format';
 export { RoomLinks } from './lib/room-links';
 export { HostSession } from './model/host-session';
 export type {

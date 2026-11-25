@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { injectMessages } from '@shared/i18n';
 import {
   AiProviderIcon,
   QuizWriter,
@@ -32,6 +33,7 @@ import { VdOption, VdSelect } from '@vadem/ui/select';
 import { VdToaster } from '@vadem/ui/toast';
 import { MAX_PROMPT_LENGTH } from '../../config/prompt';
 import { OwnAiSettings } from '../own-ai-settings/own-ai-settings';
+import { MESSAGES } from '../../i18n/messages';
 
 /** Where an interrupted generation stopped: the next round to write, and what it must not repeat. */
 interface Progress {
@@ -65,6 +67,7 @@ interface Progress {
   templateUrl: './quiz-generator.html',
 })
 export class QuizGenerator {
+  protected readonly t = injectMessages(MESSAGES);
   readonly quizId = input.required<string>();
   readonly quiz = input.required<QuizDocument>();
   readonly generated = output<QuizDocument>();
@@ -78,8 +81,8 @@ export class QuizGenerator {
   protected readonly busy = this.action.busy;
   protected readonly confirming = signal(false);
   private readonly currentRound = signal(0);
-  protected readonly status = computed(
-    () => `Пишемо раунд ${this.currentRound()} з ${this.quiz().rounds.length}…`,
+  protected readonly status = computed(() =>
+    this.t().quiz.working(this.currentRound(), this.quiz().rounds.length),
   );
 
   protected readonly form = inject(NonNullableFormBuilder).group({
@@ -109,7 +112,7 @@ export class QuizGenerator {
   });
   protected readonly actionLabel = computed(() => {
     const progress = this.resumable();
-    return progress ? `Продовжити з раунду ${progress.round + 1}` : 'Згенерувати';
+    return progress ? this.t().quiz.resume(progress.round + 1) : this.t().quiz.generate;
   });
 
   protected start(): void {
@@ -172,13 +175,10 @@ export class QuizGenerator {
         }
         this.interrupted.set(null);
       },
-      { errorTitle: 'Не все вдалося згенерувати' },
+      { errorTitle: this.t().quiz.failed },
     );
     if (done) {
-      this.toaster.success(
-        'Квіз написано',
-        `Писав ${[...writers].join(', ')}. Перевірте факти й збережіть його.`,
-      );
+      this.toaster.success(this.t().quiz.done, this.t().quiz.doneText([...writers].join(', ')));
     }
   }
 }

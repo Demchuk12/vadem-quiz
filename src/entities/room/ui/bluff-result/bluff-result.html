@@ -1,30 +1,30 @@
 @if (result(); as result) {
   <p class="delta" [class.gain]="result.delta > 0" [class.loss]="result.delta < 0">
-    <span class="vd-visually-hidden">Бали за раунд:</span>
+    <span class="vd-visually-hidden">{{ t().bluff.roundPoints }}</span>
     {{ delta() }}
   </p>
   <ul class="lines">
     <li>
       @switch (result.picked?.kind) {
         @case ('truth') {
-          Ви вгадали правду: +2
+          {{ t().bluff.youGuessed }}
         }
         @case ('decoy') {
-          Ви повелися на пастку ведучого: −1
+          {{ t().bluff.youFellForDecoy }}
         }
         @case ('player') {
-          Ви повелися на варіант гравця {{ result.pickedAuthor }}
+          {{ t().bluff.youFellFor(result.pickedAuthor ?? '') }}
         }
         @default {
-          Ви не проголосували
+          {{ t().bluff.youDidNotVote }}
         }
       }
     </li>
     <li>
       @if (result.fooled.length > 0) {
-        На ваш варіант повелися: {{ result.fooled.join(', ') }} (+{{ result.fooled.length }})
+        {{ t().bluff.fooled(result.fooled.join(', '), result.fooled.length) }}
       } @else {
-        На ваш варіант ніхто не повівся
+        {{ t().bluff.fooledNobody }}
       }
     </li>
   </ul>

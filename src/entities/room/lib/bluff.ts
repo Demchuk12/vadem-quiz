@@ -86,7 +86,7 @@ export interface BluffResult {
 export function bluffResult(room: Room, players: Player[], playerId: string): BluffResult {
   const options = room.bluff_options ?? [];
   const name = (id: string | null | undefined) =>
-    players.find((player) => player.id === id)?.nickname ?? 'Гравець';
+    players.find((player) => player.id === id)?.nickname ?? '—';
   const picked = options.find((option) => option.voter_ids?.includes(playerId)) ?? null;
   return {
     delta: room.bluff_deltas?.[playerId] ?? 0,
@@ -102,7 +102,8 @@ export function bluffResult(room: Room, players: Player[], playerId: string): Bl
 /** An option as the reveal shows it: whose it was and who fell for it. */
 export interface RevealedOption {
   option: BluffOption;
-  label: string;
+  /** The nickname behind a player's lie; null for the truth and the decoy. */
+  author: string | null;
   voters: string[];
 }
 
@@ -112,12 +113,7 @@ export interface RevealedOption {
  */
 export function revealOrder(room: Room, players: Player[]): RevealedOption[] {
   const name = (id: string | null | undefined) =>
-    players.find((player) => player.id === id)?.nickname ?? 'Гравець';
-  const label = (option: BluffOption) => {
-    if (option.kind === 'truth') return 'Правда';
-    if (option.kind === 'decoy') return 'Пастка ведучого';
-    return `Варіант гравця ${name(option.player_id)}`;
-  };
+    players.find((player) => player.id === id)?.nickname ?? '—';
   const voters = (option: BluffOption) => option.voter_ids ?? [];
   return [...(room.bluff_options ?? [])]
     .sort(
@@ -125,5 +121,9 @@ export function revealOrder(room: Room, players: Player[]): RevealedOption[] {
         Number(a.kind === 'truth') - Number(b.kind === 'truth') ||
         voters(a).length - voters(b).length,
     )
-    .map((option) => ({ option, label: label(option), voters: voters(option).map(name) }));
+    .map((option) => ({
+      option,
+      author: option.kind === 'player' ? name(option.player_id) : null,
+      voters: voters(option).map(name),
+    }));
 }

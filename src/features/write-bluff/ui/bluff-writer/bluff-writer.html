@@ -1,18 +1,14 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
-  <vd-field
-    label="Ваш варіант"
-    hint="Вигадайте закінчення, у яке повірять інші."
-    error="Напишіть свій варіант."
-  >
+  <vd-field [label]="t().label" [hint]="t().hint" [error]="t().required">
     <input vdInput formControlName="text" [attr.maxlength]="maxLength" autocomplete="off" />
   </vd-field>
   <button vdButton type="submit" variant="primary" [loading]="busy()">
-    {{ sent() ? 'Змінити' : 'Надіслати' }}
+    {{ sent() ? t().change : t().send }}
   </button>
 </form>
 <p class="status" aria-live="polite">
   @if (sent(); as text) {
-    Надіслано: «{{ text }}». Можна змінити, поки йде час.
+    {{ t().sent(text) }}
   }
-  <span class="count">Написали {{ done() }} з {{ total() }}</span>
+  <span class="count">{{ t().wrote(done(), total()) }}</span>
 </p>

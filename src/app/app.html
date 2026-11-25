@@ -1,5 +1,5 @@
 <router-outlet />
 @if (navigating()) {
-  <vq-question-loader size="sm" class="navigating" label="Завантажуємо сторінку…" />
+  <vq-question-loader size="sm" class="navigating" [label]="t().loading" />
 }
-<vd-toaster label="Сповіщення" closeLabel="Закрити" />
+<vd-toaster [label]="t().notifications" [closeLabel]="t().close" />

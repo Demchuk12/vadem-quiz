@@ -23,7 +23,7 @@
     {{ label() }}
   </button>
 }
-<span class="status" aria-live="polite">{{ busy() ? 'AI переписує…' : '' }}</span>
+<span class="status" aria-live="polite">{{ busy() ? t().working : '' }}</span>
 
 <div
   vdPopover
@@ -38,7 +38,7 @@
       <p class="context">{{ context() }}</p>
     </header>
 
-    <div class="chips" role="group" aria-label="Швидкі варіанти">
+    <div class="chips" role="group" [attr.aria-label]="t().chips">
       @for (chip of texts().chips; track chip.label) {
         <button type="button" vdButton size="sm" variant="secondary" (click)="pick(chip)">
           {{ chip.label }}
@@ -46,7 +46,7 @@
       }
     </div>
 
-    <vd-field label="Що змінити" [descriptionIds]="instructionCount.descriptionId()">
+    <vd-field [label]="t().instruction" [descriptionIds]="instructionCount.descriptionId()">
       <textarea
         vdInput
         rows="3"
@@ -70,7 +70,7 @@
       </span>
       <button vdButton size="sm" variant="primary" type="submit" [disabled]="!ready()">
         <vd-icon slot="start" name="star" />
-        Змінити
+        {{ t().change }}
       </button>
     </footer>
   </form>

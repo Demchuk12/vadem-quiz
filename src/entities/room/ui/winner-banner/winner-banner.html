@@ -1,5 +1,5 @@
 <vq-confetti class="burst" [count]="18" />
-<h2>Гру завершено</h2>
+<h2>{{ t().winner.over }}</h2>
 @if (winner(); as player) {
-  <p>Перемагає {{ player.nickname }}: {{ format(player.score) }}</p>
+  <p>{{ t().winner.wins(player.nickname, format(player.score)) }}</p>
 }

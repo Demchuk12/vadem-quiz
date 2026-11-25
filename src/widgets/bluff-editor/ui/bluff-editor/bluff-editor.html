@@ -1,49 +1,48 @@
-<vd-field label="Назва квізу">
+<vd-field [label]="t().title">
   <input vdInput maxlength="120" [value]="quiz().title" (input)="setTitle($event)" />
 </vd-field>
 
 <div class="clocks">
   <vq-clock-setting
-    label="Обмежити час на вигадування"
-    secondsLabel="Секунд на вигадування"
+    [label]="t().writingClock"
+    [secondsLabel]="t().writingSeconds"
     [value]="quiz().writingSeconds ?? null"
     [defaultSeconds]="seconds.writing"
     (valueChange)="setClock({ writingSeconds: $event })"
   />
   <vq-clock-setting
-    label="Обмежити час на голосування"
-    secondsLabel="Секунд на голосування"
+    [label]="t().votingClock"
+    [secondsLabel]="t().votingSeconds"
     [value]="quiz().votingSeconds ?? null"
     [defaultSeconds]="seconds.voting"
     (valueChange)="setClock({ votingSeconds: $event })"
   />
 </div>
 
-<p class="hint">
-  Кожен факт — це раунд. Гравці вигадують своє закінчення, щоб заплутати інших, а ви додаєте власну
-  пастку. Найкраще працюють дивні, але правдиві факти: такі, де правда звучить як брехня.
-</p>
+<p class="hint">{{ t().about }}</p>
 
 <ol class="facts">
   @for (fact of quiz().facts; track $index; let i = $index) {
-    <li vdCard class="fact" [class.incomplete]="!isComplete(fact)">
+    <li vdCard class="fact">
       <div class="fact-head">
-        <span class="number">Факт {{ i + 1 }}</span>
+        <span>
+          <span class="number">{{ t().fact(i + 1) }}</span>
+          @if (!isComplete(fact)) {
+            <span class="incomplete"> · {{ t().incomplete }}</span>
+          }
+        </span>
         <button
           vdButton
           variant="ghost"
           iconOnly
-          [attr.aria-label]="'Видалити факт ' + (i + 1)"
+          [attr.aria-label]="t().removeFact(i + 1)"
           [disabled]="quiz().facts.length <= 1"
           (click)="remove(i)"
         >
           <vd-icon name="trash" />
         </button>
       </div>
-      <vd-field
-        label="Факт без закінчення"
-        [hint]="i === 0 ? 'Наприклад: «У Швеції є готель, збудований з…»' : ''"
-      >
+      <vd-field [label]="t().text" [hint]="i === 0 ? t().textHint : ''">
         <textarea
           vdInput
           rows="2"
@@ -53,7 +52,7 @@
         ></textarea>
       </vd-field>
       <div class="pair">
-        <vd-field label="Правдиве закінчення">
+        <vd-field [label]="t().truth">
           <input
             vdInput
             [attr.maxlength]="lengths.ending"
@@ -61,10 +60,7 @@
             (input)="setFact(i, { truth: valueOf($event) })"
           />
         </vd-field>
-        <vd-field
-          label="Пастка ведучого"
-          [hint]="i === 0 ? 'Ваша брехня серед варіантів: хто її обере, втратить бал.' : ''"
-        >
+        <vd-field [label]="t().decoy" [hint]="i === 0 ? t().decoyHint : ''">
           <input
             vdInput
             [attr.maxlength]="lengths.ending"
@@ -74,8 +70,8 @@
         </vd-field>
       </div>
       @if (fact.decoyIdeas?.length) {
-        <div class="ideas" role="group" [attr.aria-label]="'Інші пастки для факту ' + (i + 1)">
-          <span class="ideas-label">Інші пастки від AI:</span>
+        <div class="ideas" role="group" [attr.aria-label]="t().ideasOf(i + 1)">
+          <span class="ideas-label">{{ t().ideas }}</span>
           @for (idea of fact.decoyIdeas; track idea) {
             <button vdButton type="button" size="sm" variant="ghost" (click)="useDecoy(i, idea)">
               {{ idea }}
@@ -83,10 +79,7 @@
           }
         </div>
       }
-      <vd-field
-        label="Пояснення"
-        [hint]="i === 0 ? 'Необовʼязково. Гравці побачать його, коли відкриється правда.' : ''"
-      >
+      <vd-field [label]="t().explanation" [hint]="i === 0 ? t().explanationHint : ''">
         <textarea
           vdInput
           rows="2"
@@ -102,9 +95,9 @@
 <div class="footer">
   <button vdButton [disabled]="quiz().facts.length >= limits.max" (click)="add()">
     <vd-icon slot="start" name="plus" />
-    Додати факт
+    {{ t().addFact }}
   </button>
   <span class="count">
-    {{ quiz().facts.length }} з {{ limits.max }} · для гри потрібно щонайменше {{ limits.min }}
+    {{ t().count(quiz().facts.length, limits.max, limits.min) }}
   </span>
 </div>

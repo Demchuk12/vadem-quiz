@@ -7,6 +7,7 @@ import {
   model,
   signal,
 } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import {
   DEFAULT_BUZZ_SECONDS,
   addCategory,
@@ -29,10 +30,13 @@ import { VdIcon } from '@vadem/ui/icon';
 import { VdInput } from '@vadem/ui/input';
 import { VD_NUMBER_INPUT } from '@vadem/ui/number-input';
 import { VD_TABS } from '@vadem/ui/tabs';
+import { MESSAGES } from '../../i18n/messages';
 
 /** Edits a quiz document in memory. Saving belongs to the page. */
 @Component({
   selector: 'vq-quiz-editor',
+  // Text a stylesheet shows over the part the AI is rewriting.
+  host: { '[style.--vq-ai-working]': 'aiWorkingText()' },
   imports: [
     ClockSetting,
     VD_ACCORDION,
@@ -51,7 +55,9 @@ import { VD_TABS } from '@vadem/ui/tabs';
   templateUrl: './quiz-editor.html',
 })
 export class QuizEditor {
+  protected readonly t = injectMessages(MESSAGES);
   readonly quizId = input.required<string>();
+  protected readonly aiWorkingText = computed(() => JSON.stringify(this.t().aiWorking));
   readonly quiz = model.required<QuizDocument>();
 
   private readonly roundCount = computed(() => this.quiz().rounds.length);

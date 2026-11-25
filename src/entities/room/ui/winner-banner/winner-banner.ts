@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { Confetti } from '@shared/ui';
-import { formatScore } from '../../lib/game-logic';
+import { injectScoreFormat } from '../../lib/format';
 import { RoomStore } from '../../model/room-store';
+import { MESSAGES } from '../../i18n/messages';
 
 /** Who won. With shared first place it names the first in the standings. */
 @Component({
@@ -12,8 +14,9 @@ import { RoomStore } from '../../model/room-store';
   templateUrl: './winner-banner.html',
 })
 export class WinnerBanner {
+  protected readonly t = injectMessages(MESSAGES);
   private readonly store = inject(RoomStore);
 
   protected readonly winner = computed(() => this.store.ranked()[0]?.player ?? null);
-  protected readonly format = formatScore;
+  protected readonly format = injectScoreFormat();
 }

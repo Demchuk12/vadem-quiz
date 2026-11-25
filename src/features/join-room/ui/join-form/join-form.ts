@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { injectMessages } from '@shared/i18n';
 import { RoomApi, RoomSessions, normalizeRoomCode } from '@entities/room';
 import { apiAction } from '@shared/api';
 import { VD_ALERT } from '@vadem/ui/alert';
 import { VdButton } from '@vadem/ui/button';
 import { VdField } from '@vadem/ui/field';
 import { VdInput } from '@vadem/ui/input';
+import { MESSAGES } from '../../i18n/messages';
 
 const CODE_LENGTH = 5;
 
@@ -18,6 +20,7 @@ const CODE_LENGTH = 5;
   templateUrl: './join-form.html',
 })
 export class JoinForm {
+  protected readonly t = injectMessages(MESSAGES);
   /** From a shared link or QR code: /join/ABCDE. */
   readonly code = input<string>();
 
@@ -26,7 +29,6 @@ export class JoinForm {
   private readonly router = inject(Router);
 
   protected readonly codeLength = CODE_LENGTH;
-  protected readonly codeError = `Код складається з ${CODE_LENGTH} символів.`;
   private readonly action = apiAction();
   protected readonly busy = this.action.busy;
   protected readonly error = signal<string | null>(null);

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import {
   BLUFF_FACTS,
   BLUFF_LENGTHS,
@@ -17,6 +18,7 @@ import { VD_CARD } from '@vadem/ui/card';
 import { VdField } from '@vadem/ui/field';
 import { VdIcon } from '@vadem/ui/icon';
 import { VdInput } from '@vadem/ui/input';
+import { MESSAGES } from '../../i18n/messages';
 
 /** The facts of a "Варіанти" quiz: each with its missing ending and the host's decoy. */
 @Component({
@@ -27,6 +29,7 @@ import { VdInput } from '@vadem/ui/input';
   templateUrl: './bluff-editor.html',
 })
 export class BluffEditor {
+  protected readonly t = injectMessages(MESSAGES);
   readonly quiz = input.required<BluffDocument>();
   readonly quizChange = output<BluffDocument>();
 

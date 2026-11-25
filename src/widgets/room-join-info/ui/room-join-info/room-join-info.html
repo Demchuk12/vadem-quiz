@@ -1,6 +1,6 @@
 <vq-join-qr [url]="joinUrl()" />
 <div class="info">
-  <p class="vd-eyebrow">Код кімнати</p>
+  <p class="vd-eyebrow">{{ t().code }}</p>
   <p class="code">
     <span class="vd-visually-hidden">{{ code() }}</span>
     <span class="tiles" aria-hidden="true">
@@ -10,7 +10,7 @@
     </span>
   </p>
   @if (copyable()) {
-    <vd-copy-button [value]="joinUrl()" label="Скопіювати посилання" copiedLabel="Скопійовано" />
+    <vd-copy-button [value]="joinUrl()" [label]="t().copy" [copiedLabel]="t().copied" />
   }
   <ng-content />
 </div>

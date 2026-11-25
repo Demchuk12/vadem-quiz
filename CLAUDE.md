@@ -6,7 +6,8 @@ No own server. Original plan: `docs/PLAN.md`. Reasons for choices: `DECISIONS.md
 
 ## Working agreement
 
-- Talk to the owner in **Ukrainian**. Code, comments, commits, docs: **English**. UI text: Ukrainian.
+- Talk to the owner in **Ukrainian**. Code, comments, commits, docs: **English**. UI text:
+  Ukrainian and English, in the slice's `i18n/messages.ts`, never in a template or component.
 - Ask before adding a dependency, feature or abstraction that was not requested.
 - A missing UI component goes into `vadem-ui-angular` (sibling folder), not into this app. App code
   composes Vadem components; styles are page layout on `--vd-*` tokens with logical properties only.
@@ -26,14 +27,14 @@ src/pages/      one slice per route: join, quizzes, quiz-editor, host, play, str
 src/widgets/    self-contained screen blocks: room-header, host-question-panel, quiz-editor...
 src/features/   one user action each: buzz, join-room, run-question, adjust-score...
 src/entities/   room (with players and tiles, too entangled to split), quiz
-src/shared/     api (Supabase, RPC, media), lib (storage, sound), ui (QR)
+src/shared/     api (Supabase, RPC, media), i18n (language), lib (storage, sound, theme), ui (QR)
 supabase/       migrations (the only way to change game state), pgTAP tests, the generate-round
                 Edge Function (holds the AI keys: GEMINI_API_KEY, GROQ_API_KEY, OPENROUTER_API_KEY;
                 model names are optional secrets, see the function's header)
 e2e/            Playwright: multi-browser game, press race, axe
 ```
 
-A slice is `api/`, `model/`, `lib/`, `config/`, `ui/<component>/` as needed, plus `index.ts`.
+A slice is `api/`, `model/`, `lib/`, `config/`, `i18n/`, `ui/<component>/` as needed, plus `index.ts`.
 Exported types go into `<name>.types.ts` beside their code, constant tables into `config/`; a
 tuning number used once stays where it is used. Components that need the live room inject
 `RoomStore`, which the page provides.
@@ -50,7 +51,7 @@ tuning number used once stays where it is used. Components that need the live ro
 2. Nothing secret in `public` tables: they reach every client through realtime. Secrets and quiz
    content live in schema `private`; a question reaches `public.rooms` only when it opens, its answer
    only when revealed.
-3. Functions raise a short code as the message; `shared/api/api-error.ts` maps codes to Ukrainian text.
+3. Functions raise a short code as the message; `shared/api/i18n/messages.ts` maps codes to text.
 4. Add a pgTAP test with every rule or permission change.
 
 ## Graphify

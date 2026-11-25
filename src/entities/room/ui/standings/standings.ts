@@ -12,14 +12,16 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { VdBadge } from '@vadem/ui/badge';
 import { VdButton } from '@vadem/ui/button';
 import { VdEmptyState, VdEmptyStateTitle } from '@vadem/ui/empty-state';
 import { VdIcon } from '@vadem/ui/icon';
 import { VD_LEADERBOARD, type VdLeaderboardChange } from '@vadem/ui/leaderboard';
-import { formatScore } from '../../lib/game-logic';
+import { injectScoreFormat } from '../../lib/format';
 import type { Player } from '../../model/room';
 import { RoomStore } from '../../model/room-store';
+import { MESSAGES } from '../../i18n/messages';
 
 const REORDER_MOTION: KeyframeAnimationOptions = {
   duration: 300,
@@ -33,6 +35,7 @@ const REORDER_MOTION: KeyframeAnimationOptions = {
   templateUrl: './standings.html',
 })
 export class Standings {
+  protected readonly t = injectMessages(MESSAGES);
   /** The row of the person looking at the screen. */
   readonly currentPlayerId = input<string | null>(null);
   /** Marks who is offline. Only meaningful while players report their presence. */
@@ -42,7 +45,7 @@ export class Standings {
   readonly adjust = output<Player>();
 
   protected readonly store = inject(RoomStore);
-  protected readonly format = formatScore;
+  protected readonly format = injectScoreFormat();
 
   /** The latest change of each player's score, shown once beside it. */
   protected readonly changes = signal<ReadonlyMap<string, VdLeaderboardChange>>(new Map());
@@ -65,7 +68,7 @@ export class Standings {
           if (before === undefined || before === score) continue;
           const delta = score - before;
           changed.set(id, {
-            label: delta > 0 ? `+${formatScore(delta)}` : formatScore(delta),
+            label: delta > 0 ? `+${this.format(delta)}` : this.format(delta),
             tone: delta > 0 ? 'gain' : 'loss',
           });
         }

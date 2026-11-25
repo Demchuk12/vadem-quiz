@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { injectMessages } from '@shared/i18n';
 import {
   AiProviderIcon,
   BLUFF_FACTS,
@@ -23,6 +24,7 @@ import { VdOption, VdSelect } from '@vadem/ui/select';
 import { VdToaster } from '@vadem/ui/toast';
 import { MAX_PROMPT_LENGTH } from '../../config/prompt';
 import { OwnAiSettings } from '../own-ai-settings/own-ai-settings';
+import { MESSAGES } from '../../i18n/messages';
 
 /**
  * Writes the facts of a "Варіанти" quiz from a topic, each with three decoys to choose from. The
@@ -50,6 +52,7 @@ import { OwnAiSettings } from '../own-ai-settings/own-ai-settings';
   templateUrl: './fact-generator.html',
 })
 export class FactGenerator {
+  protected readonly t = injectMessages(MESSAGES);
   readonly quizId = input.required<string>();
   readonly quiz = input.required<BluffDocument>();
   readonly generated = output<BluffDocument>();
@@ -118,13 +121,10 @@ export class FactGenerator {
         writer = result.writer;
         this.generated.emit(applyGeneratedFacts(this.quiz(), result.round));
       },
-      { errorTitle: 'Не вдалося згенерувати факти' },
+      { errorTitle: this.t().facts.failed },
     );
     if (done) {
-      this.toaster.success(
-        'Факти написано',
-        `Писав ${writer}. Перевірте їх, оберіть пастки й збережіть квіз.`,
-      );
+      this.toaster.success(this.t().facts.done, this.t().facts.doneText(writer));
     }
   }
 }

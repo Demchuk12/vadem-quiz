@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { QuizApi, SavedQuizzes, type SavedQuiz } from '@entities/quiz';
 import { VdAlertDialog } from '@vadem/ui/alert-dialog';
 import { VdButton } from '@vadem/ui/button';
 import { VdIcon } from '@vadem/ui/icon';
+import { MESSAGES } from '../../i18n/messages';
 
 @Component({
   selector: 'vq-delete-quiz-button',
@@ -11,6 +13,7 @@ import { VdIcon } from '@vadem/ui/icon';
   templateUrl: './delete-quiz-button.html',
 })
 export class DeleteQuizButton {
+  protected readonly t = injectMessages(MESSAGES);
   readonly quiz = input.required<SavedQuiz>();
   readonly deleted = output<void>();
 

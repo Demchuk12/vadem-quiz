@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
+import { injectMessages } from '@shared/i18n';
 import { SavedQuizzes, type SavedQuiz } from '@entities/quiz';
 import { RoomApi, RoomSessions } from '@entities/room';
 import { apiAction } from '@shared/api';
 import { VdButton } from '@vadem/ui/button';
 import { VdIcon } from '@vadem/ui/icon';
+import { MESSAGES } from '../../i18n/messages';
 
 @Component({
   selector: 'vq-start-room-button',
@@ -13,6 +15,7 @@ import { VdIcon } from '@vadem/ui/icon';
   templateUrl: './start-room-button.html',
 })
 export class StartRoomButton {
+  protected readonly t = injectMessages(MESSAGES);
   readonly quiz = input.required<SavedQuiz>();
 
   private readonly api = inject(RoomApi);

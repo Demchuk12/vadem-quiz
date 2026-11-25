@@ -1,4 +1,4 @@
-<h2 class="heading">Новий квіз</h2>
+<h2 class="heading">{{ t().heading }}</h2>
 
 <div class="games">
   <button vdCard type="button" class="game" (click)="choose('board')">
@@ -7,36 +7,36 @@
         <span class="tile" [class.lit]="$index === 4">{{ value }}</span>
       }
     </span>
-    <span class="name">Своя гра</span>
-    <span class="about">Дошка з категоріями: хто перший натисне кнопку, той і відповідає.</span>
-    <span class="meta">Раунди · категорії · бали за складність</span>
+    <span class="name">{{ t().games.board }}</span>
+    <span class="about">{{ t().boardAbout }}</span>
+    <span class="meta">{{ t().boardMeta }}</span>
   </button>
 
   <button vdCard type="button" class="game" (click)="choose('bluff')">
     <span class="art bluff" aria-hidden="true">
-      <span class="option">старих трамваїв</span>
-      <span class="option truth">льоду</span>
-      <span class="option">соломи</span>
+      <span class="option">{{ t().bluffOptions.lie }}</span>
+      <span class="option truth">{{ t().bluffOptions.truth }}</span>
+      <span class="option">{{ t().bluffOptions.decoy }}</span>
     </span>
-    <span class="name">Варіанти</span>
-    <span class="about">Вигадайте правдоподібну брехню, вгадайте правду і заплутайте друзів.</span>
-    <span class="meta">Від 3 гравців · {{ facts.min }}–{{ facts.max }} фактів</span>
+    <span class="name">{{ t().games.bluff }}</span>
+    <span class="about">{{ t().bluffAbout }}</span>
+    <span class="meta">{{ t().bluffMeta(facts.min, facts.max) }}</span>
   </button>
 </div>
 
 <dialog vdDialog size="sm" [open]="mode() !== null" (openChange)="$event || close()">
   <form [formGroup]="form" (ngSubmit)="create()">
     <header vdDialogHeader>
-      <h2 vdDialogTitle>Новий квіз · {{ gameName() }}</h2>
+      <h2 vdDialogTitle>{{ t().dialog(gameName()) }}</h2>
     </header>
     <div vdDialogBody>
-      <vd-field label="Назва квізу" error="Вкажіть назву.">
+      <vd-field [label]="t().title" [error]="t().titleError">
         <input vdInput formControlName="title" maxlength="120" autocomplete="off" />
       </vd-field>
     </div>
     <footer vdDialogFooter>
-      <button vdButton type="button" variant="ghost" (click)="close()">Скасувати</button>
-      <button vdButton type="submit" variant="primary" [loading]="busy()">Створити</button>
+      <button vdButton type="button" variant="ghost" (click)="close()">{{ t().cancel }}</button>
+      <button vdButton type="submit" variant="primary" [loading]="busy()">{{ t().create }}</button>
     </footer>
   </form>
 </dialog>

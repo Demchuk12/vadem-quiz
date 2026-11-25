@@ -3,7 +3,7 @@
 
   @if (room.state !== 'answer_shown' && answer(); as hostAnswer) {
     <div class="host-answer">
-      <p class="vd-eyebrow">Відповідь (бачите лише ви)</p>
+      <p class="vd-eyebrow">{{ t().answer }}</p>
       @if (hostAnswer.answer_text) {
         <p>{{ hostAnswer.answer_text }}</p>
       }
@@ -11,7 +11,7 @@
         <p class="explanation">{{ hostAnswer.explanation }}</p>
       }
       @if (hostAnswer.answer_image_path; as path) {
-        <img [src]="media.publicUrl(path)" alt="Картинка до відповіді" />
+        <img [src]="media.publicUrl(path)" [alt]="t().answerImage" />
       }
     </div>
   }
@@ -20,7 +20,7 @@
     <vq-question-controls />
     <vq-phase-timer />
     @if (room.state !== 'answer_shown') {
-      <span class="timer" role="timer" aria-label="Час на питанні">{{ timer() }}</span>
+      <span class="timer" role="timer" [attr.aria-label]="t().timer">{{ timer() }}</span>
     }
   </div>
 }

@@ -1,9 +1,9 @@
 <section vdCard>
   <form [formGroup]="form" (ngSubmit)="start()">
     <vd-field
-      label="Тема квізу"
-      hint="AI напише чернетку, а ви її перевірите: він буває впевнено неправий у фактах."
-      error="Опишіть тему: від 3 до 1500 символів."
+      [label]="t().quiz.topic"
+      [hint]="t().quiz.hint"
+      [error]="t().promptError"
       [descriptionIds]="promptCount.descriptionId()"
     >
       <textarea
@@ -11,7 +11,7 @@
         id="quiz-topic"
         rows="3"
         formControlName="prompt"
-        placeholder="Наприклад: кіно 90-х, середня складність"
+        [placeholder]="t().quiz.placeholder"
       ></textarea>
       <vd-character-count
         #promptCount
@@ -22,23 +22,16 @@
     </vd-field>
     <label class="vd-choice">
       <input type="checkbox" vdCheckbox formControlName="images" />
-      Додати фото до відповідей
+      {{ t().quiz.images }}
     </label>
-    <p class="hint">
-      Близько третини відповідей отримають фото з Вікіпедії. Його побачать, коли відповідь
-      відкриють.
-    </p>
+    <p class="hint">{{ t().quiz.imagesHint }}</p>
     <label class="vd-choice">
       <input type="checkbox" vdCheckbox formControlName="explain" />
-      Писати пояснення до відповідей
+      {{ t().quiz.explain }}
     </label>
-    <p class="hint">Ведучий зможе розповісти цікавинку, коли відповідь відкриють.</p>
+    <p class="hint">{{ t().quiz.explainHint }}</p>
     <div class="writer">
-      <vd-field
-        class="provider-field"
-        label="Хто пише питання"
-        hint="«Авто» бере першу вільну модель: якщо в однієї вичерпано ліміт, раунд напише інша."
-      >
+      <vd-field class="provider-field" [label]="t().quiz.writer" [hint]="t().quiz.writerHint">
         <vd-select [value]="ai.provider()" (valueChange)="ai.choose($any($event))">
           <vq-ai-provider-icon slot="start" [provider]="ai.iconOf(ai.provider())" />
           @for (option of ai.options(); track option.id) {
@@ -64,10 +57,10 @@
 </section>
 
 <vd-alert-dialog
-  title="Замінити питання?"
-  description="AI перепише всі раунди цього квізу, разом із картинками. Поки ви не збережете, збережена версія лишається цілою."
-  confirmLabel="Замінити"
-  cancelLabel="Скасувати"
+  [title]="t().quiz.replaceTitle"
+  [description]="t().quiz.replaceText"
+  [confirmLabel]="t().replace"
+  [cancelLabel]="t().cancel"
   [open]="confirming()"
   [action]="replace"
   (openChange)="confirming.set($event)"

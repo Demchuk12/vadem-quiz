@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { injectMessages } from '../../i18n';
 import qrcode from 'qrcode-generator';
+import { MESSAGES } from '../i18n/messages';
 
 const CELL_SIZE = 6;
 const QUIET_ZONE_CELLS = 4;
@@ -12,6 +14,7 @@ const QUIET_ZONE_CELLS = 4;
   templateUrl: './join-qr.html',
 })
 export class JoinQr {
+  protected readonly t = injectMessages(MESSAGES);
   readonly url = input.required<string>();
 
   protected readonly dataUrl = computed(() => {

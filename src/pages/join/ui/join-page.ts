@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { injectMessages } from '@shared/i18n';
 import { RoomSessions } from '@entities/room';
 import { InstallAppButton } from '@features/install-app';
 import { JoinForm } from '@features/join-room';
 import { TileBanner } from '@shared/ui';
 import { VdButton } from '@vadem/ui/button';
 import { VdIcon } from '@vadem/ui/icon';
+import { MESSAGES } from '../i18n/messages';
 
 @Component({
   selector: 'vq-join-page',
@@ -15,6 +17,7 @@ import { VdIcon } from '@vadem/ui/icon';
   templateUrl: './join-page.html',
 })
 export class JoinPage {
+  protected readonly t = injectMessages(MESSAGES);
   /** Room code from the URL, when opened through a shared link. */
   readonly code = input<string>();
 

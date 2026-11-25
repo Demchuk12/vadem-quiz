@@ -1,10 +1,12 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Media } from '@shared/api';
+import { I18n, injectMessages } from '@shared/i18n';
 import { AiSettings } from './ai-settings';
 import { QuizApi } from './quiz-api';
 import { QuizWriter } from './quiz-writer';
 import type { AiOption, AiRequest, AiResult, OwnAi } from './ai-writer.types';
 import type { AiProvider } from './quiz-api.types';
+import { MESSAGES } from '../i18n/messages';
 import { VENDOR_LABELS } from '../config/ai-vendors';
 import type { GeneratedRound } from '../model/quiz-document.types';
 
@@ -19,6 +21,8 @@ export class AiWriter implements QuizWriter {
   private readonly api = inject(QuizApi);
   private readonly media = inject(Media);
   private readonly settings = inject(AiSettings);
+  private readonly i18n = inject(I18n);
+  private readonly t = injectMessages(MESSAGES);
 
   /** Only the free AIs this deployment has keys for. */
   private readonly providers = signal<AiProvider[]>([]);
@@ -26,7 +30,7 @@ export class AiWriter implements QuizWriter {
   readonly provider = this.settings.choice;
 
   readonly options = computed<AiOption[]>(() => [
-    { id: 'auto', label: 'Авто', icon: 'auto' },
+    { id: 'auto', label: this.t().auto, icon: 'auto' },
     ...this.ownAis().map((own) => ({
       id: OWN_PREFIX + own.id,
       // "Claude Sonnet" already says whose it is; "gpt-5" does not.
@@ -80,6 +84,7 @@ export class AiWriter implements QuizWriter {
         : [];
     const result = await this.api.generateRound({
       ...request,
+      language: this.i18n.locale(),
       provider: chosen.startsWith(OWN_PREFIX) ? 'own' : chosen,
       own: own.map(({ vendor, key, model }) => ({ vendor, key, model })),
     });

@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { injectMessages } from '@shared/i18n';
 import {
   QuizApi,
   SavedQuizzes,
@@ -28,6 +29,7 @@ import { VdSkeleton } from '@vadem/ui/skeleton';
 import { VdToaster } from '@vadem/ui/toast';
 import { BluffEditor } from '@widgets/bluff-editor';
 import { QuizEditor } from '@widgets/quiz-editor';
+import { MESSAGES } from '../i18n/messages';
 
 type LoadState = 'loading' | 'ready' | 'forbidden' | 'error';
 
@@ -51,6 +53,7 @@ type LoadState = 'loading' | 'ready' | 'forbidden' | 'error';
   templateUrl: './quiz-editor-page.html',
 })
 export class QuizEditorPage implements OnInit, HasUnsavedChanges {
+  protected readonly t = injectMessages(MESSAGES);
   readonly quizId = input.required<string>();
 
   private readonly api = inject(QuizApi);
@@ -113,13 +116,13 @@ export class QuizEditorPage implements OnInit, HasUnsavedChanges {
     if (!quiz || !saved) return;
 
     const done = await this.saveAction.run(() => this.api.save(saved.id, saved.token, quiz), {
-      errorTitle: 'Не вдалося зберегти',
+      errorTitle: this.t().saveFailed,
     });
     if (done) {
       this.saved = { ...saved, title: quiz.title, mode: isBluff(quiz) ? 'bluff' : 'board' };
       this.savedQuizzes.save(this.saved);
       this.dirty.set(false);
-      this.toaster.success('Квіз збережено');
+      this.toaster.success(this.t().saved);
     }
   }
 }

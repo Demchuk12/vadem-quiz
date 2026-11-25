@@ -1,0 +1,45 @@
+<button
+  vdButton
+  type="button"
+  variant="ghost"
+  size="sm"
+  iconOnly
+  [vdPopoverTrigger]="popover"
+  [attr.aria-label]="t().open"
+>
+  <vd-icon name="settings" />
+</button>
+
+<div vdPopover #popover="vdPopover" class="panel" placement="bottom" [attr.aria-label]="t().open">
+  <div class="setting">
+    <span class="label" aria-hidden="true">{{ t().language }}</span>
+    <vd-segmented
+      size="sm"
+      [attr.aria-label]="t().language"
+      [value]="i18n.locale()"
+      (valueChange)="i18n.use($any($event))"
+    >
+      @for (locale of locales; track locale) {
+        <vd-segment [value]="locale">
+          <span [attr.lang]="locale">{{ languages[locale] }}</span>
+        </vd-segment>
+      }
+    </vd-segmented>
+  </div>
+  <div class="setting">
+    <span class="label" aria-hidden="true">{{ t().theme }}</span>
+    <vd-segmented
+      size="sm"
+      [attr.aria-label]="t().theme"
+      [value]="theme.name()"
+      (valueChange)="theme.use($any($event))"
+    >
+      @for (name of themes; track name) {
+        <vd-segment [value]="name">
+          <vd-icon [name]="name === 'dark' ? 'moon' : 'sun'" />
+          {{ t().themes[name] }}
+        </vd-segment>
+      }
+    </vd-segmented>
+  </div>
+</div>

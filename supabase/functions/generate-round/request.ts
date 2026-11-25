@@ -103,6 +103,8 @@ export function parseRequest(body: unknown): RoundRequest {
   if (provider === 'own' && own.length !== 1) throw new Failure(400, 'invalid_prompt');
   return {
     mode,
+    // An older page does not say: the app was Ukrainian only.
+    language: b['language'] === 'en' ? 'en' : 'uk',
     quizId: b['quizId'],
     token: b['token'],
     prompt,

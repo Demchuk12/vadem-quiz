@@ -8,7 +8,9 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { formatDelay } from '@entities/room';
+import { injectMessages } from '@shared/i18n';
+import { injectDelayFormat } from '@entities/room';
+import { MESSAGES } from '../../i18n/messages';
 
 const COUNT_MS = 650;
 /** Under this, the player nearly had it. */
@@ -25,13 +27,15 @@ const CLOSE_MS = 100;
   templateUrl: './late-meter.html',
 })
 export class LateMeter {
+  protected readonly t = injectMessages(MESSAGES);
   /** Milliseconds after the winning press. */
   readonly ms = input.required<number>();
 
+  private readonly format = injectDelayFormat();
   protected readonly shown = signal(0);
   protected readonly close = computed(() => this.ms() < CLOSE_MS);
-  protected readonly text = computed(() => formatDelay(this.shown()));
-  protected readonly final = computed(() => formatDelay(this.ms()));
+  protected readonly text = computed(() => this.format(this.shown()));
+  protected readonly final = computed(() => this.format(this.ms()));
   /** How full the ring is, from 0 to 1, a second being a full turn. */
   protected readonly fill = computed(() => Math.min(1, this.shown() / 1000));
 

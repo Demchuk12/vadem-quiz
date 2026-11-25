@@ -1,9 +1,9 @@
 @if (store.ranked().length === 0) {
   <div vdEmptyState icon="users" size="sm">
-    <p vdEmptyStateTitle>Гравців ще немає</p>
+    <p vdEmptyStateTitle>{{ t().standings.empty }}</p>
   </div>
 } @else {
-  <ol vdLeaderboard aria-label="Таблиця лідерів">
+  <ol vdLeaderboard [attr.aria-label]="t().standings.label">
     @for (entry of store.ranked(); track entry.player.id) {
       <li
         vdLeaderboardRow
@@ -17,7 +17,7 @@
         [change]="changes().get(entry.player.id) ?? null"
       >
         @if (isOffline(entry.player)) {
-          <span vdBadge>Офлайн</span>
+          <span vdBadge>{{ t().standings.offline }}</span>
         }
         @if (editable()) {
           <button
@@ -26,7 +26,7 @@
             variant="ghost"
             size="sm"
             iconOnly
-            [attr.aria-label]="'Змінити очки: ' + entry.player.nickname"
+            [attr.aria-label]="t().standings.adjust(entry.player.nickname)"
             (click)="adjust.emit(entry.player)"
           >
             <vd-icon name="pencil" />

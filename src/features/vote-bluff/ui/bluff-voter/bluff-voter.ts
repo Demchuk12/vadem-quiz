@@ -8,9 +8,11 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { RoomApi, RoomStore, votableOptions, type PlayerSession } from '@entities/room';
 import { apiAction } from '@shared/api';
 import { VdButton } from '@vadem/ui/button';
+import { MESSAGES } from '../../i18n/messages';
 
 /** The options of the round, but none with the player's own words; the vote may change. */
 @Component({
@@ -21,6 +23,7 @@ import { VdButton } from '@vadem/ui/button';
   templateUrl: './bluff-voter.html',
 })
 export class BluffVoter {
+  protected readonly t = injectMessages(MESSAGES);
   readonly session = input.required<PlayerSession>();
 
   private readonly store = inject(RoomStore);

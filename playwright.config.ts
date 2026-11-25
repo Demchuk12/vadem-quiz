@@ -12,6 +12,8 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:4210',
     ...devices['Desktop Chrome'],
+    // The tests read the Ukrainian app; e2e/settings.spec.ts covers the other language.
+    locale: 'uk-UA',
     trace: 'retain-on-failure',
     // Stable measurements: axe would otherwise read contrast mid-fade. Also proves the app is
     // complete without motion.

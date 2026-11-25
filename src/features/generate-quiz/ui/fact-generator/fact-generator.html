@@ -1,9 +1,9 @@
 <section vdCard>
   <form [formGroup]="form" (ngSubmit)="start()">
     <vd-field
-      label="Тема фактів"
-      hint="AI добере дивні, але правдиві факти і запропонує до кожного три пастки. Перевірте їх: він буває впевнено неправий."
-      error="Опишіть тему: від 3 до 1500 символів."
+      [label]="t().facts.topic"
+      [hint]="t().facts.hint"
+      [error]="t().promptError"
       [descriptionIds]="promptCount.descriptionId()"
     >
       <textarea
@@ -11,7 +11,7 @@
         id="facts-topic"
         rows="3"
         formControlName="prompt"
-        placeholder="Наприклад: тварини, історія, дивні закони різних країн"
+        [placeholder]="t().facts.placeholder"
       ></textarea>
       <vd-character-count
         #promptCount
@@ -21,7 +21,7 @@
       />
     </vd-field>
     <div class="writer">
-      <vd-field class="provider-field" label="Хто пише факти">
+      <vd-field class="provider-field" [label]="t().facts.writer">
         <vd-select [value]="ai.provider()" (valueChange)="ai.choose($any($event))">
           <vq-ai-provider-icon slot="start" [provider]="ai.iconOf(ai.provider())" />
           @for (option of ai.options(); track option.id) {
@@ -37,20 +37,20 @@
     <div class="actions">
       <button vdButton type="submit" [loading]="busy()">
         <vd-icon slot="start" name="star" />
-        Згенерувати {{ count() }} фактів
+        {{ t().facts.generate(count()) }}
       </button>
       @if (busy()) {
-        <vq-question-loader size="sm" label="Шукаємо дивні факти…" />
+        <vq-question-loader size="sm" [label]="t().facts.working" />
       }
     </div>
   </form>
 </section>
 
 <vd-alert-dialog
-  title="Замінити факти?"
-  description="AI перепише всі факти цього квізу. Поки ви не збережете, збережена версія лишається цілою."
-  confirmLabel="Замінити"
-  cancelLabel="Скасувати"
+  [title]="t().facts.replaceTitle"
+  [description]="t().facts.replaceText"
+  [confirmLabel]="t().replace"
+  [cancelLabel]="t().cancel"
   [open]="confirming()"
   [action]="replace"
   (openChange)="confirming.set($event)"

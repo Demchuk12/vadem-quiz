@@ -6,8 +6,10 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { secondsLeft } from '../../lib/bluff';
 import { RoomStore } from '../../model/room-store';
+import { MESSAGES } from '../../i18n/messages';
 
 /** The countdown of the current "Варіанти" phase. Hidden when the phase has no clock. */
 @Component({
@@ -17,6 +19,7 @@ import { RoomStore } from '../../model/room-store';
   templateUrl: './phase-timer.html',
 })
 export class PhaseTimer {
+  protected readonly t = injectMessages(MESSAGES);
   private readonly store = inject(RoomStore);
   private readonly now = signal(Date.now());
 

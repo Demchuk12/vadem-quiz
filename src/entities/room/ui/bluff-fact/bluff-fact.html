@@ -5,7 +5,7 @@
       <mark class="truth">{{ room.answer_text }}</mark>
     } @else {
       <span class="blank" aria-hidden="true">…</span>
-      <span class="vd-visually-hidden">пропуск</span>
+      <span class="vd-visually-hidden">{{ t().bluff.blank }}</span>
     }
   </p>
   @if (room.answer_explanation) {

@@ -7,10 +7,12 @@ import {
   inject,
   input,
 } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { Confetti } from '@shared/ui';
 import { VdIcon } from '@vadem/ui/icon';
-import { formatScore } from '../../lib/game-logic';
+import { injectScoreFormat } from '../../lib/format';
 import { RoomStore } from '../../model/room-store';
+import { MESSAGES } from '../../i18n/messages';
 
 const VIBRATION = { correct: [70], wrong: [90, 70, 90] };
 
@@ -27,17 +29,19 @@ const VIBRATION = { correct: [70], wrong: [90, 70, 90] };
   host: { '[attr.data-mode]': 'mode()' },
 })
 export class Verdict {
+  protected readonly t = injectMessages(MESSAGES);
   readonly mode = input<'stage' | 'phone'>('stage');
   /** On a phone: whose verdicts to show. */
   readonly playerId = input<string | null>(null);
 
   private readonly store = inject(RoomStore);
+  private readonly format = injectScoreFormat();
 
   protected readonly shown = computed(() => {
     const verdict = this.store.verdict();
     if (!verdict) return null;
     if (this.mode() === 'phone' && verdict.playerId !== this.playerId()) return null;
-    const points = formatScore(verdict.points);
+    const points = this.format(verdict.points);
     return { ...verdict, change: verdict.correct ? `+${points}` : `−${points}` };
   });
 

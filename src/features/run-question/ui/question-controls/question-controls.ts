@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { HostSession, LateLadder, RoomStore, everyoneSpent } from '@entities/room';
 import { VdBadge } from '@vadem/ui/badge';
 import { VdButton } from '@vadem/ui/button';
 import { VdIcon } from '@vadem/ui/icon';
+import { MESSAGES } from '../../i18n/messages';
 
 /** The host's actions on the open question: open presses, judge, skip, back to the board. */
 @Component({
@@ -13,6 +15,7 @@ import { VdIcon } from '@vadem/ui/icon';
   templateUrl: './question-controls.html',
 })
 export class QuestionControls {
+  protected readonly t = injectMessages(MESSAGES);
   protected readonly store = inject(RoomStore);
   private readonly host = inject(HostSession);
 

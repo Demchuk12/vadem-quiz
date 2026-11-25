@@ -6,9 +6,11 @@ import {
   inject,
   input,
 } from '@angular/core';
+import { injectMessages } from '@shared/i18n';
 import { VdBadge } from '@vadem/ui/badge';
 import { Media } from '@shared/api';
 import { RoomStore } from '../../model/room-store';
+import { MESSAGES } from '../../i18n/messages';
 
 /** The open question, and its answer once revealed. */
 @Component({
@@ -23,6 +25,7 @@ import { RoomStore } from '../../model/room-store';
   templateUrl: './question-view.html',
 })
 export class QuestionView {
+  protected readonly t = injectMessages(MESSAGES);
   /** For a shared screen. */
   readonly large = input(false, { transform: booleanAttribute });
 

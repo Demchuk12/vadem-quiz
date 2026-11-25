@@ -2,8 +2,8 @@
   <vq-room-status [status]="store.status()" />
 } @else if (!host.authorized()) {
   <div vdAlert variant="danger" role="alert">
-    <p vdAlertTitle>Ви не ведучий цієї гри</p>
-    <p>Панель керування відкривається лише на пристрої, де гру створили.</p>
+    <p vdAlertTitle>{{ t().notHost }}</p>
+    <p>{{ t().notHostText }}</p>
   </div>
 } @else if (store.room(); as room) {
   <vq-room-header>
@@ -14,13 +14,13 @@
       size="sm"
       iconOnly
       routerLink="/quizzes"
-      aria-label="До моїх квізів"
+      [attr.aria-label]="t().toQuizzes"
     >
       <vd-icon name="arrow-left" />
     </a>
     <a vdButton size="sm" target="_blank" rel="noopener" [href]="streamUrl()">
       <vd-icon slot="start" name="monitor" />
-      Екран для стріму
+      {{ t().stream }}
     </a>
   </vq-room-header>
 
@@ -38,10 +38,10 @@
               (click)="act('startGame')"
             >
               <vd-icon slot="start" name="rocket" />
-              Почати гру
+              {{ t().start }}
             </button>
             @if (room.mode === 'bluff' && store.players().length < minPlayers()) {
-              <p class="hint">Для гри «Варіанти» потрібно щонайменше {{ minPlayers() }} гравці.</p>
+              <p class="hint">{{ t().minPlayers(minPlayers()) }}</p>
             }
           </vq-room-join-info>
         </section>
@@ -50,13 +50,13 @@
         <vq-game-board interactive (pick)="openQuestion($event)" />
         @if (room.round < room.round_count) {
           <div>
-            <button vdButton (click)="act('nextRound')">Завершити раунд достроково</button>
+            <button vdButton (click)="act('nextRound')">{{ t().endRound }}</button>
           </div>
         }
       }
       @case ('round_end') {
         <section vdCard>
-          <h2>Раунд {{ room.round }} завершено</h2>
+          <h2>{{ t().roundOver(room.round) }}</h2>
           <div>
             <button
               vdButton
@@ -65,7 +65,7 @@
               [loading]="host.busy()"
               (click)="act('nextRound')"
             >
-              {{ room.round < room.round_count ? 'Наступний раунд' : 'Підбити підсумки' }}
+              {{ room.round < room.round_count ? t().nextRound : t().results }}
             </button>
           </div>
         </section>
@@ -89,7 +89,7 @@
       }
     }
 
-    <aside slot="aside" class="stack" aria-label="Рахунок">
+    <aside slot="aside" class="stack" [attr.aria-label]="t().score">
       <vq-standings showOnline editable (adjust)="adjusting.set($event)" />
       @if (room.state !== 'finished') {
         <vq-finish-game-button />

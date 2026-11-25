@@ -1,5 +1,5 @@
 @if (running()) {
-  <span class="timer" [class.urgent]="left() <= 5" role="timer" aria-label="Залишилось секунд">
+  <span class="timer" [class.urgent]="left() <= 5" role="timer" [attr.aria-label]="t().timer">
     {{ left() }}
   </span>
 }

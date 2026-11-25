@@ -1,6 +1,6 @@
 <div class="live" role="status">
   @if (shown(); as verdict) {
-    {{ verdict.nickname }}: {{ verdict.correct ? 'правильно' : 'неправильно' }},
+    {{ verdict.nickname }}: {{ verdict.correct ? t().verdict.correct : t().verdict.wrong }},
     {{ verdict.change }}
   }
 </div>
@@ -16,7 +16,9 @@
       @if (mode() === 'stage') {
         <span class="name">{{ verdict.nickname }}</span>
       } @else {
-        <span class="name">{{ verdict.correct ? 'Правильно!' : 'Цього разу без вас' }}</span>
+        <span class="name">{{
+          verdict.correct ? t().verdict.phoneCorrect : t().verdict.phoneWrong
+        }}</span>
       }
       <span class="change">{{ verdict.change }}</span>
     </div>
