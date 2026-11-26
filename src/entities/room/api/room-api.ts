@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Rpc } from '@shared/api';
+import type { PlayerSession } from '../model/room-sessions';
 import type {
   BluffHostFact,
+  EstateOfferDraft,
   BluffMyRound,
   GuessHostQuestion,
   HostAnswer,
@@ -129,6 +131,59 @@ export class RoomApi {
   guessNext(key: HostKey): Promise<void> {
     return this.hostCall('guess_next', key);
   }
+  // "Господар"
+  private playerCall(fn: string, session: PlayerSession, args: Record<string, unknown> = {}) {
+    return this.rpc.call<void>(fn, {
+      p_room_id: session.roomId,
+      p_player_id: session.playerId,
+      p_token: session.token,
+      ...args,
+    });
+  }
+  estate(
+    action:
+      | 'roll'
+      | 'pay_bail'
+      | 'buy'
+      | 'decline'
+      | 'end_turn'
+      | 'pay_debt'
+      | 'give_up'
+      | 'cancel_offer',
+    session: PlayerSession,
+  ): Promise<void> {
+    return this.playerCall(`estate_${action}`, session);
+  }
+  estateProperty(
+    action: 'build' | 'sell_house' | 'mortgage' | 'redeem',
+    session: PlayerSession,
+    cell: number,
+  ): Promise<void> {
+    return this.playerCall(`estate_${action}`, session, { p_idx: cell });
+  }
+  estateBid(session: PlayerSession, amount: number): Promise<void> {
+    return this.playerCall('estate_bid', session, { p_amount: amount });
+  }
+  estateOffer(session: PlayerSession, offer: EstateOfferDraft): Promise<void> {
+    return this.playerCall('estate_offer', session, {
+      p_to: offer.to,
+      p_give_cells: offer.giveCells,
+      p_get_cells: offer.getCells,
+      p_give_money: offer.giveMoney,
+      p_get_money: offer.getMoney,
+    });
+  }
+  estateAnswer(session: PlayerSession, offerId: string, accept: boolean): Promise<void> {
+    return this.playerCall('estate_answer', session, { p_offer_id: offerId, p_accept: accept });
+  }
+  /** Either the host's token or a player's: anyone in the room may say a clock ran out. */
+  estateTimeout(roomId: string, token: string): Promise<void> {
+    return this.rpc.call('estate_timeout', { p_room_id: roomId, p_token: token });
+  }
+  estateRemovePlayer(key: HostKey, playerId: string): Promise<void> {
+    return this.hostCall('estate_remove_player', key, { p_player_id: playerId });
+  }
+
   async guessHostQuestion(key: HostKey): Promise<GuessHostQuestion | null> {
     const rows = await this.hostCall<GuessHostQuestion[]>('guess_host_question', key);
     return rows[0] ?? null;

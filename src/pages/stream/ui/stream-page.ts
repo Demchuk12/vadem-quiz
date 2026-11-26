@@ -2,6 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angu
 import { injectMessages } from '@shared/i18n';
 import {
   BluffFact,
+  EstateBoard,
+  EstateCenter,
+  EstatePlayers,
   PhaseProgress,
   BluffReveal,
   GameBoard,
@@ -28,6 +31,9 @@ import { MESSAGES } from '../i18n/messages';
   selector: 'vq-stream-page',
   imports: [
     BluffFact,
+    EstateBoard,
+    EstateCenter,
+    EstatePlayers,
     PhaseProgress,
     BluffReveal,
     PhaseTimer,

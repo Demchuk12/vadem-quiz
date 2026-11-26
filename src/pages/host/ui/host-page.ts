@@ -32,6 +32,7 @@ import { VdButton } from '@vadem/ui/button';
 import { VD_CARD } from '@vadem/ui/card';
 import { VdIcon } from '@vadem/ui/icon';
 import { HostBluffPanel } from '@widgets/host-bluff-panel';
+import { HostEstatePanel } from '@widgets/host-estate-panel';
 import { HostGuessPanel } from '@widgets/host-guess-panel';
 import { HostQuestionPanel } from '@widgets/host-question-panel';
 import { RoomHeader } from '@widgets/room-header';
@@ -50,6 +51,7 @@ import { MESSAGES } from '../i18n/messages';
     FinishGameButton,
     GameBoard,
     HostBluffPanel,
+    HostEstatePanel,
     HostGuessPanel,
     HostQuestionPanel,
     RoomHeader,

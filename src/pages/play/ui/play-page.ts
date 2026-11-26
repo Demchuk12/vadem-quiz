@@ -36,6 +36,7 @@ import { BuzzButton } from '@features/buzz';
 import { BluffVoter } from '@features/vote-bluff';
 import { GuessWriter } from '@features/write-guess';
 import { BluffWriter } from '@features/write-bluff';
+import { EstatePlay } from '@widgets/estate-play';
 import { VademLogo } from '@shared/ui';
 import { VdButton } from '@vadem/ui/button';
 import { VD_CARD } from '@vadem/ui/card';
@@ -55,6 +56,7 @@ import { MESSAGES } from '../i18n/messages';
     BluffVoter,
     BluffWriter,
     BuzzButton,
+    EstatePlay,
     GameBoard,
     GuessQuestion,
     GuessResult,

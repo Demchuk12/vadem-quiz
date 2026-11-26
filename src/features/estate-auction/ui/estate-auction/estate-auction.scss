@@ -1,0 +1,30 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-3);
+}
+.head {
+  display: flex;
+  gap: var(--vd-space-3);
+  align-items: start;
+  justify-content: space-between;
+}
+.title {
+  margin: 0;
+  font-size: var(--vd-text-lg);
+}
+.state {
+  margin: 0;
+  font-weight: var(--vd-weight-bold);
+}
+.muted {
+  margin: 0;
+  color: var(--vd-color-text-muted);
+}
+.small {
+  font-size: var(--vd-text-sm);
+}
+.bids {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--vd-space-2);
+}

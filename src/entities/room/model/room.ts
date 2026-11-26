@@ -13,9 +13,14 @@ export type RoomState =
   | 'bluff_reveal'
   // "На око": players enter a number, then everything is revealed.
   | 'guess_open'
-  | 'guess_reveal';
+  | 'guess_reveal'
+  // "Господар": one state; what the player whose turn it is must do is `estate_step`.
+  | 'estate_playing';
 
-export type RoomMode = 'board' | 'bluff' | 'guess';
+export type RoomMode = 'board' | 'bluff' | 'guess' | 'estate';
+
+/** What the player whose turn it is must do now. */
+export type EstateStep = 'roll' | 'decide' | 'auction' | 'debt' | 'act';
 
 /** Row of `public.rooms`: the whole visible state of one game. */
 export interface Room {
@@ -59,6 +64,18 @@ export interface Room {
   guess_done: string[];
   /** Everyone who answered, closest first; null until the reveal. */
   guess_results: GuessResult[] | null;
+  /** "Господар": whose turn it is and what they must do. */
+  estate_turn: string | null;
+  estate_step: EstateStep | null;
+  /** The last throw of the turn. */
+  estate_dice: [number, number] | null;
+  /** What the player owes before going on; `to` is null for the bank. */
+  estate_debts: { to: string | null; amount: number }[] | null;
+  estate_auction: { cell: number; bid: number; leader: string | null } | null;
+  estate_regions: string[] | null;
+  estate_end_kind: 'laps' | 'minutes' | 'last' | null;
+  estate_ends_at: string | null;
+  estate_turn_seconds: number | null;
   version: number;
 }
 
@@ -93,6 +110,14 @@ export interface Player {
   nickname: string;
   score: number;
   joined_at: string;
+  /** "Господар" only: null before the game starts. `score` is then the player's worth. */
+  money: number | null;
+  position: number | null;
+  /** Failed throws in the queue; null outside it. */
+  cnap_tries: number | null;
+  bankrupt: boolean;
+  /** Order of turns, from 1; also picks the player's token. */
+  turn_order: number | null;
 }
 
 /** Row of `public.room_cells`: a tile, without its question. */
@@ -135,4 +160,56 @@ export interface Verdict {
   playerId: string;
   nickname: string;
   points: number;
+}
+
+export type EstateCellKind =
+  | 'start'
+  | 'city'
+  | 'community'
+  | 'tax'
+  | 'station'
+  | 'fate'
+  | 'utility'
+  | 'cnap'
+  | 'rest'
+  | 'summons';
+
+/** Row of `public.estate_cells`: a cell of the ring with its owner. */
+export interface EstateCell {
+  room_id: string;
+  idx: number;
+  kind: EstateCellKind;
+  name: string;
+  region: number | null;
+  price: number;
+  /** A city's rent bare, with 1 to 3 houses and with a manor. */
+  rents: number[] | null;
+  house_cost: number;
+  owner_id: string | null;
+  /** 1 to 3 houses, 4 a manor. */
+  level: number;
+  mortgaged: boolean;
+}
+
+/** Row of `public.estate_events`: something that happened, which each screen words itself. */
+export interface EstateEvent {
+  id: number;
+  room_id: string;
+  player_id: string | null;
+  code: string;
+  data: Record<string, unknown>;
+  created_at: string;
+}
+
+/** Row of `public.estate_offers`: `give_*` goes from `from_id` to `to_id`, `get_*` back. */
+export interface EstateOffer {
+  id: string;
+  room_id: string;
+  from_id: string;
+  to_id: string;
+  give_cells: number[];
+  get_cells: number[];
+  give_money: number;
+  get_money: number;
+  created_at: string;
 }

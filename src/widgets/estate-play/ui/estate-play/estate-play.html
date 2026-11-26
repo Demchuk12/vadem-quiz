@@ -1,0 +1,106 @@
+<vd-tabs [(value)]="tab">
+  <div vdTabList [attr.aria-label]="t().sections">
+    <button vdTab value="board">{{ t().board }}</button>
+    <button vdTab value="holdings">{{ t().holdings }}</button>
+    <button vdTab value="trade">
+      {{ t().trade }}
+      @if (offers() > 0) {
+        <span vdBadge variant="accent">{{ offers() }}</span>
+      }
+    </button>
+  </div>
+
+  <div vdTabPanel value="board" class="board-panel">
+    <div class="tools">
+      <button vdButton size="sm" variant="ghost" (click)="close.set(!close())">
+        <vd-icon slot="start" [name]="close() ? 'minus' : 'plus'" />
+        {{ close() ? t().whole : t().closer }}
+      </button>
+      @if (close()) {
+        <button vdButton size="sm" variant="ghost" (click)="toToken()">
+          <vd-icon slot="start" name="search" />
+          {{ t().toToken }}
+        </button>
+      }
+    </div>
+    <div class="viewport" [class.close]="close()">
+      <vq-estate-board interactive [selected]="selected()" (pick)="selected.set($event)">
+        <vq-estate-center [large]="close()" />
+      </vq-estate-board>
+    </div>
+  </div>
+
+  <div vdTabPanel value="holdings" class="holdings">
+    @if (holdings().empty) {
+      <p class="muted">{{ t().nothing }}</p>
+    } @else if (!myTurn()) {
+      <p class="muted">{{ t().notNow }}</p>
+    }
+    @for (group of holdings().regions; track group.region) {
+      <section vdCard class="group">
+        <vq-ornament class="band" [region]="group.region ?? 0" />
+        <div class="group-head">
+          <h3>{{ group.name }}</h3>
+          <span class="muted">{{ group.count }}</span>
+        </div>
+        @if (group.whole) {
+          <p class="whole">{{ t().whole_region }}</p>
+        }
+        @for (cell of group.cells; track cell.idx) {
+          <div class="holding">
+            <button type="button" class="link" (click)="selected.set(cell.idx)">
+              {{ cell.name }}
+            </button>
+            <span class="muted">{{ rent(cell) }}</span>
+            <vq-estate-property [session]="session()" [cell]="cell" [hint]="false" />
+          </div>
+        }
+      </section>
+    }
+    @if (holdings().others.length) {
+      <section vdCard class="group">
+        <div class="group-head">
+          <h3>{{ t().others }}</h3>
+        </div>
+        @for (cell of holdings().others; track cell.idx) {
+          <div class="holding">
+            <button type="button" class="link" (click)="selected.set(cell.idx)">
+              {{ cell.name }}
+            </button>
+            <span class="muted">{{ rent(cell) }}</span>
+            <vq-estate-property [session]="session()" [cell]="cell" [hint]="false" />
+          </div>
+        }
+      </section>
+    }
+  </div>
+
+  <div vdTabPanel value="trade">
+    <vq-estate-trade [session]="session()" />
+  </div>
+</vd-tabs>
+
+<section vdCard class="turn">
+  @if (step() === 'auction') {
+    <vq-estate-auction [session]="session()" />
+  } @else {
+    <vq-estate-turn [session]="session()" />
+  }
+</section>
+
+<dialog
+  vdDialog
+  size="sm"
+  [open]="selectedCell() !== null"
+  (openChange)="$event || selected.set(null)"
+>
+  @if (selectedCell(); as cell) {
+    <div vdDialogBody class="sheet">
+      <vq-estate-card [cell]="cell" />
+      <vq-estate-property [session]="session()" [cell]="cell" />
+    </div>
+    <footer vdDialogFooter>
+      <button vdButton type="button" (click)="selected.set(null)">{{ t().close }}</button>
+    </footer>
+  }
+</dialog>

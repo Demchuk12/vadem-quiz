@@ -2,5 +2,9 @@
   @if (!store.connected()) {
     <span vdBadge variant="warning" role="status">{{ t().badges.offline }}</span>
   }
-  <span vdBadge> {{ t().badges.rounds[room.mode] }} {{ room.round }}/{{ room.round_count }} </span>
+  <!-- A "Господар" game without a lap limit counts laps without an end. -->
+  <span vdBadge>
+    {{ t().badges.rounds[room.mode] }} {{ room.round
+    }}{{ room.round_count ? '/' + room.round_count : '' }}
+  </span>
 }

@@ -1,0 +1,56 @@
+<h2 class="vd-visually-hidden">{{ t().estate.players }}</h2>
+<ol class="players">
+  @for (row of rows(); track row.player.id) {
+    <li class="player" [class.turn]="row.turn" [class.out]="row.player.bankrupt">
+      <vq-estate-token [player]="row.player" [current]="row.turn" />
+      <div class="who">
+        <span class="name">
+          {{ row.player.nickname }}
+          @if (row.me) {
+            <span class="muted">({{ t().estate.you }})</span>
+          }
+        </span>
+        <span class="meta">
+          <span class="muted">{{ row.token }}</span>
+          @if (row.player.bankrupt) {
+            <span vdBadge>{{ t().estate.out }}</span>
+          } @else if (row.player.cnap_tries !== null) {
+            <span vdBadge variant="warning">{{ t().estate.inQueue }}</span>
+          }
+          @if (row.offline && !row.player.bankrupt) {
+            <span vdBadge>{{ t().standings.offline }}</span>
+          }
+        </span>
+        @if (row.chips.length) {
+          <span class="chips" aria-hidden="true">
+            @for (chip of row.chips; track chip.idx) {
+              <span
+                class="chip"
+                [style.background-color]="chip.color"
+                [class.mortgaged]="chip.mortgaged"
+              ></span>
+            }
+          </span>
+        }
+      </div>
+      <div class="sums">
+        <span class="money" [attr.aria-label]="t().estate.money">{{
+          money(row.player.money)
+        }}</span>
+        <span class="worth muted">{{ t().estate.worth }} {{ money(row.player.score) }}</span>
+      </div>
+      @if (removable() && !row.player.bankrupt) {
+        <button
+          vdButton
+          variant="ghost"
+          size="sm"
+          iconOnly
+          [attr.aria-label]="removeLabel()(row.player.nickname)"
+          (click)="remove.emit(row.player)"
+        >
+          <vd-icon name="x" />
+        </button>
+      }
+    </li>
+  }
+</ol>

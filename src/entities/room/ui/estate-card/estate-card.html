@@ -1,0 +1,43 @@
+<article class="card" [attr.aria-label]="cell().name">
+  <div class="head">
+    @if (cell().kind === 'city') {
+      <vq-ornament class="band" [region]="cell().region ?? 0" />
+    } @else if (icon(); as path) {
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="path" /></svg>
+    }
+  </div>
+  <div class="body">
+    <div>
+      <p class="kicker">{{ kicker() }}</p>
+      <h3 class="title">{{ cell().name }}</h3>
+      @if (ownable()) {
+        <p class="price">{{ money(cell().price) }}</p>
+      }
+    </div>
+    @if (rows().length) {
+      <dl class="rows">
+        @for (row of rows(); track $index) {
+          <div class="row" [class.current]="row.current">
+            <dt>{{ row.label }}</dt>
+            <dd>{{ row.value }}</dd>
+          </div>
+        }
+      </dl>
+    }
+    @if (about()) {
+      <p class="about">{{ about() }}</p>
+    }
+    @if (foot()) {
+      <p class="foot">{{ foot() }}</p>
+    }
+    @if (ownable()) {
+      <p class="owner">
+        <span class="dot" aria-hidden="true" [style.background-color]="owner()?.color"></span>
+        {{ owner() ? t().estate.owner(owner()!.nickname) : t().estate.free }}
+        @if (cell().mortgaged) {
+          · {{ t().estate.mortgaged }}
+        }
+      </p>
+    }
+  </div>
+</article>

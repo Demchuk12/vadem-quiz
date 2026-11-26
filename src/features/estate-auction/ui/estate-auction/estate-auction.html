@@ -1,0 +1,38 @@
+@if (auction(); as current) {
+  <div class="head">
+    <div>
+      <h2 class="title">{{ t().title(cell()?.name ?? '') }}</h2>
+      @if (cell(); as land) {
+        <p class="muted">{{ t().price(money(land.price)) }}</p>
+      }
+    </div>
+    <vq-phase-timer />
+  </div>
+  <p class="state" aria-live="polite">
+    @if (leader(); as lead) {
+      {{
+        lead.id === me()?.id
+          ? t().youLead(money(current.bid))
+          : t().leader(lead.nickname, money(current.bid))
+      }}
+    } @else {
+      {{ t().noBids }}
+    }
+  </p>
+  @if (canBid()) {
+    <div class="bids" role="group" [attr.aria-label]="t().bids">
+      @for (option of bids(); track option.raise) {
+        <button
+          vdButton
+          [variant]="$first ? 'primary' : 'secondary'"
+          [disabled]="busy() || !option.affordable"
+          [attr.aria-label]="t().bid(money(option.amount))"
+          (click)="bid(option.amount)"
+        >
+          {{ t().raise(money(option.raise)) }}
+        </button>
+      }
+    </div>
+  }
+  <p class="muted small">{{ t().clock }}</p>
+}

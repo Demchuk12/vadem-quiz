@@ -24,84 +24,88 @@
     </a>
   </vq-room-header>
 
-  <vq-sidebar-layout>
-    @switch (room.state) {
-      @case ('lobby') {
-        <section vdCard>
-          <vq-room-join-info [code]="room.code" copyable>
-            <button
-              vdButton
-              variant="primary"
-              size="lg"
-              [loading]="host.busy()"
-              [disabled]="store.players().length < minPlayers()"
-              (click)="act('startGame')"
-            >
-              <vd-icon slot="start" name="rocket" />
-              {{ t().start }}
-            </button>
-            @if (minPlayers() > 1 && store.players().length < minPlayers()) {
-              <p class="hint">{{ t().minPlayers(minPlayers()) }}</p>
-            }
-          </vq-room-join-info>
-        </section>
-      }
-      @case ('board') {
-        <vq-game-board interactive (pick)="openQuestion($event)" />
-        @if (room.round < room.round_count) {
-          <div>
-            <button vdButton (click)="act('nextRound')">{{ t().endRound }}</button>
-          </div>
+  @if (room.state === 'estate_playing') {
+    <vq-host-estate-panel />
+  } @else {
+    <vq-sidebar-layout>
+      @switch (room.state) {
+        @case ('lobby') {
+          <section vdCard>
+            <vq-room-join-info [code]="room.code" copyable>
+              <button
+                vdButton
+                variant="primary"
+                size="lg"
+                [loading]="host.busy()"
+                [disabled]="store.players().length < minPlayers()"
+                (click)="act('startGame')"
+              >
+                <vd-icon slot="start" name="rocket" />
+                {{ t().start }}
+              </button>
+              @if (minPlayers() > 1 && store.players().length < minPlayers()) {
+                <p class="hint">{{ t().minPlayers(minPlayers()) }}</p>
+              }
+            </vq-room-join-info>
+          </section>
+        }
+        @case ('board') {
+          <vq-game-board interactive (pick)="openQuestion($event)" />
+          @if (room.round < room.round_count) {
+            <div>
+              <button vdButton (click)="act('nextRound')">{{ t().endRound }}</button>
+            </div>
+          }
+        }
+        @case ('round_end') {
+          <section vdCard>
+            <h2>{{ t().roundOver(room.round) }}</h2>
+            <div>
+              <button
+                vdButton
+                variant="primary"
+                size="lg"
+                [loading]="host.busy()"
+                (click)="act('nextRound')"
+              >
+                {{ room.round < room.round_count ? t().nextRound : t().results }}
+              </button>
+            </div>
+          </section>
+        }
+        @case ('finished') {
+          <section vdCard><vq-winner-banner /></section>
+        }
+        @case ('bluff_writing') {
+          <section vdCard><vq-host-bluff-panel /></section>
+        }
+        @case ('bluff_voting') {
+          <section vdCard><vq-host-bluff-panel /></section>
+        }
+        @case ('bluff_reveal') {
+          <section vdCard><vq-host-bluff-panel /></section>
+        }
+        @case ('guess_open') {
+          <section vdCard><vq-host-guess-panel /></section>
+        }
+        @case ('guess_reveal') {
+          <section vdCard><vq-host-guess-panel /></section>
+        }
+        @default {
+          <section vdCard>
+            <vq-host-question-panel />
+          </section>
         }
       }
-      @case ('round_end') {
-        <section vdCard>
-          <h2>{{ t().roundOver(room.round) }}</h2>
-          <div>
-            <button
-              vdButton
-              variant="primary"
-              size="lg"
-              [loading]="host.busy()"
-              (click)="act('nextRound')"
-            >
-              {{ room.round < room.round_count ? t().nextRound : t().results }}
-            </button>
-          </div>
-        </section>
-      }
-      @case ('finished') {
-        <section vdCard><vq-winner-banner /></section>
-      }
-      @case ('bluff_writing') {
-        <section vdCard><vq-host-bluff-panel /></section>
-      }
-      @case ('bluff_voting') {
-        <section vdCard><vq-host-bluff-panel /></section>
-      }
-      @case ('bluff_reveal') {
-        <section vdCard><vq-host-bluff-panel /></section>
-      }
-      @case ('guess_open') {
-        <section vdCard><vq-host-guess-panel /></section>
-      }
-      @case ('guess_reveal') {
-        <section vdCard><vq-host-guess-panel /></section>
-      }
-      @default {
-        <section vdCard>
-          <vq-host-question-panel />
-        </section>
-      }
-    }
 
-    <aside slot="aside" class="stack" [attr.aria-label]="t().score">
-      <vq-standings showOnline editable (adjust)="adjusting.set($event)" />
-      @if (room.state !== 'finished') {
-        <vq-finish-game-button />
-      }
-    </aside>
-  </vq-sidebar-layout>
+      <aside slot="aside" class="stack" [attr.aria-label]="t().score">
+        <vq-standings showOnline editable (adjust)="adjusting.set($event)" />
+        @if (room.state !== 'finished') {
+          <vq-finish-game-button />
+        }
+      </aside>
+    </vq-sidebar-layout>
+  }
 
   <vq-adjust-score-dialog [player]="adjusting()" (closed)="adjusting.set(null)" />
 }

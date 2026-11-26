@@ -1,0 +1,28 @@
+:host {
+  display: block;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+  gap: var(--vd-space-5);
+  align-items: start;
+}
+.side {
+  display: grid;
+  gap: var(--vd-space-4);
+  justify-items: stretch;
+}
+.hint {
+  margin: 0;
+  color: var(--vd-color-text-muted);
+}
+@media (max-width: 60rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* The whole board fits the screen's height too. */
+vq-estate-board {
+  inline-size: min(100%, calc(100dvh - 7rem));
+  justify-self: center;
+}

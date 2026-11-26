@@ -1,0 +1,130 @@
+@for (offer of incoming(); track offer.id) {
+  <section vdCard class="offer">
+    <h3 class="title">{{ t().incoming(nameOf(offer.from_id)) }}</h3>
+    <dl class="sides">
+      <div>
+        <dt>{{ t().youGive }}</dt>
+        <dd>{{ side(offer.get_cells, offer.get_money) }}</dd>
+      </div>
+      <div>
+        <dt>{{ t().youGet }}</dt>
+        <dd>{{ side(offer.give_cells, offer.give_money) }}</dd>
+      </div>
+    </dl>
+    <div class="actions">
+      <button vdButton variant="primary" [disabled]="busy()" (click)="answer(offer, true)">
+        {{ t().accept }}
+      </button>
+      <button vdButton [disabled]="busy()" (click)="answer(offer, false)">
+        {{ t().decline }}
+      </button>
+    </div>
+  </section>
+}
+
+@if (mine(); as offer) {
+  <section vdCard class="offer">
+    <h3 class="title">{{ t().yourOffer(nameOf(offer.to_id)) }}</h3>
+    <dl class="sides">
+      <div>
+        <dt>{{ t().youGive }}</dt>
+        <dd>{{ side(offer.give_cells, offer.give_money) }}</dd>
+      </div>
+      <div>
+        <dt>{{ t().youGet }}</dt>
+        <dd>{{ side(offer.get_cells, offer.get_money) }}</dd>
+      </div>
+    </dl>
+    <p class="muted">{{ t().waiting }}</p>
+    <div class="actions">
+      <button vdButton [disabled]="busy()" (click)="cancel()">{{ t().cancel }}</button>
+    </div>
+  </section>
+}
+
+<section vdCard class="compose">
+  <h3 class="title">{{ t().newOffer }}</h3>
+  @if (others().length === 0) {
+    <p class="muted">{{ t().alone }}</p>
+  } @else {
+    <vd-field [label]="t().with">
+      <vd-select
+        [value]="partner() ?? ''"
+        [placeholder]="t().choose"
+        (valueChange)="choose($any($event))"
+      >
+        @for (player of others(); track player.id) {
+          <vd-option [value]="player.id" [label]="player.nickname">{{ player.nickname }}</vd-option>
+        }
+      </vd-select>
+    </vd-field>
+
+    <fieldset class="land">
+      <legend>{{ t().give }}</legend>
+      @for (cell of myLand(); track cell.idx) {
+        <label class="vd-choice">
+          <input
+            type="checkbox"
+            vdCheckbox
+            [checked]="give().has(cell.idx)"
+            (change)="toggle('give', cell.idx, $event)"
+          />
+          {{ cell.name }}
+        </label>
+      } @empty {
+        <p class="muted">{{ t().noLand }}</p>
+      }
+    </fieldset>
+
+    @if (partner()) {
+      <fieldset class="land">
+        <legend>{{ t().get }}</legend>
+        @for (cell of theirLand(); track cell.idx) {
+          <label class="vd-choice">
+            <input
+              type="checkbox"
+              vdCheckbox
+              [checked]="get().has(cell.idx)"
+              (change)="toggle('get', cell.idx, $event)"
+            />
+            {{ cell.name }}
+          </label>
+        } @empty {
+          <p class="muted">{{ t().noLand }}</p>
+        }
+      </fieldset>
+    }
+
+    <div class="money">
+      <vd-field [label]="t().giveMoney">
+        <input
+          vdInput
+          type="number"
+          min="0"
+          step="100"
+          [value]="giveMoney()"
+          (change)="setMoney('giveMoney', $event)"
+        />
+      </vd-field>
+      <vd-field [label]="t().getMoney">
+        <input
+          vdInput
+          type="number"
+          min="0"
+          step="100"
+          [value]="getMoney()"
+          (change)="setMoney('getMoney', $event)"
+        />
+      </vd-field>
+    </div>
+    <p class="muted">{{ t().tradeRule }}</p>
+    @if (mine()) {
+      <p class="muted">{{ t().replace }}</p>
+    }
+    <div class="actions">
+      <button vdButton variant="primary" [disabled]="busy() || !ready()" (click)="send()">
+        {{ t().send }}
+      </button>
+    </div>
+  }
+</section>

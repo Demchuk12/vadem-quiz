@@ -1,0 +1,9 @@
+<h2 class="heading">{{ t().estate.log }}</h2>
+<ol class="lines" aria-live="polite">
+  @for (line of lines(); track line.id) {
+    <li>
+      <span class="dot" aria-hidden="true" [style.background-color]="line.color"></span>
+      {{ line.text }}
+    </li>
+  }
+</ol>

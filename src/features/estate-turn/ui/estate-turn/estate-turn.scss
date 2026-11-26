@@ -1,0 +1,35 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-3);
+}
+.status {
+  display: flex;
+  gap: var(--vd-space-3);
+  align-items: center;
+}
+.text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.title {
+  margin: 0;
+  font-weight: var(--vd-weight-bold);
+}
+.sub,
+.note {
+  margin: 0;
+  color: var(--vd-color-text-muted);
+  font-size: var(--vd-text-sm);
+}
+.note.debt {
+  color: var(--vd-color-danger-text);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-2);
+
+  button {
+    flex: 1 1 10rem;
+  }
+}

@@ -1,0 +1,32 @@
+/* Bone-coloured dice with dark pips, the same in both themes. */
+:host {
+  display: inline-flex;
+  gap: var(--vd-space-2);
+  --die: 2.25rem;
+}
+:host(.large) {
+  gap: var(--vd-space-3);
+  --die: 3.5rem;
+}
+.die {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 8%;
+  inline-size: var(--die);
+  block-size: var(--die);
+  padding: 14%;
+  box-sizing: border-box;
+  border-radius: 22%;
+  background-color: #fbf6ea;
+  box-shadow: 0 3px 0 #d8ccb2;
+}
+.pip {
+  place-self: center;
+  inline-size: 100%;
+  block-size: 100%;
+  border-radius: 50%;
+}
+.pip.on {
+  background-color: #1d1a16;
+}

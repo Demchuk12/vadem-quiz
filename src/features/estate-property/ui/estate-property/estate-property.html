@@ -1,0 +1,32 @@
+@if (mine()) {
+  @if (moves().build || moves().sell || moves().mortgage || moves().redeem) {
+    <div class="actions" role="group" [attr.aria-label]="t().label(cell().name)">
+      @if (moves().build) {
+        <button vdButton [disabled]="busy()" (click)="run('build')">
+          {{
+            cell().level === 3
+              ? t().buildManor(money(cell().house_cost))
+              : t().build(money(cell().house_cost))
+          }}
+        </button>
+      }
+      @if (moves().sell) {
+        <button vdButton [disabled]="busy()" (click)="run('sell_house')">
+          {{ t().sell(money(cell().house_cost / 2)) }}
+        </button>
+      }
+      @if (moves().redeem) {
+        <button vdButton [disabled]="busy()" (click)="run('redeem')">
+          {{ t().redeem(money(redeemCost())) }}
+        </button>
+      }
+      @if (moves().mortgage) {
+        <button vdButton [disabled]="busy()" (click)="run('mortgage')">
+          {{ t().mortgage(money(cell().price / 2)) }}
+        </button>
+      }
+    </div>
+  } @else if (!myTurn() && hint()) {
+    <p class="hint">{{ t().notNow }}</p>
+  }
+}

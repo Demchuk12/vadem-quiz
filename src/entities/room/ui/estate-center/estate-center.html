@@ -1,0 +1,20 @@
+<div class="inner">
+  <p class="name">{{ t().estate.title }}</p>
+  @if (store.room(); as room) {
+    <p class="lap">{{ t().estate.lap(room.round, room.round_count) }}</p>
+  }
+  <div class="turn">
+    <vq-estate-dice [dice]="store.room()?.estate_dice ?? null" [large]="large()" />
+    @if (turn(); as player) {
+      <span class="who">
+        <vq-estate-token [player]="player" />
+        {{ t().estate.turn(player.nickname) }}
+      </span>
+    }
+    <vq-phase-timer />
+  </div>
+  @if (auctionCell(); as cell) {
+    <p class="auction">{{ t().estate.auctionOn(cell.name) }}</p>
+  }
+  <vq-estate-log [limit]="large() ? 5 : 3" />
+</div>

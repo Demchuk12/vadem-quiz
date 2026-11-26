@@ -1,0 +1,80 @@
+:host {
+  display: block;
+}
+.players {
+  display: grid;
+  gap: var(--vd-space-1-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.player {
+  --vq-token-size: 2.25rem;
+
+  display: flex;
+  gap: var(--vd-space-3);
+  align-items: center;
+  padding: var(--vd-space-2) var(--vd-space-3);
+  border: var(--vd-border-width) solid var(--vd-color-border);
+  border-radius: var(--vd-radius-md);
+  background-color: var(--vd-color-surface);
+}
+.player.turn {
+  border-color: var(--vd-color-action);
+  background-color: var(--vd-color-action-subtle);
+}
+.player.out {
+  opacity: 0.6;
+}
+.who {
+  display: grid;
+  flex: 1;
+  gap: var(--vd-space-0-5, 2px);
+  min-inline-size: 0;
+}
+.name {
+  overflow: hidden;
+  font-weight: var(--vd-weight-bold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vd-space-1-5);
+  align-items: center;
+  font-size: var(--vd-text-sm);
+}
+.muted {
+  color: var(--vd-color-text-muted);
+  font-weight: var(--vd-weight-normal, 400);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+/* A plot per holding, in its region's colour; stations and utilities are grey. */
+.chip {
+  inline-size: 0.7rem;
+  block-size: 0.7rem;
+  border-radius: 3px;
+  background-color: var(--vd-color-border-strong);
+}
+.chip.mortgaged {
+  opacity: 0.4;
+}
+.sums {
+  display: grid;
+  justify-items: end;
+  text-align: end;
+}
+.money {
+  font-weight: var(--vd-weight-extrabold);
+  font-variant-numeric: tabular-nums;
+}
+.worth {
+  font-size: var(--vd-text-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

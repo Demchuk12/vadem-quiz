@@ -1,0 +1,58 @@
+<div class="ring" role="group" [attr.aria-label]="t().estate.board">
+  @for (view of cells(); track view.cell.idx) {
+    <button
+      type="button"
+      class="cell"
+      [attr.data-side]="view.place.side"
+      [attr.data-kind]="view.cell.kind"
+      [attr.data-idx]="view.cell.idx"
+      [style.grid-row]="view.place.row"
+      [style.grid-column]="view.place.column"
+      [class.turn]="view.turn"
+      [class.selected]="selected() === view.cell.idx"
+      [class.mortgaged]="view.cell.mortgaged"
+      [attr.tabindex]="interactive() ? null : -1"
+      [attr.aria-pressed]="interactive() ? selected() === view.cell.idx : null"
+      (click)="interactive() && pick.emit(view.cell.idx)"
+    >
+      @if (view.cell.kind === 'city') {
+        <vq-ornament class="band" [region]="view.cell.region ?? 0" />
+      }
+      <span class="body">
+        @if (view.houses.length) {
+          <span class="houses" aria-hidden="true">
+            @for (kind of view.houses; track $index) {
+              <svg
+                [class.manor]="kind === 'manor'"
+                [attr.viewBox]="kind === 'manor' ? '0 0 24 16' : '0 0 16 16'"
+              >
+                <path [attr.d]="kind === 'manor' ? manor : house" [attr.fill]="view.owner?.color" />
+              </svg>
+            }
+          </span>
+        }
+        @if (view.icon; as icon) {
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="icon" /></svg>
+        }
+        <span class="name">{{ view.cell.name }}</span>
+        @if (view.price) {
+          <span class="price"><span class="vd-visually-hidden">, </span>{{ view.price }}</span>
+        }
+        <span class="vd-visually-hidden">{{ view.details }}</span>
+      </span>
+      @if (view.owner; as owner) {
+        <span class="owner" aria-hidden="true" [style.background-color]="owner.color">
+          {{ owner.initial }}
+        </span>
+      }
+      @if (view.here.length) {
+        <span class="tokens">
+          @for (token of view.here; track token.player.id) {
+            <vq-estate-token [player]="token.player" [current]="token.current" />
+          }
+        </span>
+      }
+    </button>
+  }
+  <div class="center"><ng-content /></div>
+</div>

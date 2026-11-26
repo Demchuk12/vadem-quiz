@@ -29,6 +29,11 @@ describe('bluffResult', () => {
     nickname: id.toUpperCase(),
     score: 0,
     joined_at: '',
+    money: null,
+    position: null,
+    cnap_tries: null,
+    bankrupt: false,
+    turn_order: null,
   }));
   const room = {
     bluff_options: [

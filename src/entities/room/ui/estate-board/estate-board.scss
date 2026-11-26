@@ -1,0 +1,178 @@
+/*
+ * The board scales with its own width (cqi): a page sets the width, the cells and their text
+ * follow. Corners are wider than the other cells, as on the prototype.
+ */
+:host {
+  display: block;
+  container-type: inline-size;
+}
+.ring {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(7, 1fr) 1.4fr;
+  grid-template-rows: 1.4fr repeat(7, 1fr) 1.4fr;
+  gap: 0.35cqi;
+  aspect-ratio: 1;
+  padding: 0.35cqi;
+  border-radius: 2cqi;
+  background-color: var(--vd-color-border);
+}
+.cell {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  min-inline-size: 0;
+  min-block-size: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0.4cqi;
+  background-color: var(--vd-color-surface);
+  color: var(--vd-color-text);
+  font: inherit;
+  text-align: center;
+  cursor: default;
+}
+:host(.interactive) .cell {
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--vd-color-surface-raised);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--vd-color-focus);
+    outline-offset: -2px;
+  }
+}
+:host(:not(.interactive)) .cell {
+  pointer-events: none;
+}
+.cell[data-side='bottom'] {
+  flex-direction: column;
+}
+.cell[data-side='top'] {
+  flex-direction: column-reverse;
+}
+.cell[data-side='left'] {
+  flex-direction: row-reverse;
+}
+.cell[data-side='right'] {
+  flex-direction: row;
+}
+.cell[data-side='corner'] {
+  background-color: var(--vd-color-surface-sunken);
+}
+.cell.turn {
+  box-shadow: inset 0 0 0 0.3cqi var(--vd-color-action);
+}
+.cell.selected {
+  box-shadow: inset 0 0 0 0.4cqi var(--vd-color-warning);
+}
+.cell.mortgaged .body {
+  opacity: 0.55;
+}
+.band {
+  flex: none;
+  inline-size: 100%;
+  block-size: 1.6cqi;
+}
+.cell[data-side='left'] .band,
+.cell[data-side='right'] .band {
+  inline-size: 1.6cqi;
+  block-size: 100%;
+}
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25cqi;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 0;
+  padding: 0.6cqi 0.4cqi;
+}
+.cell[data-side='left'] .body,
+.cell[data-side='right'] .body {
+  justify-content: flex-start;
+  padding-block-end: 3.6cqi;
+}
+.name {
+  font-size: clamp(7px, 1.4cqi, 15px);
+  font-weight: var(--vd-weight-bold);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.price {
+  color: var(--vd-color-text-muted);
+  font-size: clamp(6px, 1.25cqi, 13px);
+  font-variant-numeric: tabular-nums;
+}
+.icon {
+  inline-size: 2.6cqi;
+  block-size: 2.6cqi;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cell[data-side='corner'] .icon {
+  inline-size: 3.6cqi;
+  block-size: 3.6cqi;
+  color: var(--vd-color-action-text);
+}
+.houses {
+  display: flex;
+  gap: 0.2cqi;
+
+  svg {
+    inline-size: 1.5cqi;
+    block-size: 1.5cqi;
+    stroke: var(--vd-color-text);
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+  }
+  svg.manor {
+    inline-size: 2.4cqi;
+  }
+}
+.owner {
+  position: absolute;
+  inset-block-start: 0.5cqi;
+  inset-inline-end: 0.5cqi;
+  display: grid;
+  place-items: center;
+  inline-size: 2.1cqi;
+  block-size: 2.1cqi;
+  border-radius: 50%;
+  color: #14201a;
+  font-size: clamp(6px, 1.15cqi, 12px);
+  font-weight: var(--vd-weight-extrabold);
+}
+.cell[data-side='bottom'] .owner {
+  inset-block: auto 0.5cqi;
+}
+.tokens {
+  --vq-token-size: 3.2cqi;
+
+  position: absolute;
+  inset-block-end: 0.5cqi;
+  inset-inline-start: 0.5cqi;
+  display: flex;
+
+  vq-estate-token + vq-estate-token {
+    margin-inline-start: -1.2cqi;
+  }
+}
+.cell[data-side='top'] .tokens {
+  inset-block: 0.5cqi auto;
+}
+.cell[data-side='right'] .tokens {
+  inset-inline: auto 0.5cqi;
+}
+.center {
+  display: grid;
+  grid-row: 2 / 9;
+  grid-column: 2 / 9;
+  overflow: hidden;
+  border-radius: 0.6cqi;
+  background-color: var(--vd-color-bg);
+}

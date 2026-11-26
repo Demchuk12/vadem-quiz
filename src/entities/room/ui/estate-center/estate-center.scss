@@ -1,0 +1,53 @@
+/* Sizes follow the board around it (its cqi), so the middle grows with the board. */
+:host {
+  display: grid;
+  align-content: center;
+  padding: 3cqi 5cqi;
+  font-size: clamp(9px, 1.5cqi, 16px);
+}
+.inner {
+  display: grid;
+  gap: 2cqi;
+  justify-items: center;
+  text-align: center;
+}
+.name {
+  margin: 0;
+  font-family: var(--vd-font-display, inherit);
+  font-size: clamp(18px, 5.5cqi, 64px);
+  font-weight: var(--vd-weight-extrabold);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.lap {
+  margin: 0;
+  color: var(--vd-color-text-muted);
+}
+.turn {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2cqi;
+  align-items: center;
+  justify-content: center;
+}
+.who {
+  --vq-token-size: clamp(18px, 3.2cqi, 36px);
+
+  display: inline-flex;
+  gap: 1cqi;
+  align-items: center;
+  font-weight: var(--vd-weight-bold);
+}
+.auction {
+  margin: 0;
+  color: var(--vd-color-warning-text);
+  font-weight: var(--vd-weight-bold);
+}
+vq-estate-log {
+  inline-size: 100%;
+  max-inline-size: 48cqi;
+  text-align: start;
+}
+:host(:not(.large)) vq-estate-dice {
+  display: none;
+}

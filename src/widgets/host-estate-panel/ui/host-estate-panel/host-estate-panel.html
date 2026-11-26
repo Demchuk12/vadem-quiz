@@ -1,0 +1,28 @@
+<div class="layout">
+  <vq-estate-board interactive [selected]="selected()" (pick)="selected.set($event)">
+    <vq-estate-center large />
+  </vq-estate-board>
+  <div class="side">
+    @if (store.room()?.estate_step === 'auction') {
+      <vq-estate-auction />
+    }
+    <vq-estate-players removable [removeLabel]="removeLabel" (remove)="removing.set($event)" />
+    @if (selectedCell(); as cell) {
+      <vq-estate-card [cell]="cell" />
+    } @else {
+      <p class="hint">{{ t().pick }}</p>
+    }
+    <vq-finish-game-button />
+  </div>
+</div>
+
+<vd-alert-dialog
+  [title]="t().removeTitle(removing()?.nickname ?? '')"
+  [description]="t().removeText"
+  [confirmLabel]="t().confirm"
+  [cancelLabel]="t().cancel"
+  variant="danger"
+  [open]="removing() !== null"
+  [action]="remove"
+  (openChange)="$event || removing.set(null)"
+/>

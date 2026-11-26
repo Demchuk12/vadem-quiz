@@ -53,6 +53,9 @@
           <vq-phase-progress />
         </div>
       }
+      @case ('estate_playing') {
+        <vq-estate-board><vq-estate-center large /></vq-estate-board>
+      }
       @case ('guess_reveal') {
         <div class="round">
           <vq-guess-question large />
@@ -76,7 +79,11 @@
       }
     }
     <aside slot="aside" [attr.aria-label]="t().score">
-      <vq-standings />
+      @if (room.state === 'estate_playing') {
+        <vq-estate-players />
+      } @else {
+        <vq-standings />
+      }
     </aside>
   </vq-sidebar-layout>
   <vq-verdict />

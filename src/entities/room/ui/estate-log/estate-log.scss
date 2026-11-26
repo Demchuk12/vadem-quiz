@@ -1,0 +1,33 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-2);
+}
+.heading {
+  margin: 0;
+  color: var(--vd-color-text-muted);
+  font-size: var(--vd-text-xs);
+  font-weight: var(--vd-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.lines {
+  display: grid;
+  gap: var(--vd-space-1-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    gap: var(--vd-space-2);
+    align-items: baseline;
+    line-height: 1.35;
+  }
+}
+.dot {
+  flex: none;
+  inline-size: 0.6rem;
+  block-size: 0.6rem;
+  border-radius: 50%;
+  background-color: var(--vd-color-border-strong);
+}

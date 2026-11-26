@@ -31,3 +31,7 @@
   gap: var(--vd-space-4);
   align-items: center;
 }
+vq-estate-board {
+  inline-size: min(100%, calc(100dvh - 8rem));
+  margin-inline: auto;
+}

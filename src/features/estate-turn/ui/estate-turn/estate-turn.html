@@ -1,0 +1,107 @@
+<div class="status">
+  <vq-estate-dice [dice]="store.room()?.estate_dice ?? null" />
+  <div class="text">
+    @if (me()?.bankrupt) {
+      <p class="title">{{ t().out }}</p>
+    } @else if (mine()) {
+      <p class="title">{{ t().yourTurn }}</p>
+      @if (cell(); as here) {
+        <p class="sub">{{ t().on(here.name) }}</p>
+      }
+    } @else if (turn(); as player) {
+      <p class="title">{{ t().turnOf(player.nickname) }}</p>
+      @if (step() === 'auction') {
+        <p class="sub">{{ t().auction }}</p>
+      }
+    }
+  </div>
+  <vq-phase-timer />
+</div>
+
+@if (mine() && !me()?.bankrupt) {
+  @switch (step()) {
+    @case ('roll') {
+      @if (me()?.cnap_tries !== null) {
+        <p class="note">{{ t().inQueue(me()?.cnap_tries ?? 0) }}</p>
+      }
+      <div class="actions">
+        <button vdButton variant="primary" size="lg" [loading]="busy()" (click)="act('roll')">
+          {{ again() ? t().rollAgain : t().roll }}
+        </button>
+        @if (me()?.cnap_tries !== null) {
+          <button
+            vdButton
+            size="lg"
+            [disabled]="busy() || (me()?.money ?? 0) < 500"
+            (click)="act('pay_bail')"
+          >
+            {{ t().bail }}
+          </button>
+        }
+      </div>
+    }
+    @case ('decide') {
+      @if (cell(); as here) {
+        <p class="note">{{ t().free(here.name, money(here.price)) }}</p>
+        <div class="actions">
+          <button
+            vdButton
+            variant="primary"
+            size="lg"
+            [loading]="busy()"
+            [disabled]="(me()?.money ?? 0) < here.price"
+            (click)="act('buy')"
+          >
+            {{ t().buy(money(here.price)) }}
+          </button>
+          <button vdButton size="lg" [disabled]="busy()" (click)="act('decline')">
+            {{ t().decline }}
+          </button>
+        </div>
+      }
+    }
+    @case ('debt') {
+      <p class="note debt">{{ t().debt(money(debt())) }} · {{ t().debtHelp }}</p>
+      <div class="actions">
+        <button
+          vdButton
+          variant="primary"
+          size="lg"
+          [loading]="busy()"
+          [disabled]="(me()?.money ?? 0) < debt()"
+          (click)="act('pay_debt')"
+        >
+          {{ t().pay }}
+        </button>
+        <button
+          vdButton
+          variant="danger"
+          size="lg"
+          [disabled]="busy()"
+          (click)="confirming.set(true)"
+        >
+          {{ t().giveUp }}
+        </button>
+      </div>
+    }
+    @case ('act') {
+      <p class="note">{{ t().act }}</p>
+      <div class="actions">
+        <button vdButton variant="primary" size="lg" [loading]="busy()" (click)="act('end_turn')">
+          {{ t().endTurn }}
+        </button>
+      </div>
+    }
+  }
+}
+
+<vd-alert-dialog
+  [title]="t().giveUpTitle"
+  [description]="t().giveUpText"
+  [confirmLabel]="t().giveUp"
+  [cancelLabel]="t().cancel"
+  variant="danger"
+  [open]="confirming()"
+  [action]="giveUp"
+  (openChange)="confirming.set($event)"
+/>

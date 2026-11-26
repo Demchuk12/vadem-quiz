@@ -1,0 +1,25 @@
+/* The size comes from --vq-token-size; the drawing is dark on a light colour in both themes. */
+:host {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  inline-size: var(--vq-token-size, 2rem);
+  block-size: var(--vq-token-size, 2rem);
+  border-radius: 50%;
+  background-color: var(--vq-token-color);
+  box-shadow: 0 0 0 2px var(--vd-color-surface);
+}
+:host(.current) {
+  box-shadow:
+    0 0 0 2px var(--vd-color-surface),
+    0 0 0 4px var(--vd-color-action);
+}
+svg {
+  inline-size: 64%;
+  block-size: 64%;
+  fill: none;
+  stroke: #14201a;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

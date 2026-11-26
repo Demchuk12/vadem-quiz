@@ -40,3 +40,12 @@ export interface HostKey {
   roomId: string;
   token: string;
 }
+
+/** A deal one player offers another: `give*` goes to them, `get*` comes back. */
+export interface EstateOfferDraft {
+  to: string;
+  giveCells: number[];
+  getCells: number[];
+  giveMoney: number;
+  getMoney: number;
+}

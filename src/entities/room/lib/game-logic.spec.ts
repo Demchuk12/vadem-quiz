@@ -43,6 +43,15 @@ const room = (patch: Partial<Room> = {}): Room => ({
   guess_unit: null,
   guess_done: [],
   guess_results: null,
+  estate_turn: null,
+  estate_step: null,
+  estate_dice: null,
+  estate_debts: null,
+  estate_auction: null,
+  estate_regions: null,
+  estate_end_kind: null,
+  estate_ends_at: null,
+  estate_turn_seconds: null,
   version: 1,
   ...patch,
 });
@@ -53,6 +62,11 @@ const player = (id: string, score: number): Player => ({
   nickname: id,
   score,
   joined_at: '',
+  money: null,
+  position: null,
+  cnap_tries: null,
+  bankrupt: false,
+  turn_order: null,
 });
 
 const cell = (round: number, category: number, position: number): RoomCell => ({

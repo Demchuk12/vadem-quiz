@@ -1,0 +1,7 @@
+@for (face of faces(); track $index) {
+  <span class="die">
+    @for (pip of face; track $index) {
+      <span class="pip" [class.on]="pip"></span>
+    }
+  </span>
+}

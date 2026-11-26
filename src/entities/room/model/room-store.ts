@@ -20,7 +20,19 @@ import {
 } from '../lib/game-logic';
 import { PhaseClock } from '../lib/phase-clock';
 import { VerdictTracker } from '../lib/verdicts';
-import type { Player, Room, RoomCell, RoomLoadStatus, Verdict } from './room';
+import type {
+  EstateCell,
+  EstateEvent,
+  EstateOffer,
+  Player,
+  Room,
+  RoomCell,
+  RoomLoadStatus,
+  Verdict,
+} from './room';
+
+/** How much of a "Господар" game's story a page keeps. */
+const ESTATE_EVENTS = 40;
 
 /** How long the screens show a verdict; the animations in ui/verdict fit inside it. */
 const VERDICT_MS = 2200;
@@ -46,6 +58,10 @@ export class RoomStore {
   readonly players = signal<Player[]>([]);
   readonly cells = signal<RoomCell[]>([]);
   readonly onlinePlayerIds = signal<ReadonlySet<string>>(new Set());
+  /** "Господар": the ring, the latest events (oldest first) and the open offers. */
+  readonly estateCells = signal<EstateCell[]>([]);
+  readonly estateEvents = signal<EstateEvent[]>([]);
+  readonly estateOffers = signal<EstateOffer[]>([]);
 
   readonly ranked = computed(() => rankPlayers(this.players()));
   readonly columns = computed(() => boardColumns(this.cells(), this.room()?.round ?? 1));
@@ -152,6 +168,57 @@ export class RoomStore {
           this.cells.update((all) => upsertById(all, cell as RoomCell));
         },
       )
+      .on<EstateCell>(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'estate_cells',
+          filter: `room_id=eq.${roomId}`,
+        },
+        ({ new: cell }) => {
+          this.eventCount += 1;
+          const next = cell as EstateCell;
+          this.estateCells.update((all) => all.map((c) => (c.idx === next.idx ? next : c)));
+        },
+      )
+      .on<EstateEvent>(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'estate_events',
+          filter: `room_id=eq.${roomId}`,
+        },
+        ({ new: event }) => {
+          this.eventCount += 1;
+          this.estateEvents.update((all) => keepLatest([...all, event as EstateEvent]));
+        },
+      )
+      .on<EstateOffer>(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'estate_offers',
+          filter: `room_id=eq.${roomId}`,
+        },
+        ({ new: offer }) => {
+          this.eventCount += 1;
+          this.estateOffers.update((all) => upsertById(all, offer as EstateOffer));
+        },
+      )
+      // Deleted rows cannot be filtered by room; an id that is not ours changes nothing.
+      .on<EstateOffer>(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'estate_offers' },
+        ({ old }) => {
+          const id = (old as Partial<EstateOffer>).id;
+          if (!id || !this.estateOffers().some((o) => o.id === id)) return;
+          this.eventCount += 1;
+          this.estateOffers.update((all) => all.filter((o) => o.id !== id));
+        },
+      )
       // SUBSCRIBED comes before database changes start flowing. This later message marks the real
       // start, so anything that changed in between is picked up by loading once more.
       .on('system', {}, (message: { extension?: string; status?: string }) => {
@@ -175,6 +242,33 @@ export class RoomStore {
     this.channel = channel;
   }
 
+  /** False when the load failed or must start over; then the caller stops. */
+  private async reloadEstate(roomId: string, eventsBefore: number): Promise<boolean> {
+    const [cells, events, offers] = await Promise.all([
+      this.supabase.from('estate_cells').select('*').eq('room_id', roomId),
+      this.supabase
+        .from('estate_events')
+        .select('*')
+        .eq('room_id', roomId)
+        .order('id', { ascending: false })
+        .limit(ESTATE_EVENTS),
+      this.supabase.from('estate_offers').select('*').eq('room_id', roomId),
+    ]);
+    if (this.destroyed) return false;
+    if (cells.error || events.error || offers.error) {
+      if (this.status() === 'loading') this.status.set('error');
+      return false;
+    }
+    if (this.eventCount !== eventsBefore) {
+      void this.reload();
+      return false;
+    }
+    this.estateCells.set((cells.data as EstateCell[]).sort((a, b) => a.idx - b.idx));
+    this.estateEvents.set(keepLatest(events.data as EstateEvent[]));
+    this.estateOffers.set(offers.data as EstateOffer[]);
+    return true;
+  }
+
   private async reload(): Promise<void> {
     const roomId = this.room()?.id;
     if (!roomId) return;
@@ -194,11 +288,16 @@ export class RoomStore {
     // An event during the load may be newer than this response: load again instead of losing it.
     if (this.eventCount !== eventsBefore) return this.reload();
 
+    if (room.data.mode === 'estate' && !(await this.reloadEstate(roomId, eventsBefore))) return;
     this.room.update((current) => newerRoom(current, room.data));
     this.players.set(players.data as Player[]);
     this.cells.set(cells.data as RoomCell[]);
     this.status.set('ready');
   }
+}
+
+function keepLatest(events: EstateEvent[]): EstateEvent[] {
+  return events.sort((a, b) => a.id - b.id).slice(-ESTATE_EVENTS);
 }
 
 function onlineIds(state: RealtimePresenceState<PresenceMeta>): ReadonlySet<string> {

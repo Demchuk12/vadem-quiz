@@ -1,0 +1,107 @@
+:host {
+  display: block;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: var(--vd-border-width) solid var(--vd-color-border);
+  border-radius: var(--vd-radius-lg);
+  background-color: var(--vd-color-surface);
+}
+.head {
+  display: grid;
+  place-items: center;
+  block-size: 3.5rem;
+  background-color: var(--vd-color-surface-sunken);
+
+  svg {
+    inline-size: 2rem;
+    block-size: 2rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+.band {
+  inline-size: 100%;
+  block-size: 100%;
+}
+.body {
+  display: grid;
+  gap: var(--vd-space-3);
+  padding: var(--vd-space-4);
+}
+.kicker {
+  margin: 0;
+  color: var(--vd-color-text-muted);
+  font-size: var(--vd-text-xs);
+  font-weight: var(--vd-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.title {
+  margin: var(--vd-space-1) 0 0;
+  font-size: var(--vd-text-xl);
+}
+.price {
+  margin: var(--vd-space-1) 0 0;
+  font-weight: var(--vd-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+.rows {
+  display: grid;
+  gap: 2px;
+  margin: 0 calc(-1 * var(--vd-space-2));
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--vd-space-3);
+  padding: var(--vd-space-1) var(--vd-space-2);
+  border-radius: var(--vd-radius-sm);
+  font-size: var(--vd-text-sm);
+
+  dt {
+    color: var(--vd-color-text-muted);
+  }
+  dd {
+    margin: 0;
+    font-weight: var(--vd-weight-bold);
+    font-variant-numeric: tabular-nums;
+  }
+}
+.row.current {
+  background-color: var(--vd-color-action-subtle);
+
+  dt {
+    color: var(--vd-color-text);
+    font-weight: var(--vd-weight-bold);
+  }
+}
+.about,
+.foot {
+  margin: 0;
+}
+.foot {
+  color: var(--vd-color-text-muted);
+  font-size: var(--vd-text-sm);
+}
+.owner {
+  display: flex;
+  gap: var(--vd-space-2);
+  align-items: center;
+  margin: 0;
+  padding-block-start: var(--vd-space-3);
+  border-block-start: var(--vd-border-width) solid var(--vd-color-border);
+  font-size: var(--vd-text-sm);
+  font-weight: var(--vd-weight-bold);
+}
+.dot {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--vd-color-border-strong);
+}

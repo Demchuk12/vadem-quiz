@@ -1,5 +1,8 @@
 import type { Room } from '../model/room';
 
+/** An auction runs this long after its last bid; the database says the same. */
+export const ESTATE_AUCTION_SECONDS = 10;
+
 /** Whole seconds left until `endsAt`; 0 once it is over or when the phase has no clock. */
 export function secondsLeft(endsAt: number | null, now: number): number {
   if (endsAt === null) return 0;
@@ -17,6 +20,8 @@ export function phaseSeconds(room: Room): number | null {
       return room.voting_seconds;
     case 'guess_open':
       return room.guess_seconds;
+    case 'estate_playing':
+      return room.estate_step === 'auction' ? ESTATE_AUCTION_SECONDS : room.estate_turn_seconds;
     default:
       return null;
   }
@@ -33,7 +38,11 @@ export class PhaseClock {
 
   observe(room: Room | null, now: number): number | null {
     if (!room) return null;
-    const phase = `${room.round}:${room.state}`;
+    // A "Господар" turn has a clock for each step, and a bid restarts the auction's.
+    const phase =
+      room.state === 'estate_playing'
+        ? `${room.state}:${room.estate_turn}:${room.estate_step}:${room.phase_ends_at}`
+        : `${room.round}:${room.state}`;
     if (phase !== this.phase) {
       const seenStarting = this.phase !== null;
       this.phase = phase;

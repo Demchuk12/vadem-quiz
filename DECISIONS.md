@@ -315,6 +315,11 @@ board; the host's page shows it and runs the game but does not play.
 - A new quiz is a ready board, the map of Ukraine, in the host's language: the editor only renames
   cells and rewrites cards. `get_quiz` returns the board under `estate`, and the client lifts it to
   the top of the document.
+- On a phone the board is a close-up in a scrolling box, which follows the token whose turn it is:
+  a finger moves it natively, and a 32-cell ring stays readable. A board's sizes follow its own
+  width (container units), so each page only says how wide it is.
+- Every page in the room, host's or players', reports a step whose clock ran out; the database
+  plays the first report out and ignores the rest, so the game goes on without the host's page.
 - `score` holds a player's worth, so the standings and winner screens of the other games work as
   they are. The game ends after its laps or minutes (at the end of a turn), or when one is left.
 
