@@ -292,6 +292,29 @@ Over or under makes no difference.
 - The kind of a quiz is now `kindOf`, with a table of what each kind can do, instead of "bluff or
   not"; ending a phase on time is one helper for all three games.
 
+## D33 — "Господар": land, rent and the last one standing
+
+A fourth game in the genre of property trading, original in name, board, cards and look: a ring of
+32 cells on a map of Ukraine (eight regions of two or three cities, four stations, two utilities,
+two card decks, a tax and four corners). Everyone plays from their own device and sees the whole
+board; the host's page shows it and runs the game but does not play.
+
+- Prices, rents and house costs are fixed in `private.estate_layout`, so rules live in one place; a
+  quiz only names the regions and cells, writes the cards and picks the settings.
+- Nothing of a running game is secret except the decks' order, so the board, money, offers and an
+  event log are public tables. Events carry a code and data, and each client words them in its own
+  language.
+- Dice are thrown in the database. A test queues throws in the setting `estate.dice`, and keeps the
+  decks in order with `estate.shuffle`; no function reachable through the API calls `set_config`.
+- The optional clock times each step of a turn, not the whole turn; when it runs out any page in
+  the room may say so and the step plays out as the slowest choice would. An auction always lasts
+  ten seconds after the last bid.
+- Simplified against the classic genre, on purpose: someone made to pay by another's card pays what
+  they have and owes nothing; there is no card to leave the queue; mortgaged land changes hands
+  without a fee; land with houses in its region cannot be traded or mortgaged.
+- `score` holds a player's worth, so the standings and winner screens of the other games work as
+  they are. The game ends after its laps or minutes (at the end of a turn), or when one is left.
+
 ## Known limits
 
 - Image upload is open to the anon key: Storage policies cannot check our tokens. Size, type and path
