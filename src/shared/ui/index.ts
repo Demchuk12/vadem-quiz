@@ -1,6 +1,8 @@
 export { ClockSetting } from './clock-setting/clock-setting';
 export { Confetti } from './confetti/confetti';
 export { JoinQr } from './join-qr/join-qr';
+export { Ornament } from './ornament/ornament';
+export { ORNAMENTS, type OrnamentLook } from './ornament/ornaments';
 export { QuestionLoader } from './question-loader/question-loader';
 export { SidebarLayout } from './sidebar-layout/sidebar-layout';
 export { TileBanner } from './tile-banner/tile-banner';

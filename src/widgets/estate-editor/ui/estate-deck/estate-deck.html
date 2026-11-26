@@ -1,0 +1,135 @@
+<h2 class="section">{{ t().decks[deck()] }}</h2>
+<p class="hint">{{ t().deckAbout[deck()] }}</p>
+
+<ol class="cards">
+  @for (card of cards(); track $index; let i = $index) {
+    <li vdCard class="card">
+      <div class="head">
+        <span>
+          <span class="number">{{ t().card(i + 1) }}</span>
+          @if (!card.text.trim()) {
+            <span class="incomplete"> · {{ t().incomplete }}</span>
+          }
+        </span>
+        <button
+          vdButton
+          variant="ghost"
+          iconOnly
+          [attr.aria-label]="t().remove(i + 1)"
+          [disabled]="cards().length <= limits.cards.min"
+          (click)="remove(i)"
+        >
+          <vd-icon name="trash" />
+        </button>
+      </div>
+
+      <vd-field [label]="t().text">
+        <textarea
+          vdInput
+          rows="2"
+          [attr.maxlength]="limits.cardText"
+          [value]="card.text"
+          (input)="setText(i, card, $event)"
+        ></textarea>
+      </vd-field>
+
+      <div class="pair">
+        <vd-field [label]="t().effect">
+          <vd-select [value]="card.effect.kind" (valueChange)="setKind(i, card, $any($event))">
+            @for (kind of kinds; track kind) {
+              <vd-option [value]="kind" [label]="t().effects[kind]">{{
+                t().effects[kind]
+              }}</vd-option>
+            }
+          </vd-select>
+        </vd-field>
+
+        @switch (card.effect.kind) {
+          @case ('money') {
+            <ng-container
+              *ngTemplateOutlet="
+                number;
+                context: { key: 'amount', label: t().amount, hint: t().amountHint, step: 100 }
+              "
+            />
+          }
+          @case ('each') {
+            <ng-container
+              *ngTemplateOutlet="
+                number;
+                context: { key: 'amount', label: t().eachAmount, hint: t().eachHint, step: 50 }
+              "
+            />
+          }
+          @case ('repairs') {
+            <ng-container
+              *ngTemplateOutlet="
+                number;
+                context: { key: 'house', label: t().house, hint: '', step: 50 }
+              "
+            />
+            <ng-container
+              *ngTemplateOutlet="
+                number;
+                context: { key: 'manor', label: t().manor, hint: '', step: 100 }
+              "
+            />
+          }
+          @case ('move') {
+            <vd-field [label]="t().to">
+              <vd-select
+                [value]="'' + numberOf(card.effect, 'to')"
+                (valueChange)="setNumber(i, card, 'to', $event)"
+              >
+                @for (cell of targets; track cell) {
+                  <vd-option [value]="'' + cell" [label]="quiz().cells[cell]">
+                    {{ cell + 1 }}. {{ quiz().cells[cell] }}
+                  </vd-option>
+                }
+              </vd-select>
+            </vd-field>
+          }
+          @case ('back') {
+            <ng-container
+              *ngTemplateOutlet="
+                number;
+                context: { key: 'steps', label: t().steps, hint: '', step: 1 }
+              "
+            />
+          }
+        }
+
+        <ng-template #number let-key="key" let-label="label" let-hint="hint" let-step="step">
+          <vd-field
+            [label]="label"
+            [hint]="
+              hint ||
+              t().range(
+                format(rangeOf(card.effect, key).min),
+                format(rangeOf(card.effect, key).max)
+              )
+            "
+          >
+            <input
+              vdInput
+              type="number"
+              [step]="step"
+              [min]="rangeOf(card.effect, key).min"
+              [max]="rangeOf(card.effect, key).max"
+              [value]="numberOf(card.effect, key)"
+              (change)="setNumber(i, card, key, valueOf($event))"
+            />
+          </vd-field>
+        </ng-template>
+      </div>
+    </li>
+  }
+</ol>
+
+<div class="footer">
+  <button vdButton [disabled]="cards().length >= limits.cards.max" (click)="add()">
+    <vd-icon slot="start" name="plus" />
+    {{ t().add }}
+  </button>
+  <span class="count">{{ t().count(cards().length, limits.cards.max) }}</span>
+</div>

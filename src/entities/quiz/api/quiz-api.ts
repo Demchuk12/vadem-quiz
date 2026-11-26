@@ -17,8 +17,14 @@ export class QuizApi {
   create(title: string): Promise<NewQuiz> {
     return this.rpc.callRow('create_quiz', { p_title: title });
   }
-  get(quizId: string, token: string): Promise<AnyQuizDocument> {
-    return this.rpc.call('get_quiz', { p_quiz_id: quizId, p_token: token });
+  /** A "Господар" quiz comes with its board under `estate`; the document has it at the top. */
+  async get(quizId: string, token: string): Promise<AnyQuizDocument> {
+    const quiz = await this.rpc.call<AnyQuizDocument & { estate?: object | null }>('get_quiz', {
+      p_quiz_id: quizId,
+      p_token: token,
+    });
+    const { estate, ...rest } = quiz;
+    return (estate ? { title: quiz.title, mode: 'estate', ...estate } : rest) as AnyQuizDocument;
   }
   save(quizId: string, token: string, document: AnyQuizDocument): Promise<void> {
     return this.rpc.call('save_quiz', { p_quiz_id: quizId, p_token: token, p_document: document });

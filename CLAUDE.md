@@ -1,7 +1,7 @@
 # Vadem Quiz
 
 Live quiz games for friends: a host runs one, players answer from their phones, a clean page goes to a
-Discord screen share. Three games (`mode`): board ("Своя гра"), bluff ("Варіанти"), guess ("На око"). Angular 22 + `@vadem/ui`, Supabase (Postgres, Realtime, Storage), Vercel.
+Discord screen share. Four games (`mode`): board ("Своя гра"), bluff ("Варіанти"), guess ("На око"), estate ("Господар"). Angular 22 + `@vadem/ui`, Supabase (Postgres, Realtime, Storage), Vercel.
 No own server. Original plan: `docs/PLAN.md`. Reasons for choices: `DECISIONS.md`.
 
 ## Working agreement

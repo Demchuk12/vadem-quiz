@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { injectMessages } from '@shared/i18n';
+import { I18n, injectMessages } from '@shared/i18n';
 import {
   BLUFF_FACTS,
   GUESS_QUESTIONS,
@@ -11,6 +11,7 @@ import {
   type QuizMode,
 } from '@entities/quiz';
 import { apiAction } from '@shared/api';
+import { Ornament } from '@shared/ui';
 import { VdButton } from '@vadem/ui/button';
 import { VD_CARD } from '@vadem/ui/card';
 import { VD_DIALOG } from '@vadem/ui/dialog';
@@ -21,13 +22,14 @@ import { MESSAGES } from '../../i18n/messages';
 /** A card per kind of game; the chosen one asks for the new quiz's title. */
 @Component({
   selector: 'vq-create-quiz',
-  imports: [ReactiveFormsModule, VdButton, VD_CARD, VD_DIALOG, VdField, VdInput],
+  imports: [Ornament, ReactiveFormsModule, VdButton, VD_CARD, VD_DIALOG, VdField, VdInput],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './create-quiz.scss',
   templateUrl: './create-quiz.html',
 })
 export class CreateQuiz {
   protected readonly t = injectMessages(MESSAGES);
+  private readonly i18n = inject(I18n);
   private readonly api = inject(QuizApi);
   private readonly saved = inject(SavedQuizzes);
   private readonly router = inject(Router);
@@ -36,6 +38,8 @@ export class CreateQuiz {
   protected readonly busy = this.action.busy;
   protected readonly facts = BLUFF_FACTS;
   protected readonly questions = GUESS_QUESTIONS;
+  /** The edge of a "Господар" board: regions, and the corners and specials between them. */
+  protected readonly ring: (number | null)[] = [null, 0, 0, null, 1, 1, null, 2, 2, 3, 3, null];
   /** The game being created; null while the dialog is closed. */
   protected readonly mode = signal<QuizMode | null>(null);
   protected readonly gameName = computed(() => this.t().games[this.mode() ?? 'board']);
@@ -60,7 +64,11 @@ export class CreateQuiz {
     const title = this.form.controls.title.value.trim();
     await this.action.run(async () => {
       const quiz = await this.api.create(title);
-      await this.api.save(quiz.quiz_id, quiz.owner_token, emptyDocument(mode, title));
+      await this.api.save(
+        quiz.quiz_id,
+        quiz.owner_token,
+        emptyDocument(mode, title, this.i18n.locale()),
+      );
       this.saved.save({ id: quiz.quiz_id, token: quiz.owner_token, title, mode });
       this.mode.set(null);
       await this.router.navigate(['/quizzes', quiz.quiz_id]);

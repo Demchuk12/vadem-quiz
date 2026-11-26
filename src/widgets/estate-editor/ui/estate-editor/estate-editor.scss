@@ -1,0 +1,58 @@
+:host {
+  display: grid;
+  gap: var(--vd-space-6);
+}
+.section {
+  margin: 0;
+  font-size: var(--vd-text-lg);
+}
+.subsection {
+  margin: 0;
+  font-size: var(--vd-text-base);
+}
+.hint {
+  margin: 0;
+  color: var(--vd-color-text-muted);
+}
+.settings,
+.board,
+.others {
+  display: grid;
+  gap: var(--vd-space-4);
+}
+.narrow {
+  max-inline-size: 16rem;
+}
+.end {
+  display: grid;
+  gap: var(--vd-space-3);
+  justify-items: start;
+}
+.label {
+  font-weight: var(--vd-weight-medium);
+}
+.regions {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: var(--vd-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.region {
+  display: grid;
+  gap: var(--vd-space-3);
+  align-content: start;
+  overflow: hidden;
+}
+/* The embroidery runs along the card's top edge. */
+.band {
+  block-size: 0.875rem;
+  margin-block-start: calc(-1 * var(--vd-card-padding));
+  margin-inline: calc(-1 * var(--vd-card-padding));
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: var(--vd-space-3);
+}

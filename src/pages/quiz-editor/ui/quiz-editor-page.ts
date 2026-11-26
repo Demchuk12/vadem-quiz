@@ -28,6 +28,7 @@ import { VdButton } from '@vadem/ui/button';
 import { VdSkeleton } from '@vadem/ui/skeleton';
 import { VdToaster } from '@vadem/ui/toast';
 import { BluffEditor } from '@widgets/bluff-editor';
+import { EstateEditor } from '@widgets/estate-editor';
 import { GuessEditor } from '@widgets/guess-editor';
 import { QuizEditor } from '@widgets/quiz-editor';
 import { MESSAGES } from '../i18n/messages';
@@ -43,6 +44,7 @@ type LoadState = 'loading' | 'ready' | 'forbidden' | 'error';
     VdButton,
     VdSkeleton,
     BluffEditor,
+    EstateEditor,
     QuizEditor,
     FactGenerator,
     GuessEditor,
@@ -69,6 +71,7 @@ export class QuizEditorPage implements OnInit, HasUnsavedChanges {
   protected readonly board = computed(() => asKind(this.quiz(), 'board'));
   protected readonly bluff = computed(() => asKind(this.quiz(), 'bluff'));
   protected readonly guess = computed(() => asKind(this.quiz(), 'guess'));
+  protected readonly estate = computed(() => asKind(this.quiz(), 'estate'));
   protected readonly dirty = signal(false);
   private readonly saveAction = apiAction();
   protected readonly saving = this.saveAction.busy;

@@ -16,8 +16,11 @@ export const MESSAGES = defineMessages({
       board_file: 'Це файл «Своєї гри». Створіть для нього квіз цього типу.',
       bluff_file: 'Це файл гри «Варіанти». Створіть для нього квіз цього типу.',
       guess_file: 'Це файл гри «На око». Створіть для нього квіз цього типу.',
+      estate_file: 'Це файл гри «Господар». Створіть для нього квіз цього типу.',
+      cell_count: 'на полі має бути 8 регіонів і 32 клітинки',
+      effect: 'картка робить те, чого гра не знає',
     } satisfies Record<ImportProblem, string> as Record<ImportProblem, string>,
-    importPlace: ({ field, round, category, question, fact, guess }: ImportPlace) =>
+    importPlace: ({ field, round, category, question, fact, guess, card }: ImportPlace) =>
       [
         field,
         round && `Раунд ${round}`,
@@ -25,6 +28,7 @@ export const MESSAGES = defineMessages({
         question && `питання ${question}`,
         fact && `Факт ${fact}`,
         guess && `Питання ${guess}`,
+        card && `картка ${card}`,
       ]
         .filter(Boolean)
         .join(', ') || 'Квіз',
@@ -43,8 +47,11 @@ export const MESSAGES = defineMessages({
       board_file: 'This is a Quiz Board file. Create a quiz of that kind for it.',
       bluff_file: 'This is a Bluff file. Create a quiz of that kind for it.',
       guess_file: 'This is a Ballpark file. Create a quiz of that kind for it.',
+      estate_file: 'This is a Landlord file. Create a quiz of that kind for it.',
+      cell_count: 'the board needs 8 regions and 32 cells',
+      effect: 'a card does something the game does not know',
     },
-    importPlace: ({ field, round, category, question, fact, guess }) =>
+    importPlace: ({ field, round, category, question, fact, guess, card }) =>
       [
         field,
         round && `Round ${round}`,
@@ -52,6 +59,7 @@ export const MESSAGES = defineMessages({
         question && `question ${question}`,
         fact && `Fact ${fact}`,
         guess && `Question ${guess}`,
+        card && `card ${card}`,
       ]
         .filter(Boolean)
         .join(', ') || 'Quiz',

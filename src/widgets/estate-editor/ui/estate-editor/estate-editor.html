@@ -1,0 +1,116 @@
+<vd-field [label]="t().title">
+  <input vdInput maxlength="120" [value]="quiz().title" (input)="setTitle($event)" />
+</vd-field>
+
+<section vdCard class="settings" aria-labelledby="estate-settings">
+  <h2 id="estate-settings" class="section">{{ t().settings }}</h2>
+
+  <vd-field
+    class="narrow"
+    [label]="t().startMoney"
+    [hint]="t().range(format(limits.startMoney.min), format(limits.startMoney.max))"
+  >
+    <input
+      vdInput
+      type="number"
+      step="1000"
+      [min]="limits.startMoney.min"
+      [max]="limits.startMoney.max"
+      [value]="quiz().startMoney"
+      (change)="setStartMoney($event)"
+    />
+  </vd-field>
+
+  <div class="end">
+    <span class="label" aria-hidden="true">{{ t().end }}</span>
+    <vd-segmented
+      [attr.aria-label]="t().end"
+      [value]="quiz().endKind"
+      (valueChange)="setEndKind($any($event))"
+    >
+      @for (kind of ends; track kind) {
+        <vd-segment [value]="kind">{{ t().ends[kind] }}</vd-segment>
+      }
+    </vd-segmented>
+    @if (quiz().endKind !== 'last') {
+      <vd-field
+        class="narrow"
+        [label]="t().endValue[quiz().endKind]"
+        [hint]="
+          t().range(format(limits.end[quiz().endKind].min), format(limits.end[quiz().endKind].max))
+        "
+      >
+        <input
+          vdInput
+          type="number"
+          [min]="limits.end[quiz().endKind].min"
+          [max]="limits.end[quiz().endKind].max"
+          [value]="quiz().endValue"
+          (change)="setEndValue($event)"
+        />
+      </vd-field>
+    }
+    <p class="hint">{{ t().endAbout[quiz().endKind] }}</p>
+  </div>
+
+  <vq-clock-setting
+    [label]="t().clock"
+    [secondsLabel]="t().clockSeconds"
+    [value]="quiz().turnSeconds"
+    [defaultSeconds]="limits.turnSeconds.default"
+    [min]="limits.turnSeconds.min"
+    [max]="limits.turnSeconds.max"
+    [manualText]="t().clockOff"
+    (valueChange)="setClock($event)"
+  />
+</section>
+
+<section class="board" aria-labelledby="estate-board">
+  <h2 id="estate-board" class="section">{{ t().board }}</h2>
+  <p class="hint">{{ t().boardAbout }}</p>
+
+  <ol class="regions">
+    @for (group of regions; track group.region) {
+      <li vdCard class="region">
+        <vq-ornament class="band" [region]="group.region" />
+        <vd-field [label]="t().region(group.region + 1)">
+          <input
+            vdInput
+            [attr.maxlength]="limits.name"
+            [value]="quiz().regions[group.region]"
+            (input)="setRegion(group.region, $event)"
+          />
+        </vd-field>
+        @for (cell of group.cells; track cell) {
+          <vd-field [label]="t().city(money(layout[cell].price))">
+            <input
+              vdInput
+              [attr.maxlength]="limits.name"
+              [value]="quiz().cells[cell]"
+              (input)="setCell(cell, $event)"
+            />
+          </vd-field>
+        }
+      </li>
+    }
+  </ol>
+
+  <div vdCard class="others">
+    <h3 class="subsection">{{ t().others }}</h3>
+    <div class="grid">
+      @for (cell of others; track cell) {
+        <vd-field [label]="t().cell(cell + 1, kindOf(cell))">
+          <input
+            vdInput
+            [attr.maxlength]="limits.name"
+            [value]="quiz().cells[cell]"
+            (input)="setCell(cell, $event)"
+          />
+        </vd-field>
+      }
+    </div>
+  </div>
+</section>
+
+<vq-estate-deck deck="fate" [quiz]="quiz()" (quizChange)="quizChange.emit($event)" />
+<vq-estate-deck deck="community" [quiz]="quiz()" (quizChange)="quizChange.emit($event)" />

@@ -312,6 +312,9 @@ board; the host's page shows it and runs the game but does not play.
 - Simplified against the classic genre, on purpose: someone made to pay by another's card pays what
   they have and owes nothing; there is no card to leave the queue; mortgaged land changes hands
   without a fee; land with houses in its region cannot be traded or mortgaged.
+- A new quiz is a ready board, the map of Ukraine, in the host's language: the editor only renames
+  cells and rewrites cards. `get_quiz` returns the board under `estate`, and the client lifts it to
+  the top of the document.
 - `score` holds a player's worth, so the standings and winner screens of the other games work as
   they are. The game ends after its laps or minutes (at the end of a turn), or when one is left.
 

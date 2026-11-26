@@ -1,4 +1,5 @@
 import type { BluffDocument } from './bluff-document.types';
+import type { EstateDocument } from './estate-document.types';
 import type { GuessDocument } from './guess-document.types';
 import type { QuizDocument } from './quiz-document.types';
 
@@ -7,6 +8,7 @@ export interface QuizDocuments {
   board: QuizDocument;
   bluff: BluffDocument;
   guess: GuessDocument;
+  estate: EstateDocument;
 }
 
 /** Which game a quiz is for. */

@@ -25,10 +25,12 @@ export class ClockSetting {
   readonly value = input.required<number | null>();
   /** The seconds a clock gets when it is switched on. */
   readonly defaultSeconds = input.required<number>();
+  /** The range of seconds, when a phase has its own. */
+  readonly min = input(MIN_SECONDS);
+  readonly max = input(MAX_SECONDS);
+  /** What the page says with the clock off, when not that the host moves on. */
+  readonly manualText = input<string | null>(null);
   readonly valueChange = output<number | null>();
-
-  protected readonly min = MIN_SECONDS;
-  protected readonly max = MAX_SECONDS;
 
   protected toggle(event: Event): void {
     const on = (event.target as HTMLInputElement).checked;
@@ -38,6 +40,6 @@ export class ClockSetting {
   protected set(event: Event): void {
     const seconds = Math.round(Number((event.target as HTMLInputElement).value));
     if (!Number.isFinite(seconds)) return;
-    this.valueChange.emit(Math.min(MAX_SECONDS, Math.max(MIN_SECONDS, seconds)));
+    this.valueChange.emit(Math.min(this.max(), Math.max(this.min(), seconds)));
   }
 }

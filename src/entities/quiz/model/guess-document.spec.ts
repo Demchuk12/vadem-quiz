@@ -15,7 +15,7 @@ describe('guess document', () => {
     const quiz = emptyGuessQuiz('Числа');
     expect(quiz.guesses).toHaveLength(10);
     expect(quiz.guessSeconds).toBe(30);
-    expect(kindOf(emptyDocument('guess', 'Числа'))).toBe('guess');
+    expect(kindOf(emptyDocument('guess', 'Числа', 'uk'))).toBe('guess');
   });
 
   it('counts a question with a text and a number, zero included', () => {

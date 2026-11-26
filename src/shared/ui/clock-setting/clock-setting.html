@@ -3,19 +3,19 @@
   {{ label() }}
 </label>
 @if (value(); as seconds) {
-  <vd-field class="seconds" [label]="secondsLabel()" [hint]="t().clock.range(min, max)">
+  <vd-field class="seconds" [label]="secondsLabel()" [hint]="t().clock.range(min(), max())">
     <vd-number-input [decreaseLabel]="t().clock.less" [increaseLabel]="t().clock.more">
       <input
         vdNumberInput
         type="number"
         step="5"
-        [min]="min"
-        [max]="max"
+        [min]="min()"
+        [max]="max()"
         [value]="seconds"
         (change)="set($event)"
       />
     </vd-number-input>
   </vd-field>
 } @else {
-  <p class="manual">{{ t().clock.manual }}</p>
+  <p class="manual">{{ manualText() ?? t().clock.manual }}</p>
 }

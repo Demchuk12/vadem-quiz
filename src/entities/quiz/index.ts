@@ -35,6 +35,34 @@ export {
 } from './model/guess-document';
 export { type GuessDocument, type GuessQuestion } from './model/guess-document.types';
 export { GUESS_LENGTHS, GUESS_QUESTIONS, GUESS_SECONDS } from './config/guess-limits';
+export {
+  MOVE_TARGETS,
+  addCard,
+  effectOfKind,
+  emptyEstateQuiz,
+  estateProgress,
+  removeCard,
+  renameCell,
+  renameRegion,
+  setEnd,
+  updateCard,
+} from './model/estate-document';
+export {
+  type EstateCard,
+  type EstateCellKind,
+  type EstateCellLayout,
+  type EstateDeck,
+  type EstateDocument,
+  type EstateEffect,
+  type EstateEffectKind,
+  type EstateEnd,
+} from './model/estate-document.types';
+export {
+  ESTATE_EFFECT_KINDS,
+  ESTATE_LAYOUT,
+  ESTATE_LIMITS,
+  ESTATE_REGIONS,
+} from './config/estate-board';
 export { asKind, documentProgress, emptyDocument, kindOf } from './model/quiz-kind';
 export { type AnyQuizDocument, type QuizMode } from './model/quiz-kind.types';
 export { BLUFF_FACTS, BLUFF_LENGTHS, BLUFF_SECONDS } from './config/bluff-limits';

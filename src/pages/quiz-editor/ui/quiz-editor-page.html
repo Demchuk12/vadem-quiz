@@ -70,6 +70,9 @@
         <vq-guess-generator [quizId]="quizId()" [quiz]="guessQuiz" (generated)="change($event)" />
         <vq-guess-editor [quiz]="guessQuiz" (quizChange)="change($event)" />
       }
+      @if (estate(); as estateQuiz) {
+        <vq-estate-editor [quiz]="estateQuiz" (quizChange)="change($event)" />
+      }
     }
   }
 }

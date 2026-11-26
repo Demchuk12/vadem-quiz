@@ -33,6 +33,22 @@
     <span class="about">{{ t().guessAbout }}</span>
     <span class="meta">{{ t().guessMeta(questions.min, questions.max) }}</span>
   </button>
+
+  <button vdCard type="button" class="game" (click)="choose('estate')">
+    <span class="art estate" aria-hidden="true">
+      @for (region of ring; track $index) {
+        <span class="plot" [class.free]="region === null">
+          @if (region !== null) {
+            <vq-ornament [region]="region" />
+          }
+        </span>
+      }
+      <span class="house"></span>
+    </span>
+    <span class="name">{{ t().games.estate }}</span>
+    <span class="about">{{ t().estateAbout }}</span>
+    <span class="meta">{{ t().estateMeta }}</span>
+  </button>
 </div>
 
 <dialog vdDialog size="sm" [open]="mode() !== null" (openChange)="$event || close()">

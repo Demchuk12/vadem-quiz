@@ -1,4 +1,6 @@
+import type { Locale } from '@shared/i18n';
 import { bluffProgress, emptyBluffQuiz } from './bluff-document';
+import { emptyEstateQuiz, estateProgress } from './estate-document';
 import { emptyGuessQuiz, guessProgress } from './guess-document';
 import { emptyQuiz, quizProgress } from './quiz-document';
 import type { QuizProgress } from './quiz-document.types';
@@ -7,13 +9,15 @@ import type { AnyQuizDocument, QuizDocuments, QuizMode } from './quiz-kind.types
 /** What every game's quiz can do, whatever it holds. */
 const KINDS: {
   [M in QuizMode]: {
-    empty(title: string): QuizDocuments[M];
+    /** A new quiz; a ready board comes in the host's language. */
+    empty(title: string, locale: Locale): QuizDocuments[M];
     progress(document: QuizDocuments[M]): QuizProgress;
   };
 } = {
   board: { empty: emptyQuiz, progress: quizProgress },
   bluff: { empty: emptyBluffQuiz, progress: bluffProgress },
   guess: { empty: emptyGuessQuiz, progress: guessProgress },
+  estate: { empty: emptyEstateQuiz, progress: estateProgress },
 };
 
 /** A document without a mode is a board: there was only one game once. */
@@ -29,8 +33,8 @@ export function asKind<M extends QuizMode>(
   return document && kindOf(document) === mode ? (document as QuizDocuments[M]) : null;
 }
 
-export function emptyDocument(mode: QuizMode, title: string): AnyQuizDocument {
-  return KINDS[mode].empty(title);
+export function emptyDocument(mode: QuizMode, title: string, locale: Locale): AnyQuizDocument {
+  return KINDS[mode].empty(title, locale);
 }
 
 export function documentProgress(document: AnyQuizDocument): QuizProgress {

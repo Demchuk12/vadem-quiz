@@ -11,6 +11,9 @@ import type {
   QuizQuestion,
 } from './quiz-document.types';
 import type { GuessDocument } from './guess-document.types';
+import { ESTATE_LIMITS, ESTATE_REGIONS } from '../config/estate-board';
+import type { EstateCard, EstateDocument, EstateEffect, EstateEnd } from './estate-document.types';
+import { MOVE_TARGETS } from './estate-document';
 import { QuizImportError, type ImportPlace } from './quiz-import-error';
 import type { BluffDocument } from './bluff-document.types';
 import type { AnyQuizDocument } from './quiz-kind.types';
@@ -214,6 +217,7 @@ export function parseQuizDocument(
   const root = asRecord(raw, {});
   if (root['mode'] === 'bluff') return { document: parseBluff(root), droppedImages: 0 };
   if (root['mode'] === 'guess') return { document: parseGuess(root), droppedImages: 0 };
+  if (root['mode'] === 'estate') return { document: parseEstate(root), droppedImages: 0 };
   const rounds = asArray(root['rounds'], { field: 'rounds' });
   const roundMultipliers = asArray(root['roundMultipliers'], { field: 'roundMultipliers' }).map(
     (m, i) => asPositiveInt(m, { field: `roundMultipliers[${i}]` }),
@@ -287,5 +291,97 @@ function parseGuess(root: Record<string, unknown>): GuessDocument {
         explanation: asString(guess['explanation'], at),
       };
     }),
+  };
+}
+
+function asIntIn(value: unknown, min: number, max: number, where: ImportPlace): number {
+  if (typeof value === 'number' && Number.isInteger(value) && value >= min && value <= max) {
+    return value;
+  }
+  throw new QuizImportError('number', where);
+}
+
+function parseEffect(value: unknown, where: ImportPlace): EstateEffect {
+  const effect = asRecord(value, where);
+  const { effects } = ESTATE_LIMITS;
+  switch (effect['kind']) {
+    case 'money':
+      return {
+        kind: 'money',
+        amount: asIntIn(effect['amount'], effects.money.min, effects.money.max, where),
+      };
+    case 'each':
+      return {
+        kind: 'each',
+        amount: asIntIn(effect['amount'], effects.each.min, effects.each.max, where),
+      };
+    case 'repairs':
+      return {
+        kind: 'repairs',
+        house: asIntIn(effect['house'], effects.house.min, effects.house.max, where),
+        manor: asIntIn(effect['manor'], effects.manor.min, effects.manor.max, where),
+      };
+    case 'move': {
+      const to = asIntIn(effect['to'], 0, 31, where);
+      if (!MOVE_TARGETS.includes(to)) throw new QuizImportError('effect', where);
+      return { kind: 'move', to };
+    }
+    case 'back':
+      return {
+        kind: 'back',
+        steps: asIntIn(effect['steps'], effects.steps.min, effects.steps.max, where),
+      };
+    case 'cnap':
+      return { kind: 'cnap' };
+    default:
+      throw new QuizImportError('effect', where);
+  }
+}
+
+function parseEstate(root: Record<string, unknown>): EstateDocument {
+  const names = (field: string, count: number): string[] => {
+    const list = asArray(root[field], { field }).map((n) => asString(n, { field }));
+    if (list.length !== count) throw new QuizImportError('cell_count', { field });
+    return list.map((n) => n.slice(0, ESTATE_LIMITS.name));
+  };
+  const deck = (field: 'fate' | 'community'): EstateCard[] => {
+    const cards = asArray(root[field], { field });
+    if (cards.length < ESTATE_LIMITS.cards.min || cards.length > ESTATE_LIMITS.cards.max) {
+      throw new QuizImportError('list', { field });
+    }
+    return cards.map((c, i) => {
+      const at = { field, card: i + 1 };
+      const card = asRecord(c, at);
+      return {
+        text: asString(card['text'], at).slice(0, ESTATE_LIMITS.cardText),
+        effect: parseEffect(card['effect'], at),
+      };
+    });
+  };
+  const endKind = root['endKind'];
+  if (endKind !== 'laps' && endKind !== 'minutes' && endKind !== 'last') {
+    throw new QuizImportError('text', { field: 'endKind' });
+  }
+  const end = ESTATE_LIMITS.end[endKind as EstateEnd];
+  const turn = ESTATE_LIMITS.turnSeconds;
+  return {
+    title: asString(root['title'], { field: 'title' }),
+    mode: 'estate',
+    regions: names('regions', ESTATE_REGIONS),
+    cells: names('cells', 32),
+    fate: deck('fate'),
+    community: deck('community'),
+    startMoney: asIntIn(
+      root['startMoney'],
+      ESTATE_LIMITS.startMoney.min,
+      ESTATE_LIMITS.startMoney.max,
+      { field: 'startMoney' },
+    ),
+    endKind,
+    endValue: asIntIn(root['endValue'], end.min, end.max, { field: 'endValue' }),
+    turnSeconds:
+      root['turnSeconds'] === null || root['turnSeconds'] === undefined
+        ? null
+        : asIntIn(root['turnSeconds'], turn.min, turn.max, { field: 'turnSeconds' }),
   };
 }

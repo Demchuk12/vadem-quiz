@@ -9,7 +9,10 @@ export type ImportProblem =
   | 'object'
   | 'board_file'
   | 'bluff_file'
-  | 'guess_file';
+  | 'guess_file'
+  | 'estate_file'
+  | 'cell_count'
+  | 'effect';
 
 /** Where in the file: numbers count from 1, as the host sees them. Empty for the whole quiz. */
 export interface ImportPlace {
@@ -19,6 +22,7 @@ export interface ImportPlace {
   question?: number;
   fact?: number;
   guess?: number;
+  card?: number;
 }
 
 /** Why an imported file does not fit. The texts are in i18n. */
